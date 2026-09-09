@@ -1,0 +1,163 @@
+{
+  "leylineVersion": "1.0.0",
+  "id": "personal-dashboard",
+  "name": "Personal dashboard",
+  "description": "A page whose regions run independently and whose reading order the viewer controls. Demonstrates section containment in both modes.",
+  "entry": "dashboard",
+  "context": {
+    "viewer": {
+      "type": "object",
+      "description": "Who is looking, and what they may see."
+    },
+    "selectedItem": {
+      "type": "string",
+      "optional": true,
+      "description": "The item the detail region is showing."
+    },
+    "showsActivity": {
+      "type": "boolean",
+      "description": "Whether this viewer keeps the activity feed."
+    }
+  },
+  "requires": {
+    "guards": [
+      "keepsActivityFeed"
+    ],
+    "services": [
+      "loadItem"
+    ],
+    "dataSources": [
+      "navigationItems",
+      "summaryMetrics",
+      "activityFeed",
+      "itemDetail"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "dashboard",
+      "kind": "section",
+      "description": "The page. Its three regions run at once and advance independently.",
+      "surfaces": [
+        {
+          "id": "page-heading",
+          "type": "text",
+          "props": {
+            "value": "Your dashboard"
+          }
+        }
+      ],
+      "children": [
+        "navigation",
+        "workspace",
+        "activity"
+      ],
+      "mode": "many"
+    },
+    {
+      "id": "navigation",
+      "kind": "hub",
+      "description": "Where the viewer chooses what the workspace region shows.",
+      "surfaces": [
+        {
+          "id": "nav-items",
+          "type": "datatable",
+          "dataSource": "navigationItems"
+        },
+        {
+          "id": "to-workspace",
+          "type": "link",
+          "target": "workspace",
+          "props": {
+            "label": "Open"
+          }
+        }
+      ]
+    },
+    {
+      "id": "workspace",
+      "kind": "section",
+      "description": "One thing at a time: an overview, or the detail of one item.",
+      "children": [
+        "workspace-overview",
+        "workspace-loading",
+        "workspace-detail"
+      ],
+      "mode": "one",
+      "initial": "workspace-overview"
+    },
+    {
+      "id": "workspace-overview",
+      "kind": "hub",
+      "description": "Summary of everything, and a way into one item.",
+      "surfaces": [
+        {
+          "id": "overview-metrics",
+          "type": "metric-panel",
+          "dataSource": "summaryMetrics"
+        },
+        {
+          "id": "to-detail",
+          "type": "link",
+          "target": "workspace-loading",
+          "props": {
+            "label": "Open item"
+          }
+        }
+      ]
+    },
+    {
+      "id": "workspace-loading",
+      "kind": "step",
+      "description": "Fetches the selected item, then hands over to the detail view.",
+      "invoke": {
+        "service": "loadItem",
+        "assignTo": "selectedItem",
+        "onDone": [
+          {
+            "target": "workspace-detail"
+          }
+        ],
+        "onError": [
+          {
+            "target": "workspace-overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "workspace-detail",
+      "kind": "hub",
+      "description": "One item in full.",
+      "surfaces": [
+        {
+          "id": "detail-body",
+          "type": "form",
+          "dataSource": "itemDetail"
+        },
+        {
+          "id": "back-to-overview",
+          "type": "link",
+          "target": "workspace-overview",
+          "props": {
+            "label": "Back"
+          }
+        }
+      ]
+    },
+    {
+      "id": "activity",
+      "kind": "hub",
+      "description": "A feed that keeps running whatever the workspace region is doing.",
+      "surfaces": [
+        {
+          "id": "activity-feed",
+          "type": "datatable",
+          "description": "Present only for viewers who kept the feed.",
+          "when": "keepsActivityFeed",
+          "dataSource": "activityFeed"
+        }
+      ]
+    }
+  ]
+}

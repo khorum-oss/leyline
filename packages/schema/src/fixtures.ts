@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
  */
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const FIXTURE_NAMES = ['workspace-onboarding'] as const;
+export const FIXTURE_NAMES = ['workspace-onboarding', 'personal-dashboard'] as const;
 export type FixtureName = (typeof FIXTURE_NAMES)[number];
 
 export function fixtureText(name: FixtureName): string {

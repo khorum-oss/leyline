@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   changeSchema,
   changeRecordSchema,
+  initiatorSchema,
   proposalSchema,
   policyDecisionSchema,
 } from './changes.js';
@@ -54,6 +55,51 @@ describe('change descriptions cover what the §2 agent scenario needs', () => {
     const document = fixtureJson('workspace-onboarding') as Record<string, any>;
     document['nodes'][0].id = '../escape';
     expect(changeSchema.safeParse({ kind: 'workflow.replace', document }).success).toBe(false);
+  });
+});
+
+describe('personalization is ordinary control-plane traffic (decision 0020)', () => {
+  it('a viewer reordering the regions of a page is one change', () => {
+    expect(
+      changeSchema.safeParse({
+        kind: 'section.reorder-children',
+        node: 'dashboard',
+        children: ['activity', 'workspace', 'navigation'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('a viewer moving a region into a different container is one change', () => {
+    expect(
+      changeSchema.safeParse({
+        kind: 'section.move-child',
+        child: 'activity',
+        from: 'dashboard',
+        to: 'workspace',
+        index: 0,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('carries an initiator kind of its own, so policy can tell a viewer from an agent', () => {
+    expect(initiatorSchema.safeParse({ kind: 'user', label: 'viewer-4821' }).success).toBe(true);
+  });
+
+  it('says nothing about arrangement — a reorder names nodes, never positions', () => {
+    const result = changeSchema.safeParse({
+      kind: 'section.reorder-children',
+      node: 'dashboard',
+      children: ['activity'],
+      layout: 'two-column',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('refuses an empty reorder, which would say nothing', () => {
+    expect(
+      changeSchema.safeParse({ kind: 'section.reorder-children', node: 'dashboard', children: [] })
+        .success,
+    ).toBe(false);
   });
 });
 

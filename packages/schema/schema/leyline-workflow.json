@@ -144,6 +144,22 @@
             "$ref": "#/$defs/LeylineSurface"
           }
         },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LeylineIdentifier"
+          }
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "one",
+            "many"
+          ]
+        },
+        "initial": {
+          "$ref": "#/$defs/LeylineIdentifier"
+        },
         "invoke": {
           "$ref": "#/$defs/LeylineInvoke"
         },

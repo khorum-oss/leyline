@@ -64,7 +64,8 @@
           "enum": [
             "application",
             "developer",
-            "agent"
+            "agent",
+            "user"
           ]
         },
         "label": {

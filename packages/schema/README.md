@@ -34,16 +34,32 @@ act on, not only a sentence a human can read.
 Structure is an error; unknown vocabulary is a warning
 ([0017](../../docs/decisions/0017-structure-errors-vocabulary-warnings.md)).
 
-**Errors** — `graph.unknown-entry`, `graph.duplicate-node`,
-`graph.dangling-target`, `graph.unreachable-node`, `capability.undeclared`,
-`context.unknown-field`, `surface.missing-target`, `id.ambiguous`,
+**Errors** — `graph.unknown-entry`, `graph.entry-not-root`,
+`graph.duplicate-node`, `graph.dangling-target`, `graph.cross-boundary-target`,
+`graph.unreachable-node`, `graph.unknown-child`, `graph.multiple-parents`,
+`graph.containment-cycle`, `capability.undeclared`, `context.unknown-field`,
+`surface.missing-target`, `section.missing-initial`, `id.ambiguous`,
 `hygiene.forbidden-key`, `document.invalid-field`.
 
 **Warnings** — `vocabulary.unknown-surface-type`, `vocabulary.unknown-node-kind`,
-`document.unknown-field`, `capability.unused`.
+`document.unknown-field`, `capability.unused`, `section.empty`,
+`section.mode-mismatch`, `section.stray-containment`.
 
 A document written against a later minor version still parses and still runs;
 the warnings tell a developer what this build did not understand (AD8).
+
+## Sections
+
+A `section` node contains other nodes and says how they run together — `one`
+child at a time, or `many` at once. Children are named rather than nested, so
+the `nodes` array stays flat and a transition target stays a plain identifier.
+
+Containment is validated as its own structure: unknown children, a node claimed
+by two sections, a section containing itself, an entry node sitting inside one,
+and transitions that try to land inside a section they do not belong to.
+
+Nothing in a section describes arrangement. See
+[decision 0019](../../docs/decisions/0019-section-nodes.md).
 
 ## Addressing
 

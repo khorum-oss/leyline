@@ -42,7 +42,8 @@ _Defined in:_ `packages/schema/src/workflow.ts`.
 
 ### Node
 
-A position in the workflow. v1 defines two kinds.
+A position in the workflow. v1 defines three kinds: **step**, **hub**, and
+**section**.
 
 ### Step
 
@@ -56,6 +57,64 @@ moving on by itself. The workspace hub in the reference workflow is one.
 
 _Not:_ a step with no work to do. A hub is where a user comes to rest and
 chooses; a step is somewhere they pass through.
+
+### Section
+
+A node that contains other nodes and governs how they run together. A page
+holding a sidebar and a main panel, a panel holding a wizard, an input box
+holding its own idle, editing, and validating states — one construct at every
+scale.
+
+A section declares **containment** and topology, never arrangement. Its renderer
+receives the active children as named slots and decides how they sit, so a full
+page and an input box are the same schema resolved to different renderers.
+
+_Not:_ a layout primitive. Nothing in a section says width, direction, or
+position. A schema able to express those has become a worse HTML and has failed
+(brief §4).
+
+_Defined in:_ `packages/schema/src/node.ts` and `containment.ts`. Governed by
+[decision 0019](decisions/0019-section-nodes.md).
+
+### Containment
+
+The relationship between a **section** and its children. Children are named in a
+`children` array rather than nested inside the parent, so the `nodes` array
+stays flat and a **transition** target stays a plain identifier with no path
+syntax (I5).
+
+The tree is derived from those names, and validation checks it: unknown
+children, a node claimed by two sections, a section containing itself, and an
+entry node sitting inside one.
+
+### Mode
+
+How a section runs its children. `one` keeps exactly one child active — a wizard
+advancing a screen at a time, an input box moving through its states. `many`
+keeps every child active and advancing independently — a page whose sidebar,
+main panel, and activity feed each hold their own state.
+
+Both map onto statechart compound and parallel states, so the interpreter
+inherits semantics rather than inventing them (AD3).
+
+### Reading order
+
+The order of a section's `children`: the sequence a renderer presents them in
+unless a viewer has said otherwise. Semantic — the same thing source order means
+in HTML, and what a screen reader follows.
+
+_Not:_ a position. Reordering children says "this comes before that", never "put
+this here".
+
+### Cross-boundary target
+
+A **transition** trying to land inside a section its source does not belong to.
+Rejected, with the section itself suggested instead: entering a container means
+entering it at the top.
+
+A transition may reach a root node, a sibling, or an ancestor. This is the one
+place the design chooses readability over configurability, and it keeps both the
+graph legible and the interpreter tractable.
 
 ### Context
 
@@ -229,6 +288,22 @@ comparison is a valid change check and no equality function is needed.
 _Not:_ **context**. Context is the data the workflow carries; the snapshot is
 the whole observable state, context included.
 
+Since [decision 0019](decisions/0019-section-nodes.md) the snapshot exposes an
+**active region** tree rather than a single node, because a **section** in
+`many` **mode** has several children active at once.
+
+### Active region
+
+One active node in a snapshot, with its **resolved surfaces** and whatever is
+active beneath it. A leaf node is the same shape with no children, so an adapter
+handles one structure rather than two.
+
+`children` holds only what is currently active: every child of a `many` section,
+the one active child of a `one` section, in **reading order**.
+
+_Defined in:_ `packages/core/src/contracts.ts`, with `walkRegions` and
+`activeSurfaces` for traversal.
+
 ### Resolved surface
 
 A surface as it appears in a snapshot: its **guard** already evaluated, its
@@ -365,6 +440,30 @@ an optional label. Recorded in the log and available to policy.
 Self-asserted and advisory in v1 — the transport, not Leyline, is where stronger
 identity belongs, and the policy hook is the documented place to enforce it
 (OQ7).
+
+`user` means an end user rearranging their own view of an application that chose
+to offer that. It exists separately from `application` so that **policy** can
+tell them apart: an application may change anything, a viewer typically only
+their own presentation.
+
+### Personalization
+
+An end user reshaping their own view — reordering a **section**'s children,
+moving a region to a different container, choosing among the **renderers** an
+application published, hiding a **surface**.
+
+Expressed as ordinary **changes** through the **control plane**, not as a
+separate subsystem. A viewer rearranging a page and an agent swapping a table
+travel the same path, meet the same **policy**, produce the same **change
+record**, and revert the same way — so "reset my layout" is a revert rather than
+a feature.
+
+A viewer never writes arrangement. They reorder semantic containers and pick
+from what the application made **discoverable**, which keeps the document free
+of layout and keeps the reachable presentations bounded by what the application
+chose to offer.
+
+Governed by [decision 0020](decisions/0020-personalization.md).
 
 ### Operation descriptor
 

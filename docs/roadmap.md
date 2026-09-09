@@ -54,10 +54,19 @@ place. The reference workflow from brief §2 round-trips byte for byte and
 validates identically under the TypeScript validator and under Ajv reading the
 published artifact.
 
+Section nodes arrived after the fact, on the strength of a requirement the brief
+did not anticipate: containers that hold other containers, and end users
+rearranging their own view. Taking it before stage 2 cost three optional fields
+and a validation pass; taking it after would have meant reshaping the snapshot
+every adapter reads. See [0019](decisions/0019-section-nodes.md) and
+[0020](decisions/0020-personalization.md).
+
 Decisions recorded along the way: [0016](decisions/0016-minimum-surface-set.md)
 (the surface set, closing OQ5), [0017](decisions/0017-structure-errors-vocabulary-warnings.md)
 (severity policy), [0018](decisions/0018-identifier-derivation.md) (what a
-derived identifier hashes).
+derived identifier hashes), [0019](decisions/0019-section-nodes.md) (section
+containment) and [0020](decisions/0020-personalization.md) (personalization as
+control-plane traffic).
 
 Stage 2 — the core runtime, control plane, and trace stream — starts next. The
 contracts it implements and the change vocabulary it accepts already exist, so

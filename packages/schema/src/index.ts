@@ -26,12 +26,15 @@ export {
   SURFACE_TYPES,
   CAPABILITY_KINDS,
   INITIATOR_KINDS,
+  SECTION_MODES,
   isNodeKind,
   isSurfaceType,
+  isSectionMode,
   type NodeKind,
   type SurfaceType,
   type CapabilityKind,
   type InitiatorKind,
+  type SectionMode,
 } from './vocabulary.js';
 
 // --- Addressing and hygiene ------------------------------------------------
@@ -91,6 +94,13 @@ export {
 } from './transition.js';
 
 export { nodeSchema, NODE_KEYS, type WorkflowNode } from './node.js';
+
+export {
+  buildContainment,
+  enteredChildren,
+  isPermittedTarget,
+  type Containment,
+} from './containment.js';
 
 export {
   requirementsSchema,

@@ -73,6 +73,31 @@ const detachGuard = z.strictObject({
   surface: identifierSchema,
 });
 
+/**
+ * Personalization: the operations an end user performs on their own view
+ * (decision 0020).
+ *
+ * Reordering children changes reading order, which is semantic. Moving a child
+ * changes which container holds it. Neither says anything about arrangement —
+ * that stays with the renderer the registry resolved, which a user changes
+ * through `renderer.register` like anyone else.
+ */
+const reorderChildren = z.strictObject({
+  kind: z.literal('section.reorder-children'),
+  node: identifierSchema,
+  /** A permutation of the section's existing children. Adding or dropping one is rejected. */
+  children: z.array(identifierSchema).min(1),
+});
+
+const moveChild = z.strictObject({
+  kind: z.literal('section.move-child'),
+  child: identifierSchema,
+  from: identifierSchema,
+  to: identifierSchema,
+  /** Where in the destination's reading order to place it. Appended when absent. */
+  index: z.number().int().nonnegative().optional(),
+});
+
 const replaceWorkflow = z.strictObject({
   kind: z.literal('workflow.replace'),
   document: workflowDocumentSchema,
@@ -90,6 +115,8 @@ export const changeSchema = z
     unregisterRenderer,
     attachGuard,
     detachGuard,
+    reorderChildren,
+    moveChild,
     replaceWorkflow,
     patchContext,
   ])
@@ -106,6 +133,8 @@ export const CHANGE_KINDS = [
   'renderer.unregister',
   'surface.attach-guard',
   'surface.detach-guard',
+  'section.reorder-children',
+  'section.move-child',
   'workflow.replace',
   'context.patch',
 ] as const;

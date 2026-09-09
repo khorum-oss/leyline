@@ -108,7 +108,7 @@ describe('the glossary is reachable from everywhere it should be', () => {
 });
 
 describe('the validation rule catalogue stays complete', () => {
-  const sources = ['validate.ts', 'normalize.ts'].map((name) =>
+  const sources = ['validate.ts', 'normalize.ts', 'containment.ts'].map((name) =>
     readFileSync(join(root, 'packages', 'schema', 'src', name), 'utf8'),
   );
   const rules = [

@@ -23,12 +23,47 @@ export interface ResolvedSurface {
 
 export type WorkflowStatus = 'idle' | 'running' | 'awaiting' | 'error' | 'done';
 
+/**
+ * One active node and everything active beneath it (decision 0019).
+ *
+ * A `section` running in `many` mode holds several active children at once, so
+ * what is active is a tree rather than a single position. A `step` or a `hub`
+ * is the same structure with no children — which is why adapters handle one
+ * shape rather than two.
+ *
+ * `children` holds only what is currently active: every child of a `many`
+ * section, and the one active child of a `one` section. In reading order,
+ * which a viewer may have reordered.
+ */
+export interface ActiveRegion<TContext = Readonly<Record<string, unknown>>> {
+  readonly id: string;
+  readonly kind: NodeKind | (string & {});
+  readonly description?: string;
+  readonly surfaces: readonly ResolvedSurface[];
+  readonly children: readonly ActiveRegion<TContext>[];
+}
+
 /** The immutable state adapters read. Structural sharing makes `===` a valid change check. */
 export interface Snapshot<TContext = Readonly<Record<string, unknown>>> {
-  readonly node: { readonly id: string; readonly kind: NodeKind | (string & {}) };
+  /** The active tree, rooted at the workflow's entry node. */
+  readonly root: ActiveRegion<TContext>;
   readonly context: TContext;
-  readonly surfaces: readonly ResolvedSurface[];
   readonly status: WorkflowStatus;
+}
+
+/** Walks an active tree depth-first in reading order, root included. */
+export function* walkRegions<TContext>(
+  region: ActiveRegion<TContext>,
+): Generator<ActiveRegion<TContext>> {
+  yield region;
+  for (const child of region.children) yield* walkRegions(child);
+}
+
+/** Every resolved surface in the active tree, in reading order. */
+export function activeSurfaces<TContext>(
+  region: ActiveRegion<TContext>,
+): readonly ResolvedSurface[] {
+  return [...walkRegions(region)].flatMap((current) => current.surfaces);
 }
 
 export interface WorkflowEvent {

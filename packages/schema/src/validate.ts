@@ -2,6 +2,7 @@ import { type z } from 'zod';
 import { findHygieneIssues } from './hygiene.js';
 import { hasErrors, pointer, type Issue, type ValidationResult } from './issues.js';
 import { normalizeWorkflow } from './normalize.js';
+import { buildContainment, enteredChildren, isPermittedTarget } from './containment.js';
 import { isNodeKind, isSurfaceType } from './vocabulary.js';
 import { SURFACE_KEYS } from './surface.js';
 import { NODE_KEYS } from './node.js';
@@ -117,6 +118,20 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
     });
   }
 
+  const containment = buildContainment(document, nodeIds);
+  issues.push(...containment.issues);
+
+  if (nodeIds.has(document.entry) && containment.parents.has(document.entry)) {
+    issues.push({
+      severity: 'error',
+      rule: 'graph.entry-not-root',
+      path: pointer('entry'),
+      identifier: document.entry,
+      message: `The entry node "${document.entry}" sits inside the section "${containment.parents.get(document.entry) as string}".`,
+      suggestion: 'Enter at the section instead; a section entered activates its children itself.',
+    });
+  }
+
   // --- Edges, capabilities, and context ------------------------------------
 
   const declared = {
@@ -138,15 +153,27 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
     edges.set(from, targets);
   };
 
-  const checkTarget = (target: string, path: string): void => {
-    if (nodeIds.has(target)) return;
+  const checkTarget = (target: string, path: string, from: string): void => {
+    if (!nodeIds.has(target)) {
+      issues.push({
+        severity: 'error',
+        rule: 'graph.dangling-target',
+        path,
+        identifier: target,
+        message: `Nothing in this document defines a node "${target}".`,
+        suggestion: 'Point the target at an existing node, or add the node.',
+      });
+      return;
+    }
+    if (isPermittedTarget(from, target, containment.parents)) return;
+    const parent = containment.parents.get(target) as string;
     issues.push({
       severity: 'error',
-      rule: 'graph.dangling-target',
+      rule: 'graph.cross-boundary-target',
       path,
       identifier: target,
-      message: `Nothing in this document defines a node "${target}".`,
-      suggestion: 'Point the target at an existing node, or add the node.',
+      message: `"${target}" sits inside the section "${parent}", which "${from}" is not part of.`,
+      suggestion: `Target "${parent}" instead; entering a section activates its children.`,
     });
   };
 
@@ -169,7 +196,7 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
   };
 
   const checkTransition = (transition: Transition, path: string, from: string): void => {
-    checkTarget(transition.target, `${path}${pointer('target')}`);
+    checkTarget(transition.target, `${path}${pointer('target')}`, from);
     addEdge(from, transition.target);
     if (transition.when !== undefined) {
       checkCapability('guards', transition.when, `${path}${pointer('when')}`);
@@ -217,7 +244,7 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
         );
       }
       if (surface.target !== undefined) {
-        checkTarget(surface.target, `${surfacePath}${pointer('target')}`);
+        checkTarget(surface.target, `${surfacePath}${pointer('target')}`, node.id);
         addEdge(node.id, surface.target);
       } else if (surface.type === 'link') {
         issues.push({
@@ -278,14 +305,20 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
   // --- Reachability --------------------------------------------------------
 
   if (nodeIds.has(document.entry)) {
+    // A node is reached by a transition, or by the section holding it becoming
+    // active. Entering a section in `many` mode activates every child; in `one`
+    // mode it activates the initial child, and transitions reach the siblings.
+    const nodesById = new Map(document.nodes.map((node) => [node.id, node] as const));
     const reached = new Set<string>([document.entry]);
     const queue = [document.entry];
     while (queue.length > 0) {
       const current = queue.shift() as string;
-      for (const next of edges.get(current) ?? []) {
-        if (reached.has(next)) continue;
-        reached.add(next);
-        queue.push(next);
+      const node = nodesById.get(current);
+      const next = [...(edges.get(current) ?? []), ...(node ? enteredChildren(node) : [])];
+      for (const candidate of next) {
+        if (reached.has(candidate)) continue;
+        reached.add(candidate);
+        queue.push(candidate);
       }
     }
 
@@ -298,7 +331,7 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
         identifier: node.id,
         message: `No path leads from the entry node to "${node.id}".`,
         suggestion:
-          'Add a transition or a link that reaches it, or remove it. A node nothing reaches is usually a wiring mistake.',
+          'Add a transition or a link that reaches it, put it in a section that runs, or remove it. A node nothing reaches is usually a wiring mistake.',
       });
     }
   }
