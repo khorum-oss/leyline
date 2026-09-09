@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      # Framework-free packages must stay framework-free (brief §6).
+      - name: Dependency boundaries
+        run: pnpm boundaries
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+  invariants:
+    name: Security invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # A required gate, not an advisory one: a change to the schema or the
+      # control plane that lacks a corresponding adversarial test does not
+      # merge (AD14, brief §8).
+      - name: Adversarial invariant suites
+        run: pnpm vitest run --project schema --project core -t 'I1|I2|I3|I4|I5|I6|I7'

@@ -34,3 +34,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build output
+dist/
+*.tsbuildinfo
+
+# tool caches
+.eslintcache
+.turbo/
+.vitest/
+.tsbuild/

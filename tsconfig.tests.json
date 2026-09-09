@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  "include": [
+    "packages/*/src/**/*.test.ts",
+    "packages/*/src/**/*.test.tsx",
+    "packages/*/vitest.config.ts",
+    "packages/*/tsup.config.ts",
+    "vitest.shared.ts",
+    "vitest.config.ts",
+    "tsup.base.ts"
+  ]
+}
