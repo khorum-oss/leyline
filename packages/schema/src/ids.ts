@@ -53,7 +53,18 @@ export function deterministicId(kind: IdKind, ...parts: readonly string[]): stri
   return `${ID_TAGS[kind]}_${digest}`;
 }
 
-const ID_PATTERN = /^[a-z]{2}_[0-9a-z]{13}$|^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
+/**
+ * The one rule for every identifier in the system, author-supplied or derived.
+ *
+ * Exported as a source string rather than kept private, because the JSON Schema
+ * artifact carries it verbatim as a `pattern` (AD9). A rule expressed only in
+ * TypeScript would let a non-TypeScript producer submit an identifier this
+ * build rejects, which is precisely the drift the exported contract exists to
+ * prevent.
+ */
+export const ID_PATTERN_SOURCE = '^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$';
+
+const ID_PATTERN = new RegExp(ID_PATTERN_SOURCE);
 
 /**
  * Accepts author-supplied identifiers and generated ones alike, and rejects

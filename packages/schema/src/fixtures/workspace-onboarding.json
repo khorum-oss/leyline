@@ -1,0 +1,191 @@
+{
+  "leylineVersion": "1.0.0",
+  "id": "workspace-onboarding",
+  "name": "Workspace onboarding",
+  "description": "Create a workspace, settle billing when the tier calls for it, and arrive at a hub offering the actions the workspace state permits.",
+  "entry": "create-workspace",
+  "context": {
+    "workspace": {
+      "type": "object",
+      "optional": true,
+      "description": "The created workspace."
+    },
+    "tier": {
+      "type": "string",
+      "description": "free, paid, or organization."
+    },
+    "billing": {
+      "type": "object",
+      "optional": true,
+      "description": "Result of the billing step."
+    },
+    "actionTwoReady": {
+      "type": "boolean",
+      "description": "Whether workspace state permits action two."
+    }
+  },
+  "requires": {
+    "guards": [
+      "needsBilling",
+      "canRunActionTwo"
+    ],
+    "services": [
+      "createWorkspace",
+      "submitBilling",
+      "runActionTwo",
+      "runActionThree"
+    ],
+    "dataSources": [
+      "workspaceActions",
+      "workspaceMetrics"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "create-workspace",
+      "kind": "step",
+      "description": "Calls the workspace-creation API.",
+      "invoke": {
+        "service": "createWorkspace",
+        "assignTo": "workspace",
+        "onDone": [
+          {
+            "target": "billing",
+            "when": "needsBilling",
+            "description": "Paid and organization tiers settle billing first."
+          },
+          {
+            "target": "workspace-hub",
+            "description": "Free tier skips billing entirely."
+          }
+        ],
+        "onError": [
+          {
+            "target": "create-workspace-failed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "billing",
+      "kind": "step",
+      "description": "Management and billing details.",
+      "surfaces": [
+        {
+          "id": "billing-form",
+          "type": "form",
+          "description": "Billing details for a paid or organization workspace."
+        }
+      ],
+      "invoke": {
+        "service": "submitBilling",
+        "assignTo": "billing",
+        "onDone": [
+          {
+            "target": "workspace-hub"
+          }
+        ],
+        "onError": [
+          {
+            "target": "create-workspace-failed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "workspace-hub",
+      "kind": "hub",
+      "description": "The workspace hub: what this workspace can do, and how it is doing.",
+      "surfaces": [
+        {
+          "id": "actions",
+          "type": "datatable",
+          "description": "The table of available actions.",
+          "dataSource": "workspaceActions"
+        },
+        {
+          "id": "metrics",
+          "type": "metric-panel",
+          "description": "Workspace metrics at a glance.",
+          "dataSource": "workspaceMetrics"
+        },
+        {
+          "id": "to-action-two",
+          "type": "link",
+          "description": "Appears only while workspace state permits action two.",
+          "when": "canRunActionTwo",
+          "target": "action-two",
+          "props": {
+            "label": "Action two"
+          }
+        },
+        {
+          "id": "to-action-three",
+          "type": "link",
+          "target": "action-three",
+          "props": {
+            "label": "Action three"
+          }
+        }
+      ]
+    },
+    {
+      "id": "action-two",
+      "kind": "step",
+      "description": "Runs its own sequence and returns to the hub.",
+      "invoke": {
+        "service": "runActionTwo",
+        "onDone": [
+          {
+            "target": "workspace-hub"
+          }
+        ],
+        "onError": [
+          {
+            "target": "workspace-hub"
+          }
+        ]
+      }
+    },
+    {
+      "id": "action-three",
+      "kind": "step",
+      "description": "Runs its own sequence and returns to the hub.",
+      "invoke": {
+        "service": "runActionThree",
+        "onDone": [
+          {
+            "target": "workspace-hub"
+          }
+        ],
+        "onError": [
+          {
+            "target": "workspace-hub"
+          }
+        ]
+      }
+    },
+    {
+      "id": "create-workspace-failed",
+      "kind": "hub",
+      "description": "Something went wrong; offer a way back.",
+      "surfaces": [
+        {
+          "id": "failure-text",
+          "type": "text",
+          "props": {
+            "value": "The workspace could not be created."
+          }
+        },
+        {
+          "id": "retry",
+          "type": "link",
+          "target": "create-workspace",
+          "props": {
+            "label": "Try again"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://leyline.dev/schema/1.0.0/leyline-policy-decision.json",
+  "title": "Leyline policy decision",
+  "x-leyline-version": "1.0.0",
+  "$ref": "#/$defs/LeylinePolicyDecision",
+  "$defs": {
+    "LeylinePolicyDecision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "effect": {
+              "type": "string",
+              "const": "allow"
+            }
+          },
+          "required": [
+            "effect"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "effect": {
+              "type": "string",
+              "const": "deny"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "effect",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "effect": {
+              "type": "string",
+              "const": "confirm"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "effect",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "title": "Policy decision"
+    }
+  }
+}

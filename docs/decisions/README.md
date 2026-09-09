@@ -25,6 +25,14 @@ decision.
 
 Full statements live in [`../project-brief.md`](../project-brief.md), §5.
 
+Decisions taken since:
+
+| ID                                                   | Decision                                                   | Closes |
+| ---------------------------------------------------- | ---------------------------------------------------------- | ------ |
+| [0016](0016-minimum-surface-set.md)                  | The v1 surface set                                         | OQ5    |
+| [0017](0017-structure-errors-vocabulary-warnings.md) | Structure is an error; vocabulary is a warning             | —      |
+| [0018](0018-identifier-derivation.md)                | Derived identifiers come from identity, never presentation | —      |
+
 ## Recording a new decision
 
 Copy `template.md` to `NNNN-short-title.md`, numbering from 0016 so the sequence

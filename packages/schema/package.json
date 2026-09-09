@@ -28,13 +28,16 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./schema/*": "./schema/*"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "schema",
+    "fixtures",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -45,9 +48,13 @@
     "build": "tsup",
     "clean": "rm -rf dist .turbo *.tsbuildinfo",
     "typecheck": "tsc --build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "schema:export": "pnpm run build && node scripts/export-json-schema.mjs"
   },
   "dependencies": {
     "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
   }
 }

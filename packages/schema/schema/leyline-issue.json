@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://leyline.dev/schema/1.0.0/leyline-issue.json",
+  "title": "Leyline issue",
+  "x-leyline-version": "1.0.0",
+  "$ref": "#/$defs/LeylineIssue",
+  "$defs": {
+    "LeylineIssue": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning"
+          ]
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "severity",
+        "rule",
+        "message"
+      ],
+      "additionalProperties": false,
+      "title": "Leyline issue",
+      "description": "One structured finding from validation, binding, or a rejected change."
+    }
+  }
+}

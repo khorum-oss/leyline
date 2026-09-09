@@ -1,23 +1,15 @@
-import type { CapabilityKind } from '@leyline/schema';
+import type { CapabilityKind, Issue } from '@leyline/schema';
 
 /**
  * Errors name the problem (brief §8).
  *
  * Every failure identifies the path and identifier at fault in a shape an agent
- * can act on, not only a sentence a human can read.
+ * can act on, not only a sentence a human can read. The issue shape itself
+ * lives in `@leyline/schema` and is published as JSON Schema, so a binding
+ * failure here and a validation issue there are one format.
  */
 
-export interface LeylineIssue {
-  /** Machine-readable rule that was violated, e.g. `capability.missing`. */
-  readonly rule: string;
-  /** JSON-pointer-style path into the offending document, where one applies. */
-  readonly path?: string;
-  /** Stable identifier of the thing at fault (AD12), where one applies. */
-  readonly identifier?: string;
-  readonly message: string;
-  /** A concrete next step, when one can be named. */
-  readonly suggestion?: string;
-}
+export type LeylineIssue = Issue;
 
 export class LeylineError extends Error {
   readonly code: string;
@@ -56,6 +48,7 @@ export class CapabilityBindingError extends LeylineError {
       'capability.binding',
       `Capability bundle is missing ${missing.length} required capability/capabilities: ${summary}`,
       missing.map((m) => ({
+        severity: 'error' as const,
         rule: 'capability.missing',
         path: m.path,
         identifier: m.name,

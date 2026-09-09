@@ -4,3 +4,11 @@ node_modules
 pnpm-lock.yaml
 CHANGELOG.md
 .tsbuild
+
+# Generated and canonical-by-contract. The JSON Schema artifacts are written by
+# scripts/export-json-schema.mjs and compared byte for byte in the test suite;
+# the fixture corpus is the canonical form the parser emits, which the planned
+# Kotlin DSL must match exactly (brief §10). Reformatting either would break the
+# comparison it exists to support.
+packages/schema/schema/
+packages/schema/src/fixtures/

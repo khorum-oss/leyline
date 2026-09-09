@@ -5,10 +5,11 @@ describe('LeylineError', () => {
   it('carries a code and structured issues', () => {
     const error = new LeylineError('graph.dangling', 'Transition target does not exist', [
       {
+        severity: 'error',
         rule: 'graph.dangling-target',
         path: '/nodes/1/on/NEXT',
         identifier: 'missing-node',
-        message: 'x',
+        message: 'Nothing in this document defines a node "missing-node".',
       },
     ]);
     expect(error.toJSON()).toMatchObject({
