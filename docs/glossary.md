@@ -521,6 +521,28 @@ attached, emission is a guard check that allocates nothing.
 The built-in bounded in-memory sink backing `recent()`, devtools, and tests. The
 core never buffers unboundedly on behalf of a consumer that is not there.
 
+### Trace export
+
+The ring buffer as a serializable bundle: the events, the workflow identifier,
+the schema version, the buffer capacity, and how many events were dropped to
+stay within it.
+
+The dropped count is the part that matters. A bundle that silently lost its
+first thousand events would have a reader reconstructing a causal chain that
+never happened. Governed by
+[decision 0021](decisions/0021-trace-retention-and-export.md).
+
+### Enabled kinds
+
+Which **trace kinds** the emitter lets through. Everything is on by default,
+including guard evaluations, and `setEnabledKinds` narrows it.
+
+The default is complete rather than cheap because emission already costs nothing
+when nobody is listening — volume is only ever a cost to a consumer who chose to
+listen, and who can filter
+([decision 0022](decisions/0022-guard-event-volume.md)). Hot paths check
+`isEnabled` before building a payload, so a disabled kind costs one boolean.
+
 ### Redaction hook
 
 The function applied to every payload before any sink sees it. Context values

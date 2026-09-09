@@ -13,6 +13,19 @@
  * hooks, and the AD14 invariant test suites.
  */
 
+export { createWorkflow } from './workflow.js';
+export type { CreateWorkflowOptions, WorkflowInstance, TraceHandle } from './workflow.js';
+
+export { bindCapabilities, type BoundCapabilities } from './binding.js';
+
+export { TraceEmitter, type TraceEmitterOptions, type TraceExport } from './trace/emitter.js';
+export {
+  consoleSink,
+  collectingSink,
+  createRedaction,
+  type RedactionOptions,
+} from './trace/sinks.js';
+
 export {
   LeylineError,
   CapabilityBindingError,

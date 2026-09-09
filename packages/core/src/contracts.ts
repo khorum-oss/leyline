@@ -10,10 +10,14 @@ import type { InitiatorKind, NodeKind, SurfaceType } from '@leyline/schema';
 /** A surface with its guard already evaluated and its data source attached (AD6). */
 export interface ResolvedSurface {
   readonly id: string;
+  /** The node presenting it, so a control-plane change can address it. */
+  readonly nodeId: string;
   readonly type: SurfaceType | (string & {});
   /** Human-readable description, carried through to agent introspection (§6). */
   readonly description?: string;
   readonly props: Readonly<Record<string, unknown>>;
+  /** Whatever the surface's data source returned, already attached (AD6). */
+  readonly data?: unknown;
   /**
    * Framework-neutral prop getters the adapter spreads onto native elements
    * (AD7). The core never ships components.

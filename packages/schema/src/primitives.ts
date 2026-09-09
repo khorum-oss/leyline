@@ -44,6 +44,9 @@ export const jsonValueSchema = z.json().meta({
   description: 'Arbitrary serializable data, treated as inert by every consumer (I4).',
 });
 
+/** The inferred type of any value a document may carry. */
+export type JsonValue = z.infer<typeof jsonValueSchema>;
+
 export const propsSchema = z
   .record(identifierSchema, jsonValueSchema)
   .meta({ id: 'LeylineProps', title: 'Renderer props' });
