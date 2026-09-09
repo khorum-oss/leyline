@@ -35,6 +35,48 @@ component.
   documented place to enforce anything stronger.
 - The host application's own bugs, its network, and its browser.
 
+## The boundary, drawn
+
+```mermaid
+flowchart TB
+    subgraph untrusted["Untrusted — an initiator may submit anything here"]
+        direction LR
+        DOCS["Schema documents"]
+        CHANGES["Change descriptions"]
+        CTX["Context values"]
+    end
+
+    subgraph leyline["Leyline — where the boundary holds"]
+        direction TB
+        HYG["Prototype hygiene<br/>I7"]
+        POL["Policy hook<br/>I6 · consulted first, never skipped"]
+        VAL["Validation<br/>I2 closed capability set<br/>I4 context stays inert"]
+        RES["Resolution by opaque name<br/>I1 nothing is evaluated<br/>I3 renderers must be discoverable<br/>I5 identifiers carry no structure"]
+        REJECT["Structured refusal<br/>recorded on the trace stream"]
+    end
+
+    subgraph trusted["Trusted by definition — supplied by the application"]
+        direction LR
+        BUNDLE["Capability bundle<br/>guards · services · data sources"]
+        RENDERERS["Discoverable renderers"]
+    end
+
+    DOCS --> HYG
+    CHANGES --> HYG
+    CTX --> HYG
+    HYG --> POL
+    POL -- "deny" --> REJECT
+    POL -- "allow" --> VAL
+    VAL -- "issues" --> REJECT
+    VAL -- "ok" --> RES
+    RES --> BUNDLE
+    RES --> RENDERERS
+```
+
+An initiator crossing that boundary gains exactly what the application already
+granted itself and nothing more. The arrows into the trusted set carry names,
+never code.
+
 ## Invariants
 
 Each invariant carries a test suite that attempts to violate it. Those suites

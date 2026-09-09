@@ -16,6 +16,32 @@ whether the core stayed headless.
 | 6     | **Svelte and vanilla adapters**                                                                                                                                                                                                                                                                                         | §2 items 6–7 re-run against the SvelteKit application with no change to `@leyline/agent`; anything an adapter had to duplicate has moved into the core             |
 | 7     | **Hardening** — devtools inspector, OpenTelemetry sink, finalized threat model, versioning policy, authoring guide, agent integration guide, migration guidance                                                                                                                                                         | Benchmarks show unobserved tracing within noise; `SECURITY.md` matches the shipped invariant suites                                                                |
 
+## Stage order
+
+Two orderings resist rearranging, and the graph shows why: stage 4 sits on the
+critical path _before_ the second and third adapters, and stage 6 sits inside
+v1 rather than after it.
+
+```mermaid
+flowchart LR
+    S1["1 · Schema<br/>foundation"]
+    S2["2 · Core runtime<br/>control plane · trace"]
+    S3["3 · React<br/>adapter"]
+    S4["4 · Agent interface<br/>MCP"]
+    S5["5 · TypeScript<br/>DSL"]
+    S6["6 · Svelte and<br/>vanilla adapters"]
+    S7["7 · Hardening"]
+
+    S1 --> S2 --> S3 --> S4 --> S6 --> S7
+    S2 --> S5 --> S6
+
+    S4 -. "a control plane needing framework<br/>knowledge is a core defect" .-> S2
+    S6 -. "logic an adapter had to duplicate<br/>moves back into the core" .-> S2
+```
+
+The dotted edges are the feedback each stage is designed to produce. Finding
+either one late costs a redesign; finding it on schedule costs a refactor.
+
 ## Current position
 
 Stage 0 — repository scaffolding. The workspace, toolchain, CI gates, dependency

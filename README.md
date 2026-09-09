@@ -31,6 +31,50 @@ toolchain, CI gates, and documentation set exist; the packages carry their
 contracts and the pieces the brief already settled. See
 [`docs/roadmap.md`](docs/roadmap.md) for what lands when.
 
+## How it fits together
+
+```mermaid
+flowchart LR
+    subgraph authoring["Authoring — any producer, one document"]
+        direction TB
+        DSL["TypeScript DSL"]
+        JSON["Hand-written JSON"]
+        AGENTGEN["Agent-generated"]
+    end
+
+    DOC["Schema document<br/>names, never functions"]
+    BUNDLE["Capability bundle<br/>guards · services · data sources"]
+    CORE["@leyline/core<br/>interpreter · store<br/>control plane · trace stream"]
+    SNAP["Snapshot<br/>resolved surfaces"]
+
+    subgraph render["Appearance — swap freely"]
+        direction TB
+        REACT["React"]
+        SVELTE["Svelte"]
+        DOM["Plain DOM"]
+    end
+
+    OPERATOR["Developer or AI agent<br/>through the control plane"]
+
+    DSL --> DOC
+    JSON --> DOC
+    AGENTGEN --> DOC
+    DOC --> CORE
+    BUNDLE --> CORE
+    CORE --> SNAP
+    SNAP --> REACT
+    SNAP --> SVELTE
+    SNAP --> DOM
+    OPERATOR -- "propose · validate<br/>apply · revert" --> CORE
+```
+
+Sequencing, eligibility, and navigation live in the document. Appearance lives in
+a renderer registry. Both stay reachable through one control plane, which is what
+lets a developer and an agent operate the layer with identical power and
+identical safety checks.
+
+See [`docs/architecture.md`](docs/architecture.md) for the mechanisms in detail.
+
 ## Packages
 
 | Package                                | Responsibility                                                                                            | Framework deps |
@@ -82,6 +126,8 @@ _(Illustrative — the schema lands in stage 1.)_
 
 ## Documentation
 
+- [Architecture](docs/architecture.md) — diagrams of the package graph, runtime
+  path, renderer resolution, control plane, and trace stream
 - [Project brief](docs/project-brief.md) — the grounding document: problem,
   goals, non-goals, and the fifteen settled architectural decisions
 - [Constitution](docs/constitution.md) — the obligations every change answers to
