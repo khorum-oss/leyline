@@ -35,3 +35,11 @@ export function isSupportedSchemaVersion(version: string): boolean {
   const parsed = parseSchemaVersion(version);
   return parsed !== undefined && SUPPORTED_MAJOR_VERSIONS.includes(parsed.major);
 }
+
+/**
+ * The supported-version rule as a regular expression source.
+ *
+ * The JSON Schema artifact carries this verbatim, so a producer in another
+ * language is held to the same rule rather than to a prose description of it.
+ */
+export const SUPPORTED_VERSION_PATTERN_SOURCE = `^(${SUPPORTED_MAJOR_VERSIONS.join('|')})\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$`;

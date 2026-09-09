@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { isSupportedSchemaVersion } from './version.js';
-import { isValidId } from './ids.js';
+import { identifierSchema } from './primitives.js';
+import { SUPPORTED_VERSION_PATTERN_SOURCE } from './version.js';
 
 /**
  * The envelope every Leyline document carries.
@@ -13,8 +13,8 @@ import { isValidId } from './ids.js';
 export const documentEnvelopeSchema = z.looseObject({
   leylineVersion: z
     .string()
-    .refine(isSupportedSchemaVersion, { message: 'unsupported schema major version' }),
-  id: z.string().refine(isValidId, { message: 'identifier carries path or URL structure (I5)' }),
+    .regex(new RegExp(SUPPORTED_VERSION_PATTERN_SOURCE), 'unsupported schema major version'),
+  id: identifierSchema,
   name: z.string().min(1),
 });
 

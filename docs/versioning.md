@@ -2,6 +2,10 @@
 
 Two version numbers move independently, and confusing them causes real damage.
 
+See [schema version](glossary.md#schema-version) and
+[additive evolution](glossary.md#additive-evolution) in the glossary for the
+short definitions; this document holds the policy.
+
 ## Schema document version
 
 Carried by every document as `leylineVersion`, and owned by `@leyline/schema`.

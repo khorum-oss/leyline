@@ -20,8 +20,11 @@ export {
   type MissingCapability,
 } from './errors.js';
 
+export { walkRegions, activeSurfaces } from './contracts.js';
+
 export type {
   Snapshot,
+  ActiveRegion,
   ResolvedSurface,
   WorkflowStatus,
   WorkflowEvent,

@@ -126,6 +126,9 @@ _(Illustrative — the schema lands in stage 1.)_
 
 ## Documentation
 
+- [Glossary](docs/glossary.md) — every term in one place, with the distinctions
+  that trip people up: guard vs policy, change vs change record, context vs
+  snapshot
 - [Architecture](docs/architecture.md) — diagrams of the package graph, runtime
   path, renderer resolution, control plane, and trace stream
 - [Project brief](docs/project-brief.md) — the grounding document: problem,

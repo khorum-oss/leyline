@@ -2,6 +2,10 @@
 
 > **Purpose of this document.** This is the holistic context document for spec-driven development. An agent reading this should have enough grounding to produce a project constitution, feature specifications, and implementation plans without further background. It describes _what_ the system must do and _why_, plus the architectural decisions already made. It deliberately does not prescribe file-level implementation details; those belong in the generated specs and plans.
 
+> **Editorial note (not part of the brief).** The vocabulary §6 introduces is
+> defined entry by entry in [`glossary.md`](glossary.md), with cross-references
+> to where each term lives in code. The brief below is preserved as written.
+
 > **Name.** _Leyline_: the invisible lines said to connect significant places into a network. The metaphor carries the design — nodes joined by lines, the lines themselves never rendered, the topology present whatever gets built on top. Package scope is `@leyline/*`.
 
 ---

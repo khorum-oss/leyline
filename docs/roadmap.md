@@ -6,6 +6,9 @@ a control plane needing framework knowledge shows up as a core defect early; and
 stage 6 lands within v1, because two more adapters are the only honest test of
 whether the core stayed headless.
 
+Stage scopes use the project vocabulary throughout; [`glossary.md`](glossary.md)
+defines it.
+
 | Stage | Scope                                                                                                                                                                                                                                                                                                                   | Exit criteria                                                                                                                                                      |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1     | **Schema foundation** — Zod definitions for the minimal node and surface set, graph validation (dangling targets, unreachable nodes, undeclared capabilities), stable identifier rules, JSON Schema export, change-description schemas                                                                                  | The §2 workflow round-trips as a JSON document; graph validation rejects each malformed case by name; JSON Schema exports and validates the same corpus            |
@@ -44,10 +47,30 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-Stage 0 — repository scaffolding. The workspace, toolchain, CI gates, dependency
-boundaries, and documentation set exist; the packages carry their contracts and
-the pieces the brief already settled (schema versioning, deterministic
-identifiers, prototype hygiene, the store bridges). Stage 1 starts next.
+**Stage 1 complete.** The canonical document is defined in Zod and exported as
+JSON Schema; graph and capability validation reject each malformed case by name;
+deterministic addressing, change descriptions, and the trace envelope are in
+place. The reference workflow from brief §2 round-trips byte for byte and
+validates identically under the TypeScript validator and under Ajv reading the
+published artifact.
+
+Section nodes arrived after the fact, on the strength of a requirement the brief
+did not anticipate: containers that hold other containers, and end users
+rearranging their own view. Taking it before stage 2 cost three optional fields
+and a validation pass; taking it after would have meant reshaping the snapshot
+every adapter reads. See [0019](decisions/0019-section-nodes.md) and
+[0020](decisions/0020-personalization.md).
+
+Decisions recorded along the way: [0016](decisions/0016-minimum-surface-set.md)
+(the surface set, closing OQ5), [0017](decisions/0017-structure-errors-vocabulary-warnings.md)
+(severity policy), [0018](decisions/0018-identifier-derivation.md) (what a
+derived identifier hashes), [0019](decisions/0019-section-nodes.md) (section
+containment) and [0020](decisions/0020-personalization.md) (personalization as
+control-plane traffic).
+
+Stage 2 — the core runtime, control plane, and trace stream — starts next. The
+contracts it implements and the change vocabulary it accepts already exist, so
+the work is behaviour rather than shape.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema

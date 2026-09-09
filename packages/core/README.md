@@ -6,6 +6,10 @@ compiled JavaScript with declarations so plain JS gets the same API.
 Every adapter bridges the store contract here to its own reactivity. Anything an
 adapter would otherwise duplicate belongs in this package instead (G5).
 
+Terms used below — **store contract**, **snapshot**, **resolved surface**,
+**control plane**, **trace event** — are defined in the
+[glossary](../../docs/glossary.md#the-runtime).
+
 ## Present
 
 - The public runtime contract: snapshot, resolved surfaces, store, capability

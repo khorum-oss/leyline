@@ -5,6 +5,8 @@ prose alone leaves ambiguous; the reasoning behind every choice lives in
 [`project-brief.md`](project-brief.md) §5, and the obligations they create live
 in [`constitution.md`](constitution.md).
 
+Every term the diagrams label is defined in [`glossary.md`](glossary.md).
+
 ## Packages and dependency direction
 
 Arrows point from a package to what it depends on. The framework-free set is a
@@ -193,6 +195,47 @@ flowchart LR
 With no sink attached, emission costs a guard check and allocates nothing. Events
 stay small — an envelope plus identifiers, a few hundred bytes as the working
 ceiling. Anything larger goes through the control plane instead.
+
+## Sections: containment without arrangement
+
+A `section` holds other nodes and says how they run together (decision 0019).
+`many` runs every child at once; `one` runs a single child at a time. Any node
+may be a child, including another section, so the same construct describes a
+page, a panel, and an input box.
+
+```mermaid
+flowchart TB
+    subgraph page["dashboard — section, mode: many"]
+        direction LR
+        NAV["navigation<br/>hub"]
+        subgraph ws["workspace — section, mode: one"]
+            direction TB
+            OV["workspace-overview<br/>hub · initial"]
+            LOAD["workspace-loading<br/>step"]
+            DET["workspace-detail<br/>hub"]
+        end
+        ACT["activity<br/>hub"]
+    end
+
+    OV -- "link" --> LOAD
+    LOAD -- "onDone" --> DET
+    DET -- "link" --> OV
+    NAV -. "link enters the section<br/>at its initial child" .-> ws
+```
+
+Three regions of the page run at once, so the activity feed keeps updating while
+the workspace region moves between overview, loading, and detail. Inside the
+workspace only one child runs at a time.
+
+The dotted edge shows the boundary rule: `navigation` may target the
+`workspace` section, which enters at its initial child, but may not target
+`workspace-detail` directly. A transition reaches a root, a sibling, or an
+ancestor — never into the interior of a section it does not belong to.
+
+What the schema never says is where any of this sits. The section's renderer
+receives its active children as named slots and arranges them, which is why the
+same document drives a full page, an inner panel, or an input box depending on
+which renderer the registry resolved.
 
 ## The motivating scenario as a graph
 

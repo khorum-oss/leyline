@@ -5,6 +5,9 @@ implements them rather than re-opening them, unless implementation surfaces a
 concrete blocker — in which case the blocker gets recorded here as a superseding
 decision.
 
+A decision record assumes the project vocabulary; [`../glossary.md`](../glossary.md)
+defines it, and a record introducing a new term adds it there in the same change.
+
 | ID   | Decision                                                  | Where it binds                    |
 | ---- | --------------------------------------------------------- | --------------------------------- |
 | AD1  | Canonical schema, DSL as a producer                       | `@leyline/schema`, `@leyline/dsl` |
@@ -24,6 +27,14 @@ decision.
 | AD15 | Observability as a single lightweight emission            | core trace stream                 |
 
 Full statements live in [`../project-brief.md`](../project-brief.md), §5.
+
+Decisions taken since:
+
+| ID                                                   | Decision                                                   | Closes |
+| ---------------------------------------------------- | ---------------------------------------------------------- | ------ |
+| [0016](0016-minimum-surface-set.md)                  | The v1 surface set                                         | OQ5    |
+| [0017](0017-structure-errors-vocabulary-warnings.md) | Structure is an error; vocabulary is a warning             | —      |
+| [0018](0018-identifier-derivation.md)                | Derived identifiers come from identity, never presentation | —      |
 
 ## Recording a new decision
 
