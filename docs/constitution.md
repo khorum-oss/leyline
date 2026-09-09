@@ -5,6 +5,9 @@ The rules every specification, plan, and pull request answers to. The brief
 obligations. Where the two disagree, the brief wins and this document gets
 corrected.
 
+Terms used here — **surface**, **guard**, **policy**, **initiator**, **control
+plane**, and the rest — are defined once in [`glossary.md`](glossary.md).
+
 ## Article I — One canonical artifact
 
 The serializable schema document holds the truth. The TypeScript DSL, a Kotlin

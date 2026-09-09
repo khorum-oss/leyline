@@ -6,6 +6,9 @@ a control plane needing framework knowledge shows up as a core defect early; and
 stage 6 lands within v1, because two more adapters are the only honest test of
 whether the core stayed headless.
 
+Stage scopes use the project vocabulary throughout; [`glossary.md`](glossary.md)
+defines it.
+
 | Stage | Scope                                                                                                                                                                                                                                                                                                                   | Exit criteria                                                                                                                                                      |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1     | **Schema foundation** — Zod definitions for the minimal node and surface set, graph validation (dangling targets, unreachable nodes, undeclared capabilities), stable identifier rules, JSON Schema export, change-description schemas                                                                                  | The §2 workflow round-trips as a JSON document; graph validation rejects each malformed case by name; JSON Schema exports and validates the same corpus            |

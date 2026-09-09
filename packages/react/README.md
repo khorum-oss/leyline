@@ -7,6 +7,9 @@ Adapters stay thin (G5). `useLeylineStore` bridges the core's store contract to
 Snapshots carry structural sharing (AD4), so identity comparison is a valid
 change check and no equality function is needed.
 
+See the [glossary](../../docs/glossary.md#the-runtime) for **store contract**,
+**snapshot**, and **prop-getter**.
+
 ```tsx
 const snapshot = useLeylineStore(workflow);
 ```

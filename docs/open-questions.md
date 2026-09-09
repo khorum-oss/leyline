@@ -4,6 +4,10 @@ Each of these gets resolved during specification and planning, and the decision
 gets recorded in `decisions/` with a link back here. The suggested starting
 point carries no authority beyond being a reasonable default to argue against.
 
+Terms appearing in these questions are defined in
+[`glossary.md`](glossary.md) — several of the questions turn on a distinction it
+draws, such as [policy versus guard](glossary.md#policy).
+
 | ID  | Question                                                                                                                                   | Suggested starting point                                                                                                                              | Decide by |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | OQ1 | **Persistence of applied changes.** Should an agent's renderer swap survive a page reload?                                                 | Ephemeral by default, with an explicit export-to-file operation, so source control stays the durable record                                           | Stage 2   |

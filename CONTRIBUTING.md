@@ -1,5 +1,11 @@
 # Contributing
 
+New to the project vocabulary? [`docs/glossary.md`](docs/glossary.md) defines
+every term in one place, including the distinctions that actually trip people
+up — [guard versus policy](docs/glossary.md#guard), [change versus change
+record](docs/glossary.md#change-record), [context versus
+snapshot](docs/glossary.md#snapshot).
+
 ## Getting set up
 
 ```bash
@@ -47,6 +53,11 @@ Three gates deserve advance attention:
    without one does not merge.
 3. **A changeset.** Anything altering a published package's behaviour or API
    needs `pnpm changeset`.
+4. **The glossary.** A change introducing a term — a surface type, a node kind,
+   a trace kind, a validation rule — defines it in
+   [`docs/glossary.md`](docs/glossary.md) in the same commit. The `docs` test
+   project checks the vocabulary the code exports against the glossary, and
+   checks that every link into it resolves.
 
 ## Adding a surface type
 

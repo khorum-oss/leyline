@@ -5,6 +5,9 @@ implements them rather than re-opening them, unless implementation surfaces a
 concrete blocker — in which case the blocker gets recorded here as a superseding
 decision.
 
+A decision record assumes the project vocabulary; [`../glossary.md`](../glossary.md)
+defines it, and a record introducing a new term adds it there in the same change.
+
 | ID   | Decision                                                  | Where it binds                    |
 | ---- | --------------------------------------------------------- | --------------------------------- |
 | AD1  | Canonical schema, DSL as a producer                       | `@leyline/schema`, `@leyline/dsl` |

@@ -5,6 +5,8 @@ prose alone leaves ambiguous; the reasoning behind every choice lives in
 [`project-brief.md`](project-brief.md) §5, and the obligations they create live
 in [`constitution.md`](constitution.md).
 
+Every term the diagrams label is defined in [`glossary.md`](glossary.md).
+
 ## Packages and dependency direction
 
 Arrows point from a package to what it depends on. The framework-free set is a

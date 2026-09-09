@@ -8,6 +8,10 @@ producers. Zod holds the single definition of every type, and the published JSON
 Schema is exported from it (AD9), so a non-TypeScript producer validates against
 an identical contract rather than a description of one.
 
+Terms used below — **surface**, **capability**, **requirements block**,
+**derived identifier**, **issue** — are defined in the
+[glossary](../../docs/glossary.md#the-document).
+
 ## What a document looks like
 
 ```ts

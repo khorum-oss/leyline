@@ -6,6 +6,9 @@ Svelte's store contract is a plain `subscribe` function, so this adapter imports
 nothing from Svelte at all — which is the point. `toSvelteStore` presents a
 Leyline instance as a readable, so `$store` works directly.
 
+See the [glossary](../../docs/glossary.md#the-runtime) for **store contract**
+and **snapshot**.
+
 ```svelte
 <script>
   const snapshot = toSvelteStore(workflow);

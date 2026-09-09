@@ -8,6 +8,10 @@ working days.
 
 ## Threat model
 
+The vocabulary this section uses — **inert**, **opaque**, **discoverable**,
+**capability bundle**, **initiator**, **trusted by definition** — is defined in
+[`docs/glossary.md`](docs/glossary.md#the-security-boundary).
+
 Leyline exists so that an AI agent can reshape a running application's workflow
 and presentation through a structured interface. That capability defines the
 threat.
