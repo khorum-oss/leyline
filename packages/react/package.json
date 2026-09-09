@@ -1,0 +1,65 @@
+{
+  "name": "@leyline/react",
+  "version": "0.0.0",
+  "description": "React reactivity bridge, WorkflowView, and registry helpers for Leyline",
+  "license": "Apache-2.0",
+  "author": "Leyline contributors",
+  "homepage": "https://github.com/khorum-oss/leyline#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khorum-oss/leyline.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/khorum-oss/leyline/issues"
+  },
+  "keywords": [
+    "leyline",
+    "react",
+    "adapter"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "typecheck": "tsc --build",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@leyline/core": "workspace:^",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@leyline/core": "workspace:^",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  }
+}

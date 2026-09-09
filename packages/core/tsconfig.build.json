@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "declarationMap": false,
+    "outDir": "dist",
+    // Declaration emit resolves sibling packages through their published
+    // entry points, not their sources, so a build proves what consumers get.
+    "paths": {}
+  }
+}

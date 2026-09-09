@@ -1,0 +1,53 @@
+{
+  "name": "@leyline/schema",
+  "version": "0.0.0",
+  "description": "Canonical Leyline schema: Zod definitions, validators, JSON Schema export, version rules",
+  "license": "Apache-2.0",
+  "author": "Leyline contributors",
+  "homepage": "https://github.com/khorum-oss/leyline#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khorum-oss/leyline.git",
+    "directory": "packages/schema"
+  },
+  "bugs": {
+    "url": "https://github.com/khorum-oss/leyline/issues"
+  },
+  "keywords": [
+    "leyline",
+    "schema",
+    "zod",
+    "json-schema",
+    "validation"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "typecheck": "tsc --build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.1.12"
+  }
+}
