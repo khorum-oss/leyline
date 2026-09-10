@@ -6,9 +6,14 @@ import {
   type WorkflowNode,
 } from '@leyline/schema';
 import { LeylineError } from './errors.js';
+import { RendererRegistry, type RendererDefinition, type Resolution } from './registry.js';
+import { ControlPlane } from './control/plane.js';
+import { defaultPolicy } from './control/policy.js';
+import type { ChangeImpact, ControlState } from './control/apply.js';
+import type { Policy } from './control-plane.js';
 import { bindCapabilities } from './binding.js';
 import { createEngine, linkEventType } from './engine/xstate.js';
-import type { ActiveNodes, EngineInstance } from './engine/facade.js';
+import type { ActiveNodes, EngineInstance, EngineObserver } from './engine/facade.js';
 import { TraceEmitter, type TraceExport } from './trace/emitter.js';
 import { createRedaction } from './trace/sinks.js';
 import type {
@@ -54,6 +59,20 @@ export interface CreateWorkflowOptions<TContext> {
   readonly initiator?: Initiator;
   /** Injectable so a test can assert on timestamps. */
   readonly now?: () => number;
+
+  /**
+   * The renderers this application publishes. A change may register one of
+   * these and nothing else, which is what makes I3 enforceable: an initiator
+   * names a renderer, never supplies one.
+   */
+  readonly renderers?: readonly RendererDefinition[];
+  readonly registryId?: string;
+  /**
+   * What an initiator may change (AD13). Absent, development is permissive and
+   * production refuses agent and end-user initiators — so the safe setting is
+   * the one you get by saying nothing.
+   */
+  readonly policy?: Policy;
 }
 
 export interface TraceHandle {
@@ -67,8 +86,13 @@ export interface TraceHandle {
 export interface WorkflowInstance<TContext extends Record<string, unknown>> extends Store<
   Snapshot<TContext>
 > {
+  /** The document as it stands now, which the control plane may have changed. */
   readonly document: WorkflowDocument;
   readonly trace: TraceHandle;
+  /** The single mutation path over registries and the workflow (AD10). */
+  readonly control: ControlPlane;
+  /** Resolves a surface to a registered renderer; undefined means the fallback. */
+  resolve(surface: ResolvedSurface): Resolution | undefined;
   stop(): void;
 }
 
@@ -91,9 +115,10 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
     );
   }
 
-  const document = validation.document;
+  let document = validation.document;
   const capabilities = bindCapabilities(document, bundle);
   const initiator = options.initiator ?? APPLICATION;
+  const registry = new RendererRegistry(options.registryId ?? 'default', options.renderers ?? []);
 
   const emitter = new TraceEmitter({
     mode: options.mode,
@@ -118,45 +143,52 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
     emitter.emit({ kind, correlationId, initiator, data: data ?? {} });
   };
 
-  const byId = new Map(document.nodes.map((node) => [node.id, node] as const));
+  let byId = new Map(document.nodes.map((node) => [node.id, node] as const));
   const listeners = new Set<() => void>();
+  let context: TContext = options.initialContext ?? ({} as TContext);
 
-  const engine: EngineInstance<TContext> = createEngine<TContext>({
-    document,
-    capabilities,
-    initialContext: options.initialContext ?? ({} as TContext),
-    observer: {
-      guardTracingEnabled: () => emitter.isEnabled('guard.evaluated'),
-      onGuard: (name, result) =>
-        emitter.emit({
-          kind: 'guard.evaluated',
-          correlationId,
-          initiator,
-          data: { guard: name, result },
-        }),
-      onTransition: (from, to, event) =>
-        emitter.emit({
-          kind: 'workflow.transition',
-          correlationId,
-          initiator,
-          data: { from: [...from], to: [...to], event: event.type },
-        }),
-      onServiceInvoked: (name, nodeId) =>
-        emitter.emit({
-          kind: 'service.invoked',
-          correlationId,
-          initiator,
-          data: { service: name, node: nodeId },
-        }),
-      onServiceSettled: (name, nodeId, outcome) =>
-        emitter.emit({
-          kind: 'service.settled',
-          correlationId,
-          initiator,
-          data: { service: name, node: nodeId, outcome },
-        }),
-    },
-  });
+  const observer: EngineObserver = {
+    guardTracingEnabled: () => emitter.isEnabled('guard.evaluated'),
+    onGuard: (name, result) =>
+      emitter.emit({
+        kind: 'guard.evaluated',
+        correlationId,
+        initiator,
+        data: { guard: name, result },
+      }),
+    onTransition: (from, to, event) =>
+      emitter.emit({
+        kind: 'workflow.transition',
+        correlationId,
+        initiator,
+        data: { from: [...from], to: [...to], event: event.type },
+      }),
+    onServiceInvoked: (name, nodeId) =>
+      emitter.emit({
+        kind: 'service.invoked',
+        correlationId,
+        initiator,
+        data: { service: name, node: nodeId },
+      }),
+    onServiceSettled: (name, nodeId, outcome) =>
+      emitter.emit({
+        kind: 'service.settled',
+        correlationId,
+        initiator,
+        data: { service: name, node: nodeId, outcome },
+      }),
+  };
+
+  let engine: EngineInstance<TContext>;
+
+  const buildEngine = (restore?: unknown): EngineInstance<TContext> =>
+    createEngine<TContext>({
+      document,
+      capabilities,
+      initialContext: context,
+      observer,
+      ...(restore !== undefined ? { restore } : {}),
+    });
 
   // --- Snapshot construction ------------------------------------------------
 
@@ -219,8 +251,16 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
     context: TContext,
     fresh: Map<string, ActiveRegion<TContext>>,
   ): ActiveRegion<TContext> => {
-    const children = active.children.map((child) => buildRegion(child, context, fresh));
     const node = byId.get(active.id);
+    // Reading order is the document's, not the interpreter's. A reorder changes
+    // the document, and the next snapshot has to reflect it without anything
+    // restarting (decision 0025).
+    const order = node?.children ?? [];
+    const ordered =
+      order.length === 0
+        ? active.children
+        : [...active.children].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    const children = ordered.map((child) => buildRegion(child, context, fresh));
     const reusable = previousRegions.get(active.id);
 
     if (
@@ -249,7 +289,7 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
   let snapshot: Snapshot<TContext>;
 
   const publish = (): void => {
-    const context = engine.getContext();
+    context = engine.getContext();
     const fresh = new Map<string, ActiveRegion<TContext>>();
     const root = buildRegion(engine.getActive(), context, fresh);
     previousRegions = fresh;
@@ -281,12 +321,63 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
     mode: options.mode,
   } as never);
 
+  engine = buildEngine();
   engine.subscribe(publish);
   engine.start();
   publish();
 
+  /**
+   * How an applied change reaches the running workflow (decision 0025).
+   *
+   * A registry or presentation change needs no rebuild: the next snapshot
+   * simply resolves differently, which is what makes "hide the metrics panel"
+   * instant. A graph or context change rebuilds the interpreter and hands it
+   * the position it held, so a viewer who moved a panel stays where they were
+   * rather than being returned to the entry node.
+   */
+  const commit = (state: ControlState, impact: ChangeImpact): void => {
+    registry.reset(state.registryEntries);
+    if (impact === 'registry') {
+      publish();
+      return;
+    }
+
+    document = state.document;
+    byId = new Map(document.nodes.map((node) => [node.id, node] as const));
+    context = { ...context, ...state.contextPatch } as TContext;
+    previousRegions = new Map();
+    previousContext = undefined;
+
+    // Context belongs to the interpreter, so a patch has to reach it rather
+    // than sit beside it — otherwise a guard would evaluate against a context
+    // the snapshot no longer shows. A rebuild is heavier than an overlay and is
+    // the only version that stays consistent.
+    if (impact === 'graph' || impact === 'context') {
+      const position = engine.getPosition();
+      engine.stop();
+      engine = buildEngine(position);
+      engine.subscribe(publish);
+      engine.start();
+    }
+    publish();
+  };
+
+  const control = new ControlPlane({
+    initial: { document, registryEntries: [], contextPatch: {} },
+    registry,
+    policy: options.policy ?? defaultPolicy(options.mode),
+    emitter,
+    workflowId: document.id,
+    ...(options.now !== undefined ? { now: options.now } : {}),
+    onCommit: commit,
+  });
+
   return {
-    document,
+    get document() {
+      return document;
+    },
+    control,
+    resolve: (surface) => registry.resolve(surface),
     getSnapshot: () => snapshot,
     subscribe(listener) {
       listeners.add(listener);

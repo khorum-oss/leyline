@@ -103,6 +103,19 @@ const replaceWorkflow = z.strictObject({
   document: workflowDocumentSchema,
 });
 
+/**
+ * Reverting is itself a change (AD10).
+ *
+ * Giving revert its own kind keeps the promise that there is one mutation path:
+ * a revert meets the same policy, produces the same kind of record, and appears
+ * in the same log. Reverting a revert therefore needs no special case.
+ */
+const revertChange = z.strictObject({
+  kind: z.literal('change.revert'),
+  /** The identifier of the change record being undone. */
+  change: identifierSchema,
+});
+
 const patchContext = z.strictObject({
   kind: z.literal('context.patch'),
   /** Checked against the workflow's declared context shape, then left inert (I4). */
@@ -119,6 +132,7 @@ export const changeSchema = z
     moveChild,
     replaceWorkflow,
     patchContext,
+    revertChange,
   ])
   .meta({
     id: 'LeylineChange',
@@ -137,6 +151,7 @@ export const CHANGE_KINDS = [
   'section.move-child',
   'workflow.replace',
   'context.patch',
+  'change.revert',
 ] as const;
 
 export const proposalSchema = z

@@ -117,7 +117,7 @@ describe('the validation rule catalogue stays complete', () => {
         [...source.matchAll(/rule: '([a-z.-]+)'/g)].map((m) => m[1] as string),
       ),
     ),
-  ].sort();
+  ].sort((a, b) => a.localeCompare(b));
   const schemaReadme = readFileSync(join(root, 'packages', 'schema', 'README.md'), 'utf8');
 
   it('finds the rules to check', () => {

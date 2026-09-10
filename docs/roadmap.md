@@ -47,27 +47,30 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 2, part one complete.** The runtime runs: capability binding that
-reports every gap at once, the interpreter over the XState facade, the store
-with structural sharing, snapshots carrying resolved surfaces and prop-getters,
-and the trace stream with ring-buffer and console sinks, redaction, per-kind
-filtering, and export.
+**Stage 2 complete.** The runtime runs and the control plane operates it. Brief
+§2 items 1–7 all pass: the workflow drives headlessly, and an agent with no
+access to application source swaps the actions table for a card grid in two
+calls, reverts it in one, and hides the metrics panel by attaching a guard.
 
-Brief §2 items 1–5 drive headlessly with no DOM, and the section fixture runs
-three regions of a page in parallel while one of them advances through its own
-children. A completeness harness asserts the stream accounts for everything that
-happened — it caught a real defect on its first run: binding and the entry
-node's first invocation happen inside `createWorkflow`, so a sink attached
-afterwards missed them. Sinks may now be passed at construction.
+Every AD14 invariant has a suite that tries to break it. Change records and the
+trace stream are asserted to agree entry for entry, and a recorded log replayed
+against a fresh instance reproduces the same state.
 
-Decisions recorded: [0021](decisions/0021-trace-retention-and-export.md)
-(closing OQ6) and [0022](decisions/0022-guard-event-volume.md) (closing OQ8).
-OQ1 and OQ2 are decided and land with the control plane.
+Seven decisions came out of it, four closing open questions:
+[0023](decisions/0023-renderer-catalogue.md) (OQ3),
+[0024](decisions/0024-policy-shape.md) (OQ2),
+[0025](decisions/0025-live-changes.md),
+[0026](decisions/0026-revert-by-replay.md),
+[0027](decisions/0027-confirmation-flow.md) (OQ4),
+[0028](decisions/0028-persistence.md) (OQ1), and
+[0029](decisions/0029-change-log-and-stream.md), which records a deviation from
+AD15 rather than quietly implementing one thing and citing another.
 
-**Stage 2, part two** is next: control-plane-addressable registries,
-propose/validate/apply/revert, the change log projected from the trace stream,
-policy with combinators, `hydrate()` for persisted changes, and the AD14
-invariant suites.
+OQ7 is the only open question left, and it belongs to stage 4.
+
+**Stage 3** is next: the React adapter — the reactivity bridge already exists,
+so the work is the ranked registry bridge and `WorkflowView`, proving §2 items
+1–5 in a real application.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema

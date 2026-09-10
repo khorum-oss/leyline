@@ -1,4 +1,4 @@
-import type { InitiatorKind, NodeKind, SurfaceType } from '@leyline/schema';
+import type { NodeKind, SurfaceType } from '@leyline/schema';
 
 /**
  * The public runtime contract (AD4, AD6, AD7).
@@ -82,11 +82,14 @@ export interface Store<TSnapshot> {
   send(event: WorkflowEvent): void;
 }
 
-/** Who a change is attributed to. Self-asserted and advisory in v1 (OQ8). */
-export interface Initiator {
-  readonly kind: InitiatorKind;
-  readonly label?: string;
-}
+/**
+ * Who a change is attributed to. Self-asserted and advisory in v1 (OQ7).
+ *
+ * Defined in `@leyline/schema` and re-exported here, so the identity on a trace
+ * event and the identity a policy inspects are one type rather than two that
+ * resemble each other.
+ */
+export type { Initiator } from '@leyline/schema';
 
 /** Implementations for the guards, services, and data sources a schema requires (AD2). */
 export interface CapabilityBundle {
