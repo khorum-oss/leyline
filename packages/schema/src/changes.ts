@@ -28,16 +28,36 @@ export const initiatorSchema = z
 
 export type Initiator = z.infer<typeof initiatorSchema>;
 
-/** Which surfaces a renderer registration claims. Predicates are data, not code. */
+/**
+ * What a renderer registration claims. Predicates are data, never code.
+ *
+ * `target` says whether the entry claims a **surface** or a **region** — the
+ * container a `section` node is drawn as. It defaults to `surface`, so every
+ * entry written before regions were claimable keeps its meaning (AD8).
+ *
+ * The discriminator exists because a match naming only `nodeId` already means
+ * "every surface on that node", and could not also mean "that node's own
+ * container" without becoming ambiguous.
+ */
 export const rendererMatchSchema = z
   .strictObject({
+    target: z.enum(['surface', 'region']).optional(),
     surfaceId: identifierSchema.optional(),
     surfaceType: z.string().min(1).optional(),
     nodeId: identifierSchema.optional(),
+    /** Region matches only: claims every node of this kind, e.g. every `section`. */
+    nodeKind: z.string().min(1).optional(),
   })
-  .refine((match) => Object.values(match).some((value) => value !== undefined), {
-    message: 'a renderer match names at least one of surfaceId, surfaceType, or nodeId',
-  })
+  .refine(
+    (match) =>
+      match.surfaceId !== undefined ||
+      match.surfaceType !== undefined ||
+      match.nodeId !== undefined ||
+      match.nodeKind !== undefined,
+    {
+      message: 'a renderer match names at least one of surfaceId, surfaceType, nodeId, or nodeKind',
+    },
+  )
   .meta({ id: 'LeylineRendererMatch', title: 'Renderer match' });
 
 const registerRenderer = z.strictObject({

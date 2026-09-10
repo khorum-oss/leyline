@@ -48,6 +48,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # The example is not part of the library — nothing under packages/ refers
+      # to it and it is never published — but an example that stops compiling is
+      # worse than no example, so CI builds it.
+      - name: Example app
+        run: pnpm --filter "./examples/**" run typecheck && pnpm --filter "./examples/**" run build
+
   invariants:
     name: Security invariants
     runs-on: ubuntu-latest

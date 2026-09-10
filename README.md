@@ -141,6 +141,16 @@ _(Illustrative — the schema lands in stage 1.)_
 - [Security](SECURITY.md) — threat model and the seven invariants
 - [Contributing](CONTRIBUTING.md) — setup, commands, and the merge gates
 
+## See it running
+
+[`examples/react-workspace`](examples/react-workspace) is the scenario above as
+a React application, with controls that drive the control plane the way an agent
+would.
+
+```bash
+pnpm --filter @leyline-examples/react-workspace dev
+```
+
 ## Development
 
 ```bash

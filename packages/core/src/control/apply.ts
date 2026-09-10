@@ -101,19 +101,26 @@ function validateRendererRegister(change: Registered, registry: RendererRegistry
     ];
   }
 
-  const type = change.match.surfaceType;
-  if (type === undefined || registry.claims(change.renderer, type)) return [];
+  // A surface entry names a surface type; a region entry names a node kind.
+  // Either way the catalogue decides whether the renderer draws that thing.
+  const region = (change.match.target ?? 'surface') === 'region';
+  const what = region ? change.match.nodeKind : change.match.surfaceType;
+  if (what === undefined || registry.claims(change.renderer, what)) return [];
   return [
-    issue('renderer.does-not-claim', `"${change.renderer}" does not draw "${type}" surfaces.`, {
-      identifier: change.renderer,
-      path: pointer('match', 'surfaceType'),
-      suggestion: `It claims: ${
-        registry
-          .catalogue()
-          .find((entry) => entry.id === change.renderer)
-          ?.claims.join(', ') ?? 'nothing'
-      }.`,
-    }),
+    issue(
+      'renderer.does-not-claim',
+      `"${change.renderer}" does not draw "${what}" ${region ? 'regions' : 'surfaces'}.`,
+      {
+        identifier: change.renderer,
+        path: pointer('match', region ? 'nodeKind' : 'surfaceType'),
+        suggestion: `It claims: ${
+          registry
+            .catalogue()
+            .find((entry) => entry.id === change.renderer)
+            ?.claims.join(', ') ?? 'nothing'
+        }.`,
+      },
+    ),
   ];
 }
 

@@ -93,6 +93,8 @@ export interface WorkflowInstance<TContext extends Record<string, unknown>> exte
   readonly control: ControlPlane;
   /** Resolves a surface to a registered renderer; undefined means the fallback. */
   resolve(surface: ResolvedSurface): Resolution | undefined;
+  /** Resolves a region — the container a section is drawn as (decision 0030). */
+  resolveRegion(region: { id: string; kind: string }): Resolution | undefined;
   stop(): void;
 }
 
@@ -377,7 +379,24 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
       return document;
     },
     control,
-    resolve: (surface) => registry.resolve(surface),
+    /**
+     * Nothing claiming a surface is normal operation, not a fault: the caller
+     * draws its fallback. The stream still says so, because "why is this
+     * drawn as a placeholder" is exactly the question the stream exists for.
+     */
+    resolve: (surface) => {
+      const resolution = registry.resolve(surface);
+      if (resolution === undefined && emitter.isEnabled('surface.unresolved')) {
+        emitter.emit({
+          kind: 'surface.unresolved',
+          correlationId,
+          initiator,
+          data: { surface: surface.id, node: surface.nodeId, type: surface.type },
+        });
+      }
+      return resolution;
+    },
+    resolveRegion: (region) => registry.resolveRegion(region),
     getSnapshot: () => snapshot,
     subscribe(listener) {
       listeners.add(listener);

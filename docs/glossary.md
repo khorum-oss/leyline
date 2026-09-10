@@ -376,11 +376,37 @@ for a card grid" happens without editing a document (AD5, after JSON Forms).
 
 The integer deciding which claim wins. Higher wins.
 
+### Region renderer
+
+The component a **region** is drawn as — the container for a node and whatever
+is active beneath it. Claimed through the registry like a **surface**, with
+`target: 'region'` on the match and `nodeId` or `nodeKind` to say which
+([decision 0030](decisions/0030-react-rendering-contract.md)).
+
+Every active node is a region, not only sections. A hub is drawn by whichever
+renderer claims it.
+
+### Slot
+
+What a **region renderer** receives for each of its surfaces and each of its
+active children: `{ id, …, render() }`, in **reading order**.
+
+A function rather than an element, because the component decides where each one
+goes and whether to draw it at all. Handing over pre-rendered elements would
+make that decision for it, which is the arrangement question sections exist to
+leave open.
+
 ### Fallback renderer
 
-What a registry draws for a surface nothing claimed. Leyline logs and renders
-the fallback; it never throws. This is what lets a deployed build read a
-document containing surface types it has never heard of (AD8).
+What gets drawn when nothing in the registry claims a surface or a region.
+Leyline reports `surface.unresolved` on the trace stream and renders the
+fallback; it never throws. This is what lets a deployed build read a document
+containing surface types it has never heard of (AD8).
+
+A fallback is an ordinary catalogue entry claiming `*` at rank 0, so it can be
+inspected, replaced, and reverted like any other. `WorkflowView` also ships a
+built-in last resort, so an empty registry shows a visible placeholder rather
+than a blank page.
 
 ---
 
