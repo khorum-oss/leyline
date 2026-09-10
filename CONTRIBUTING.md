@@ -59,6 +59,21 @@ Three gates deserve advance attention:
    project checks the vocabulary the code exports against the glossary, and
    checks that every link into it resolves.
 
+## SonarQube
+
+The quality gate runs on every pull request. `pnpm lint` runs the rules it fails
+builds over — cognitive complexity, unsafe sorts, nested conditionals, duplicate
+branches — so they surface locally rather than after a push.
+
+Those rules need type information, so package sources are linted with the
+TypeScript project service. Test files sit outside the package tsconfigs and get
+the untyped rules only.
+
+Two habits keep the gate green. Keep a function under 15 cognitive complexity:
+when a validator grows a branch per case, split it into one function per case
+and dispatch. And give `sort` a comparator, always — the default sorts as text,
+which is a bug waiting for the first array that is not strings.
+
 ## Adding a surface type
 
 The highest-cost change in the project, because every renderer registry ever

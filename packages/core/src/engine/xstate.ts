@@ -96,6 +96,13 @@ function stateConfig(node: WorkflowNode, byId: ReadonlyMap<string, WorkflowNode>
   return config;
 }
 
+/** The engine's own status vocabulary, mapped onto Leyline's. */
+function workflowStatus(status: string): WorkflowStatus {
+  if (status === 'done') return 'done';
+  if (status === 'error') return 'error';
+  return 'running';
+}
+
 /** Reads the active node tree out of an XState value, guided by the document. */
 function activeFrom(
   value: StateValue,
@@ -203,8 +210,7 @@ export function createEngine<TContext extends Record<string, unknown>>(
     active = next;
     position = snapshot.value;
     context = snapshot.context;
-    status =
-      snapshot.status === 'done' ? 'done' : snapshot.status === 'error' ? 'error' : 'running';
+    status = workflowStatus(snapshot.status);
 
     const current = flatten(active);
     if (previous.join('|') !== current.join('|')) {

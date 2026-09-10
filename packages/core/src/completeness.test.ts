@@ -39,6 +39,7 @@ async function run(context: Partial<ScenarioContext>): Promise<{
 }
 
 const kinds = (events: TraceEvent[]): string[] => events.map((event) => event.kind);
+const compareText = (a: string, b: string): number => a.localeCompare(b);
 
 describe('the stream accounts for everything that happened', () => {
   it('reports binding once, before anything runs', async () => {
@@ -177,6 +178,10 @@ describe('events stay small enough to leave on (brief §8)', () => {
     const snapshot = events.find((event) => event.kind === 'workflow.snapshot');
     // A snapshot event names the node and counts the regions; it never carries
     // the surfaces, the data, or the context.
-    expect(Object.keys(snapshot?.data ?? {}).sort()).toEqual(['node', 'regions', 'status']);
+    expect([...Object.keys(snapshot?.data ?? {})].sort(compareText)).toEqual([
+      'node',
+      'regions',
+      'status',
+    ]);
   });
 });

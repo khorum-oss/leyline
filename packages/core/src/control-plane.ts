@@ -1,11 +1,4 @@
-import type {
-  Change,
-  ChangeRecord,
-  Initiator,
-  Issue,
-  PolicyDecision,
-  Proposal,
-} from '@leyline/schema';
+import type { Issue, PolicyDecision, Proposal } from '@leyline/schema';
 
 /**
  * The single mutation path over registries and workflows (AD10, AD11, AD13).
@@ -20,7 +13,7 @@ import type {
  * result, and a devtools panel all speak one format. This module re-exports
  * them and adds only what the core itself introduces.
  */
-export type { Change, Proposal, ChangeRecord, PolicyDecision, Initiator };
+export type { Change, Proposal, ChangeRecord, PolicyDecision, Initiator } from '@leyline/schema';
 
 export interface ValidationResult {
   readonly ok: boolean;

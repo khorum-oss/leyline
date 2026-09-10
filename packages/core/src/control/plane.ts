@@ -35,6 +35,20 @@ import { applyChange, validateChange, type ChangeImpact, type ControlState } fro
 
 type ProposalStatus = 'open' | 'pending' | 'denied' | 'applied' | 'cancelled';
 
+/** Where a policy decision leaves a proposal before anyone acts on it. */
+function statusFor(decision: PolicyDecision): ProposalStatus {
+  if (decision.effect === 'deny') return 'denied';
+  if (decision.effect === 'confirm') return 'pending';
+  return 'open';
+}
+
+/** Why a proposal in this state cannot be applied. */
+function blockedBecause(status: ProposalStatus): string {
+  if (status === 'pending') return 'awaiting confirmation';
+  if (status === 'cancelled') return 'cancelled';
+  return 'denied by policy';
+}
+
 interface Tracked {
   readonly proposal: Proposal;
   readonly decision: PolicyDecision;
@@ -137,8 +151,7 @@ export class ControlPlane {
       proposal,
       decision,
       parseIssues,
-      status:
-        decision.effect === 'deny' ? 'denied' : decision.effect === 'confirm' ? 'pending' : 'open',
+      status: statusFor(decision),
     });
     return proposal;
   }
@@ -208,14 +221,14 @@ export class ControlPlane {
 
   confirm(proposalId: string): boolean {
     const tracked = this.#proposals.get(proposalId);
-    if (tracked === undefined || tracked.status !== 'pending') return false;
+    if (tracked?.status !== 'pending') return false;
     tracked.status = 'open';
     return true;
   }
 
   cancel(proposalId: string): boolean {
     const tracked = this.#proposals.get(proposalId);
-    if (tracked === undefined || tracked.status !== 'pending') return false;
+    if (tracked?.status !== 'pending') return false;
     tracked.status = 'cancelled';
     return true;
   }
@@ -233,13 +246,9 @@ export class ControlPlane {
     if (tracked.status === 'applied' && tracked.record !== undefined) return tracked.record;
 
     if (tracked.status !== 'open') {
-      const reason =
-        tracked.status === 'pending'
-          ? 'awaiting confirmation'
-          : tracked.status === 'cancelled'
-            ? 'cancelled'
-            : 'denied by policy';
-      throw new Error(`Proposal "${proposal.id}" cannot be applied: ${reason}.`);
+      throw new Error(
+        `Proposal "${proposal.id}" cannot be applied: ${blockedBecause(tracked.status)}.`,
+      );
     }
 
     const validation = await this.validate(proposal);
