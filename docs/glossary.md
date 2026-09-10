@@ -354,6 +354,17 @@ registrable and discoverable, and generates nothing itself (brief §4).
 An ordered, ranked set of predicates mapping surfaces to renderers. Swapping the
 registry restyles the application without touching any workflow document (G6).
 
+### Renderer catalogue
+
+What an application publishes: `{ id, description, claims, component }` per
+renderer. The core keeps the metadata and holds the component as an opaque value
+it never inspects, which is how a registry lives in a framework-free package.
+
+A **change** may name a catalogue id and nothing else — that is invariant **I3**
+made enforceable. `describe()` exposes id, description, and claims, never the
+component, so an agent can discover what exists without reading source
+([decision 0023](decisions/0023-renderer-catalogue.md)).
+
 ### Ranked resolution
 
 Resolving a surface by asking ranked predicates rather than reading a flat type
@@ -418,6 +429,40 @@ _Not:_ a **change**. The change is the request; the record is what happened.
 The ordered record of applied changes, supporting revert. Derived from `apply`
 and `revert` **trace events** rather than maintained beside them, so the audit
 trail and the observability stream can never disagree (AD15).
+
+### Change impact
+
+What a change disturbs, reported on its **change record** and on the
+`control.applied` **trace event**: `registry`, `presentation`, `context`, or
+`graph`.
+
+The classification decides what happens to a running workflow. Registry and
+presentation changes apply live — the next snapshot resolves differently.
+Context and graph changes rebuild the interpreter and restore the position it
+held, so a viewer stays where they were
+([decision 0025](decisions/0025-live-changes.md)).
+
+### Pending proposal
+
+A **proposal** whose **policy** returned `confirm`, waiting for someone to
+resolve it. Listed by `pending()`, opened by `confirm(id)`, refused by
+`cancel(id)`. Nothing blocks; an unresolved one simply expires unapplied
+([decision 0027](decisions/0027-confirmation-flow.md)).
+
+### Hydration
+
+Restoring persisted **change records** into a fresh instance. Each is
+re-proposed with its recorded **initiator**, so it meets the _current_ policy
+rather than the one in force when it was first applied — a change an initiator
+is no longer entitled to is dropped rather than restored
+([decision 0028](decisions/0028-persistence.md)).
+
+### Replay
+
+Recomputing state by applying a **change log** from the initial state,
+re-validating as it goes. How **revert** works: skip what is reverted, replay the
+rest, and fail with a precise explanation if a later change no longer validates
+([decision 0026](decisions/0026-revert-by-replay.md)).
 
 ### Policy
 

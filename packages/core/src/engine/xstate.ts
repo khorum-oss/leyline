@@ -122,6 +122,8 @@ export interface EngineOptions<TContext> {
   readonly capabilities: BoundCapabilities;
   readonly initialContext: TContext;
   readonly observer: EngineObserver;
+  /** A position from a previous engine, restored where the new machine allows it. */
+  readonly restore?: unknown;
 }
 
 export function createEngine<TContext extends Record<string, unknown>>(
@@ -181,6 +183,7 @@ export function createEngine<TContext extends Record<string, unknown>>(
     ),
   } as never);
 
+  let position: StateValue | undefined;
   let actor: AnyActorRef | undefined;
   const listeners = new Set<() => void>();
   let active: ActiveNodes = { id: document.entry, children: [] };
@@ -198,6 +201,7 @@ export function createEngine<TContext extends Record<string, unknown>>(
     const roots = activeFrom(snapshot.value, rootNodes, byId, childrenOf);
     const next = roots[0] ?? active;
     active = next;
+    position = snapshot.value;
     context = snapshot.context;
     status =
       snapshot.status === 'done' ? 'done' : snapshot.status === 'error' ? 'error' : 'running';
@@ -211,7 +215,26 @@ export function createEngine<TContext extends Record<string, unknown>>(
 
   return {
     start() {
-      actor = createActor(machine);
+      // A restored position that the new machine no longer recognises drops the
+      // workflow to its entry rather than failing: a viewer whose panel moved
+      // should see the page, not an error.
+      let restored: unknown;
+      if (options.restore !== undefined) {
+        try {
+          restored = (
+            machine as unknown as {
+              resolveState: (input: { value: unknown; context: TContext }) => unknown;
+            }
+          ).resolveState({ value: options.restore, context: options.initialContext });
+        } catch {
+          restored = undefined;
+        }
+      }
+
+      actor =
+        restored === undefined
+          ? createActor(machine)
+          : createActor(machine, { snapshot: restored as never });
       actor.subscribe((snapshot) => read(snapshot as never));
       actor.start();
     },
@@ -227,6 +250,7 @@ export function createEngine<TContext extends Record<string, unknown>>(
     getActive: () => active,
     getContext: () => context,
     getStatus: () => status,
+    getPosition: () => position,
     subscribe(listener) {
       listeners.add(listener);
       return () => {

@@ -20,6 +20,10 @@ Terms used below — **store contract**, **snapshot**, **resolved surface**,
 - Snapshots with structural sharing, resolved surfaces, and prop-getters
 - The trace emitter with ring-buffer and console sinks, redaction, per-kind
   filtering, and `export()`
+- The control plane: propose, validate, apply, revert, confirm, hydrate, and
+  `describe()` that reads like documentation
+- Ranked renderer registries over a catalogue the application publishes
+- Policy with combinators, and safe defaults per runtime mode
 - The public runtime contract: snapshot, resolved surfaces, store, capability
   bundle, runtime mode
 - The control-plane contract: changes, proposals, validation results, change
@@ -49,11 +53,40 @@ Sinks passed at construction see the whole stream. Binding and the entry node's
 first service invocation happen inside `createWorkflow`, so a sink attached
 afterwards would miss them.
 
-## Next — delivery stage 2, part two
+## The control plane
 
-Control-plane-addressable registries, propose/validate/apply/revert, the change
-log projected from the trace stream, policy hooks with combinators, `hydrate()`
-for persisted changes, and the AD14 invariant suites.
+```ts
+const proposal = await workflow.control.propose(
+  {
+    kind: 'renderer.register',
+    registry: 'default',
+    renderer: 'CardGrid',
+    match: { surfaceId: 'actions' },
+    rank: 80,
+  },
+  { kind: 'agent', label: 'card-grid-swap' },
+);
+
+await workflow.control.validate(proposal); // a dry run; nothing is committed
+const record = await workflow.control.apply(proposal);
+await workflow.control.revert(record.id);
+```
+
+Policy is consulted at proposal time, before validation and apply and revert
+alike, and no operation skips it — including changes an application proposes
+about itself. With none configured, development is permissive and production
+refuses agent and end-user initiators.
+
+Changes are classified by what they disturb. A guard attachment or a renderer
+registration applies live; a context patch or a graph change rebuilds the
+interpreter and restores the position it held.
+
+Persistence is the application's: store the records `log()` returns, hand them
+back to `hydrate()`, and each one meets policy again on the way in.
+
+## Next — delivery stage 3
+
+The React adapter's registry bridge and `WorkflowView`.
 
 ## The engine facade
 

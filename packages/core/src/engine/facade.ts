@@ -28,6 +28,12 @@ export interface EngineInstance<TContext> {
   getActive(): ActiveNodes;
   getContext(): TContext;
   getStatus(): WorkflowStatus;
+  /**
+   * The interpreter's own position, opaque to everything outside the engine.
+   * A rebuild hands it back so a graph-level change does not send a viewer to
+   * the entry node (decision 0025).
+   */
+  getPosition(): unknown;
   /** Notifies on every published change. Returns an unsubscribe function. */
   subscribe(listener: () => void): () => void;
 }

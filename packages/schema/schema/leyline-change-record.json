@@ -233,6 +233,23 @@
             "values"
           ],
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "change.revert"
+            },
+            "change": {
+              "$ref": "#/$defs/LeylineIdentifier"
+            }
+          },
+          "required": [
+            "kind",
+            "change"
+          ],
+          "additionalProperties": false
         }
       ],
       "title": "Change",

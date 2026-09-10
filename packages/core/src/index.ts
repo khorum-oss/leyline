@@ -18,6 +18,38 @@ export type { CreateWorkflowOptions, WorkflowInstance, TraceHandle } from './wor
 
 export { bindCapabilities, type BoundCapabilities } from './binding.js';
 
+export {
+  RendererRegistry,
+  type RendererDefinition,
+  type RendererMatch,
+  type RegistryEntry,
+  type RegistrySnapshot,
+  type Resolution,
+  type SurfaceDescriptor,
+} from './registry.js';
+
+export { ControlPlane, type ControlPlaneOptions, type ReplayFailure } from './control/plane.js';
+export {
+  allow,
+  permissive,
+  denyAll,
+  allowKinds,
+  denyKinds,
+  forInitiator,
+  requireConfirmation,
+  allOf,
+  anyOf,
+  defaultPolicy,
+} from './control/policy.js';
+export {
+  impactOf,
+  validateChange,
+  applyChange,
+  type ChangeImpact,
+  type ControlState,
+  type ChangeOutcome,
+} from './control/apply.js';
+
 export { TraceEmitter, type TraceEmitterOptions, type TraceExport } from './trace/emitter.js';
 export {
   consoleSink,
@@ -55,7 +87,6 @@ export type {
   PolicyDecision,
   Policy,
   OperationDescriptor,
-  ControlPlane,
   Description,
 } from './control-plane.js';
 

@@ -69,3 +69,9 @@ jobs:
       # merge (AD14, brief §8).
       - name: Adversarial invariant suites
         run: pnpm vitest run --project schema --project core -t 'I1|I2|I3|I4|I5|I6|I7'
+
+      # The audit trail cannot drift from reality (brief §8). Decision 0029
+      # makes that a tested property rather than a structural guarantee, which
+      # puts the test in the same required gate as the invariant suites.
+      - name: Audit trail agreement
+        run: pnpm vitest run --project core src/control/log.test.ts

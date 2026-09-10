@@ -1,5 +1,11 @@
-import type { LeylineIssue } from './errors.js';
-import type { Initiator } from './contracts.js';
+import type {
+  Change,
+  ChangeRecord,
+  Initiator,
+  Issue,
+  PolicyDecision,
+  Proposal,
+} from '@leyline/schema';
 
 /**
  * The single mutation path over registries and workflows (AD10, AD11, AD13).
@@ -8,38 +14,18 @@ import type { Initiator } from './contracts.js';
  * the same interface with the same safety checks. There is no back door.
  */
 
-/** A serializable description of a proposed mutation. Pure data — never code (I1). */
-export interface Change {
-  readonly kind: string;
-  readonly target: string;
-  readonly payload: Readonly<Record<string, unknown>>;
-}
-
-export interface Proposal {
-  readonly id: string;
-  readonly change: Change;
-  readonly initiator: Initiator;
-  readonly correlationId: string;
-}
+/**
+ * Changes, proposals, records, and policy decisions are defined once in
+ * `@leyline/schema` and published as JSON Schema, so a log line, an MCP tool
+ * result, and a devtools panel all speak one format. This module re-exports
+ * them and adds only what the core itself introduces.
+ */
+export type { Change, Proposal, ChangeRecord, PolicyDecision, Initiator };
 
 export interface ValidationResult {
   readonly ok: boolean;
-  readonly issues: readonly LeylineIssue[];
+  readonly issues: readonly Issue[];
 }
-
-export interface ChangeRecord {
-  readonly id: string;
-  readonly proposalId: string;
-  readonly change: Change;
-  readonly initiator: Initiator;
-  readonly appliedAt: number;
-  readonly revertedBy?: string;
-}
-
-export type PolicyDecision =
-  | { readonly effect: 'allow' }
-  | { readonly effect: 'deny'; readonly reason: string }
-  | { readonly effect: 'confirm'; readonly reason: string };
 
 /** Consulted before validation, apply, and revert alike. Nothing bypasses it (I6). */
 export type Policy = (proposal: Proposal) => PolicyDecision | Promise<PolicyDecision>;
@@ -53,15 +39,14 @@ export interface OperationDescriptor {
   readonly outputSchema: Readonly<Record<string, unknown>>;
 }
 
-export interface ControlPlane {
-  describe(): Description;
-  propose(change: Change, initiator: Initiator): Promise<Proposal>;
-  validate(proposal: Proposal): Promise<ValidationResult>;
-  apply(proposal: Proposal): Promise<ChangeRecord>;
-  revert(changeId: string): Promise<ChangeRecord>;
-  log(): readonly ChangeRecord[];
-  operations(): readonly OperationDescriptor[];
-}
+/**
+ * The implementation is the contract.
+ *
+ * An interface mirroring the `ControlPlane` class would be a second definition
+ * free to drift from the first — the duplication this package has already had
+ * to collapse twice. Consumers depend on the class; `operations()` describes it
+ * as data for anything that cannot.
+ */
 
 /** Introspection that reads like documentation, for humans and agents alike. */
 export interface Description {
