@@ -28,6 +28,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js",
+      "require": "./dist/mcp.cjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
@@ -51,9 +56,16 @@
     "@leyline/schema": "workspace:^"
   },
   "peerDependencies": {
-    "@leyline/core": "workspace:^"
+    "@leyline/core": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.30.0"
   },
   "devDependencies": {
-    "@leyline/core": "workspace:^"
+    "@leyline/core": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  },
+  "peerDependenciesMeta": {
+    "@modelcontextprotocol/sdk": {
+      "optional": true
+    }
   }
 }

@@ -2,17 +2,22 @@
  * `@leyline/agent` — the control plane, packaged for machine consumers.
  *
  * This package adds no capability the control plane lacks (G9). It packages
- * introspection that reads like documentation, operation descriptors that map
- * onto tool and MCP definitions, structured errors an agent can act on, and
- * idempotent, replayable proposals.
+ * introspection that reads like documentation, operation descriptors carrying
+ * the published JSON Schema, structured errors an agent can act on, and the
+ * identity boundary between an untrusted caller and the control plane.
  *
- * Delivery stage 4 fills this in, deliberately before the second and third
- * adapters: if the control plane turns out to need framework-specific
- * knowledge, that is a core design defect worth catching early.
+ * Nothing here speaks a transport. `@leyline/agent/mcp` builds an MCP server
+ * from this surface, and its SDK is an optional peer — anyone targeting a
+ * different tool-calling format uses the definitions directly.
  */
 
-export const packageStatus = {
-  package: '@leyline/agent',
-  deliveryStage: 4,
-  status: 'planned',
-} as const;
+export { createAgentSurface } from './surface.js';
+export { introspect, type Introspection } from './introspection.js';
+export { OPERATIONS, OPERATIONS_BY_NAME, type Operation } from './operations.js';
+export type {
+  AgentSurface,
+  AgentSurfaceOptions,
+  ToolDefinition,
+  ToolFailure,
+  ToolResult,
+} from './types.js';

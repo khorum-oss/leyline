@@ -536,6 +536,29 @@ chose to offer.
 
 Governed by [decision 0020](decisions/0020-personalization.md).
 
+### Attestation
+
+What a transport authenticated about a connection: `{ subject, via }` carried on
+an **initiator** alongside its self-asserted label.
+
+A caller never supplies one. Whatever sits between an untrusted caller and the
+control plane attaches it from the connection it already authenticated and
+discards anything the caller sent in its place, so an attestation is a fact
+about the connection rather than a claim in the message
+([decision 0031](decisions/0031-initiator-trust.md)).
+
+Leyline enforces nothing about it. **Policy** is where an application requires
+one, because whether to require it depends entirely on the deployment.
+
+### Agent surface
+
+The control plane packaged for a machine consumer: `tools()` returns
+self-describing operations carrying the published JSON Schema, and `handle()`
+runs one and returns data whether it succeeded or not.
+
+It is also the identity boundary. The surface is constructed with the initiator
+and **attestation** the host decided; a tool call cannot set either.
+
 ### Operation descriptor
 
 A self-describing definition of one control-plane operation: name, description,

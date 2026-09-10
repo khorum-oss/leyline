@@ -47,25 +47,24 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 3 complete.** The React adapter renders a workflow: `WorkflowView`
-resolves each active region and surface through the registry and hands it to
-whichever component claimed it. The §2 scenario runs in a real React tree, and
-the assertions are against the DOM, because "the link disappears when workspace
-state changes" is a claim about what a user sees.
+**Stage 4 complete, and every open question is closed.** `@leyline/agent`
+packages the control plane as self-describing operations carrying the published
+JSON Schema, with `@leyline/agent/mcp` serving them over MCP.
 
-[Decision 0030](decisions/0030-react-rendering-contract.md) closes the debt
-[0019](decisions/0019-section-nodes.md) left: registries can claim regions as
-well as surfaces, so a container is swappable the same way a table is.
+Brief §2 items 6 and 7 are proven by a real MCP client over a real transport: it
+lists tools, discovers the actions table and the renderers it is allowed to
+name, swaps the table for a card grid, reverts it, and hides the metrics panel
+by attaching a guard — all without source access to the application.
 
-[`examples/react-workspace`](../../examples/react-workspace) is the scenario as
-a running application. It is deliberately not part of the library — nothing
-under `packages/` refers to it and it is never published — but CI builds it, so
-it cannot rot quietly.
+[Decision 0031](decisions/0031-initiator-trust.md) closes OQ7, the last of the
+eight. Building the surface also found a real hole in the control plane: `apply`
+read the change from the caller's argument rather than from what it had
+recorded, so a caller could validate one change and commit another under the
+same identifier. Only the identifier is read now, and two adversarial tests hold
+it that way.
 
-**Stage 4** is next: `@leyline/agent`, with introspection, operation
-descriptors, and the MCP adapter. Proving §2 items 6–7 with a real agent driving
-this application through MCP is the exit criterion, and OQ7 is the open question
-it has to settle.
+**Stage 5** is next: the TypeScript DSL, emitting documents byte-identical to
+the hand-written fixtures.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema

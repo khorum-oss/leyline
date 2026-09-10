@@ -1,8 +1,10 @@
 # Open questions
 
-Each of these gets resolved during specification and planning, and the decision
-gets recorded in `decisions/` with a link back here. The suggested starting
-point carries no authority beyond being a reasonable default to argue against.
+**All eight are now decided.** Each was resolved during the stage that needed
+it, and each has a decision record. The table stays as the trail: what was open,
+what was chosen, and where the reasoning lives.
+
+New questions get added here as they surface, and closed the same way.
 
 Terms appearing in these questions are defined in
 [`glossary.md`](glossary.md) — several of the questions turn on a distinction it

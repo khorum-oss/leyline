@@ -214,6 +214,51 @@ describe('I6 — policy is consulted first and cannot be bypassed', () => {
     );
   });
 
+  it('commits what was proposed, not what the caller hands back at apply time', async () => {
+    // The hole this closes: propose something policy and validation accept,
+    // then call apply with the same id and a different change. Only the id is
+    // read from the argument, so the swap has nowhere to land.
+    const { workflow } = start();
+    await settle();
+
+    const proposal = await workflow.control.propose(
+      { kind: 'context.patch', values: { tier: 'paid' } },
+      attacker,
+    );
+    expect((await workflow.control.validate(proposal)).ok).toBe(true);
+
+    const record = await workflow.control.apply({
+      ...proposal,
+      change: { kind: 'context.patch', values: { tier: 'organization' } },
+    } as never);
+
+    expect(record.change).toEqual({ kind: 'context.patch', values: { tier: 'paid' } });
+    expect(workflow.getSnapshot().context.tier).toBe('paid');
+  });
+
+  it('validates what was proposed, whatever the caller passes back', async () => {
+    const { workflow } = start();
+    await settle();
+    const proposal = await workflow.control.propose(
+      {
+        kind: 'surface.attach-guard',
+        node: 'workspace-hub',
+        surface: 'metrics',
+        guard: 'readAllSecrets',
+      },
+      attacker,
+    );
+
+    // Substituting a valid change at validate time does not make the recorded
+    // one valid, because the recorded one is what gets checked.
+    const result = await workflow.control.validate({
+      ...proposal,
+      change: { kind: 'context.patch', values: { tier: 'paid' } },
+    } as never);
+    expect(result.ok).toBe(false);
+    expect(result.issues[0]?.rule).toBe('capability.undeclared');
+  });
+
   it('offers no operation that skips it — apply refuses an unproposed proposal', async () => {
     const { workflow } = start();
     await settle();

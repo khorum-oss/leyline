@@ -119,6 +119,7 @@ export { documentEnvelopeSchema, type DocumentEnvelope } from './envelope.js';
 export {
   CHANGE_KINDS,
   initiatorSchema,
+  attestationSchema,
   rendererMatchSchema,
   changeSchema,
   proposalSchema,
@@ -126,6 +127,7 @@ export {
   validationOutcomeSchema,
   changeRecordSchema,
   type Initiator,
+  type Attestation,
   type Change,
   type Proposal,
   type PolicyDecision,

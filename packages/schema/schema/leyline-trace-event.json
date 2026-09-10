@@ -71,6 +71,9 @@
         "label": {
           "type": "string",
           "maxLength": 200
+        },
+        "attested": {
+          "$ref": "#/$defs/LeylineAttestation"
         }
       },
       "required": [
@@ -78,6 +81,27 @@
       ],
       "additionalProperties": false,
       "title": "Initiator"
+    },
+    "LeylineAttestation": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "via": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "subject",
+        "via"
+      ],
+      "additionalProperties": false,
+      "title": "Transport attestation"
     },
     "__schema0": {
       "anyOf": [
