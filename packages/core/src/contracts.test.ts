@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { activeSurfaces, walkRegions, type ActiveRegion } from './contracts.js';
 
-const surface = (id: string) => ({ id, type: 'text', props: {}, getters: {} });
+const surface = (id: string, nodeId = 'n') => ({
+  id,
+  nodeId,
+  type: 'text',
+  props: {},
+  getters: {},
+});
 
 /** The §2 dashboard shape: a page running three regions, one of them nested. */
 const page: ActiveRegion = {

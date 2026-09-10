@@ -68,6 +68,7 @@ export {
   eventNameSchema,
   jsonValueSchema,
   propsSchema,
+  type JsonValue,
 } from './primitives.js';
 
 export {

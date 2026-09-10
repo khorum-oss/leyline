@@ -1,31 +1,42 @@
+import type { WorkflowEvent, WorkflowStatus } from '../contracts.js';
+
 /**
  * The internal statechart facade (AD3).
  *
- * XState runs the interpreter behind this interface. The public API and the
- * schema never expose XState types or concepts, which keeps the option of
- * replacing it with a smaller purpose-built interpreter later. This directory
- * is the only place in the repository permitted to name XState — the lint
- * configuration enforces that.
+ * XState runs behind this interface, and this directory is the only place in
+ * the repository permitted to name it — enforced by a lint rule and by the CI
+ * boundary check. The public API and the schema never expose XState types or
+ * concepts, which keeps the option of replacing it with a smaller purpose-built
+ * interpreter later.
+ *
+ * The facade deals in node identifiers and context. It knows nothing about
+ * surfaces, registries, or renderers: turning an active tree of identifiers
+ * into resolved surfaces belongs to the layer above, where it can be tested
+ * without an interpreter at all.
  */
 
-import type { Snapshot, WorkflowEvent } from '../contracts.js';
+/** Which nodes are active, and what is active beneath them. */
+export interface ActiveNodes {
+  readonly id: string;
+  readonly children: readonly ActiveNodes[];
+}
 
 export interface EngineInstance<TContext> {
   start(): void;
   stop(): void;
   send(event: WorkflowEvent): void;
-  getSnapshot(): Snapshot<TContext>;
-  subscribe(listener: (snapshot: Snapshot<TContext>) => void): () => void;
+  getActive(): ActiveNodes;
+  getContext(): TContext;
+  getStatus(): WorkflowStatus;
+  /** Notifies on every published change. Returns an unsubscribe function. */
+  subscribe(listener: () => void): () => void;
 }
 
-/**
- * Stage 2 implements this over XState. Nothing outside this directory imports
- * the engine; everything else depends on `EngineInstance` alone.
- */
-export interface EngineFactory {
-  create<TContext>(input: {
-    readonly document: unknown;
-    readonly capabilities: unknown;
-    readonly onTrace: (kind: string, data: Record<string, unknown>) => void;
-  }): EngineInstance<TContext>;
+/** What the engine reports as it runs, so the layer above can trace it. */
+export interface EngineObserver {
+  onTransition(from: readonly string[], to: readonly string[], event: WorkflowEvent): void;
+  onGuard(name: string, result: boolean): void;
+  guardTracingEnabled(): boolean;
+  onServiceInvoked(name: string, nodeId: string): void;
+  onServiceSettled(name: string, nodeId: string, outcome: 'done' | 'error'): void;
 }

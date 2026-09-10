@@ -47,30 +47,27 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 1 complete.** The canonical document is defined in Zod and exported as
-JSON Schema; graph and capability validation reject each malformed case by name;
-deterministic addressing, change descriptions, and the trace envelope are in
-place. The reference workflow from brief §2 round-trips byte for byte and
-validates identically under the TypeScript validator and under Ajv reading the
-published artifact.
+**Stage 2, part one complete.** The runtime runs: capability binding that
+reports every gap at once, the interpreter over the XState facade, the store
+with structural sharing, snapshots carrying resolved surfaces and prop-getters,
+and the trace stream with ring-buffer and console sinks, redaction, per-kind
+filtering, and export.
 
-Section nodes arrived after the fact, on the strength of a requirement the brief
-did not anticipate: containers that hold other containers, and end users
-rearranging their own view. Taking it before stage 2 cost three optional fields
-and a validation pass; taking it after would have meant reshaping the snapshot
-every adapter reads. See [0019](decisions/0019-section-nodes.md) and
-[0020](decisions/0020-personalization.md).
+Brief §2 items 1–5 drive headlessly with no DOM, and the section fixture runs
+three regions of a page in parallel while one of them advances through its own
+children. A completeness harness asserts the stream accounts for everything that
+happened — it caught a real defect on its first run: binding and the entry
+node's first invocation happen inside `createWorkflow`, so a sink attached
+afterwards missed them. Sinks may now be passed at construction.
 
-Decisions recorded along the way: [0016](decisions/0016-minimum-surface-set.md)
-(the surface set, closing OQ5), [0017](decisions/0017-structure-errors-vocabulary-warnings.md)
-(severity policy), [0018](decisions/0018-identifier-derivation.md) (what a
-derived identifier hashes), [0019](decisions/0019-section-nodes.md) (section
-containment) and [0020](decisions/0020-personalization.md) (personalization as
-control-plane traffic).
+Decisions recorded: [0021](decisions/0021-trace-retention-and-export.md)
+(closing OQ6) and [0022](decisions/0022-guard-event-volume.md) (closing OQ8).
+OQ1 and OQ2 are decided and land with the control plane.
 
-Stage 2 — the core runtime, control plane, and trace stream — starts next. The
-contracts it implements and the change vocabulary it accepts already exist, so
-the work is behaviour rather than shape.
+**Stage 2, part two** is next: control-plane-addressable registries,
+propose/validate/apply/revert, the change log projected from the trace stream,
+policy with combinators, `hydrate()` for persisted changes, and the AD14
+invariant suites.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema
