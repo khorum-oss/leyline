@@ -52,6 +52,19 @@ export interface Description {
     readonly description?: string;
     readonly renderer?: string;
   }[];
-  readonly registries: readonly { readonly id: string; readonly entries: number }[];
+  readonly registries: readonly {
+    readonly id: string;
+    readonly entries: number;
+    /**
+     * What this application published. A change may name one of these and
+     * nothing else (I3), so an agent that cannot see the catalogue is reduced
+     * to guessing at names it is not allowed to invent.
+     */
+    readonly catalogue: readonly {
+      readonly id: string;
+      readonly description?: string;
+      readonly claims: readonly string[];
+    }[];
+  }[];
   readonly capabilities: readonly { readonly kind: string; readonly name: string }[];
 }

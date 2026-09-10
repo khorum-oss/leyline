@@ -18,11 +18,33 @@ import { workflowDocumentSchema } from './workflow.js';
  * component, or an expression (I1, I3).
  */
 
+/**
+ * What a transport authenticated, if anything (decision 0031).
+ *
+ * A caller never supplies this. Whatever sits between an untrusted caller and
+ * the control plane — the MCP surface, an HTTP handler — attaches it from the
+ * connection it already authenticated, and strips anything the caller tried to
+ * put here. Its presence is a fact about the connection, not a claim in the
+ * message.
+ */
+export const attestationSchema = z
+  .strictObject({
+    /** Who the transport authenticated: a user id, a service account, a key id. */
+    subject: z.string().min(1).max(200),
+    /** How, in the host's own vocabulary: "oauth", "mtls", "shared-secret". */
+    via: z.string().min(1).max(100),
+  })
+  .meta({ id: 'LeylineAttestation', title: 'Transport attestation' });
+
+export type Attestation = z.infer<typeof attestationSchema>;
+
 export const initiatorSchema = z
   .strictObject({
     kind: z.enum(INITIATOR_KINDS),
-    /** Self-asserted and advisory in v1; policy is where anything stronger belongs (OQ7). */
+    /** Self-asserted and advisory; policy is where anything stronger belongs (OQ7). */
     label: z.string().max(200).optional(),
+    /** Filled by the transport, never by the caller. Absent means unauthenticated. */
+    attested: attestationSchema.optional(),
   })
   .meta({ id: 'LeylineInitiator', title: 'Initiator' });
 

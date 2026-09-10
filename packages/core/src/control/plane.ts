@@ -158,8 +158,9 @@ export class ControlPlane {
 
   // --- Phase two: validate --------------------------------------------------
 
-  async validate(proposal: Proposal): Promise<ValidationResult> {
-    const tracked = this.#proposals.get(proposal.id);
+  /** Checks a proposal by identifier; only `id` is read from the argument. */
+  async validate(input: Pick<Proposal, 'id'>): Promise<ValidationResult> {
+    const tracked = this.#proposals.get(input.id);
     if (tracked === undefined) {
       return {
         ok: false,
@@ -167,7 +168,7 @@ export class ControlPlane {
           {
             severity: 'error',
             rule: 'proposal.unknown',
-            identifier: proposal.id,
+            identifier: input.id,
             message: 'This proposal was never proposed to this control plane.',
             suggestion: 'Call propose() first; a proposal is not a free-floating document.',
           },
@@ -183,7 +184,7 @@ export class ControlPlane {
       issues.push({
         severity: 'error',
         rule: 'policy.denied',
-        identifier: proposal.id,
+        identifier: tracked.proposal.id,
         message: tracked.decision.reason,
       });
     }
@@ -194,18 +195,18 @@ export class ControlPlane {
       issues.push({
         severity: 'warning',
         rule: 'policy.confirmation-required',
-        identifier: proposal.id,
+        identifier: tracked.proposal.id,
         message: tracked.decision.reason,
-        suggestion: `Resolve it with confirm("${proposal.id}") or cancel("${proposal.id}").`,
+        suggestion: `Resolve it with confirm("${tracked.proposal.id}") or cancel("${tracked.proposal.id}").`,
       });
     }
 
     const ok = !issues.some((candidate) => candidate.severity === 'error');
     this.#emitter.emit({
       kind: 'control.validated',
-      correlationId: proposal.correlationId,
-      initiator: proposal.initiator,
-      data: { proposal: proposal.id, ok, issues: issues.length },
+      correlationId: tracked.proposal.correlationId,
+      initiator: tracked.proposal.initiator,
+      data: { proposal: tracked.proposal.id, ok, issues: issues.length },
     });
     return { ok, issues };
   }
@@ -235,11 +236,20 @@ export class ControlPlane {
 
   // --- Phase three: apply ---------------------------------------------------
 
-  async apply(proposal: Proposal): Promise<ChangeRecord> {
-    const tracked = this.#proposals.get(proposal.id);
+  /**
+   * Commits a proposal, identified by its identifier alone.
+   *
+   * Only `id` is read from the argument. Everything else comes from what was
+   * recorded at propose time, because policy and validation ran against *that*
+   * — a caller handing back an edited proposal would otherwise have one change
+   * approved and a different one committed.
+   */
+  async apply(input: Pick<Proposal, 'id'>): Promise<ChangeRecord> {
+    const tracked = this.#proposals.get(input.id);
     if (tracked === undefined) {
-      throw new Error(`Unknown proposal "${proposal.id}".`);
+      throw new Error(`Unknown proposal "${input.id}".`);
     }
+    const proposal = tracked.proposal;
 
     // Applying the same validated proposal twice is a no-op with a clear
     // result, so an agent that retries after a dropped response is safe.
@@ -251,7 +261,7 @@ export class ControlPlane {
       );
     }
 
-    const validation = await this.validate(proposal);
+    const validation = await this.validate({ id: proposal.id });
     if (!validation.ok) {
       throw new Error(
         `Proposal "${proposal.id}" is not valid: ${validation.issues
@@ -311,7 +321,7 @@ export class ControlPlane {
       { kind: 'change.revert', change: changeId },
       initiator ?? target.initiator,
     );
-    const validation = await this.validate(proposal);
+    const validation = await this.validate({ id: proposal.id });
     if (!validation.ok) {
       throw new Error(
         `Revert of "${changeId}" was refused: ${validation.issues
@@ -428,7 +438,7 @@ export class ControlPlane {
       // a log that never held its target means nothing.
       if (record.revertedBy !== undefined || record.change.kind === 'change.revert') continue;
       const proposal = await this.propose(record.change, record.initiator);
-      const validation = await this.validate(proposal);
+      const validation = await this.validate({ id: proposal.id });
       if (!validation.ok) {
         dropped.push({
           record: record.id,
@@ -474,7 +484,17 @@ export class ControlPlane {
           };
         }),
       ),
-      registries: [{ id: this.#registry.id, entries: this.#state.registryEntries.length }],
+      registries: [
+        {
+          id: this.#registry.id,
+          entries: this.#state.registryEntries.length,
+          catalogue: this.#registry.catalogue().map((entry) => ({
+            id: entry.id,
+            ...(entry.description !== undefined ? { description: entry.description } : {}),
+            claims: [...entry.claims],
+          })),
+        },
+      ],
       capabilities: [
         ...(document.requires?.guards ?? []).map((name) => ({ kind: 'guard', name })),
         ...(document.requires?.services ?? []).map((name) => ({ kind: 'service', name })),
