@@ -138,7 +138,7 @@ export { TRACE_KINDS, traceEventSchema, type TraceKind, type TraceEvent } from '
 
 // --- Validation ------------------------------------------------------------
 
-export { parseWorkflow, validateWorkflow } from './validate.js';
+export { parseWorkflow, validateWorkflow, serializeWorkflow } from './validate.js';
 export { normalizeWorkflow, type NormalizeResult } from './normalize.js';
 
 // --- JSON Schema export ----------------------------------------------------

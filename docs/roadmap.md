@@ -47,24 +47,22 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 4 complete, and every open question is closed.** `@leyline/agent`
-packages the control plane as self-describing operations carrying the published
-JSON Schema, with `@leyline/agent/mcp` serving them over MCP.
+**Stage 5 complete.** The TypeScript DSL emits the canonical document, and the
+§2 workflow authored through it is byte-identical to the hand-written fixture —
+which is AD1's claim turned into an assertion.
 
-Brief §2 items 6 and 7 are proven by a real MCP client over a real transport: it
-lists tools, discovers the actions table and the renderers it is allowed to
-name, swaps the table for a card grid, reverts it, and hides the metrics panel
-by attaching a guard — all without source access to the application.
+Node references, capability names, and context fields are checked at the call
+site by accumulating what the workflow declared into type unions. The tests for
+that are the `@ts-expect-error` directives themselves: the typecheck project
+includes them, so a directive with nothing to suppress fails the build.
 
-[Decision 0031](decisions/0031-initiator-trust.md) closes OQ7, the last of the
-eight. Building the surface also found a real hole in the control plane: `apply`
-read the change from the caller's argument rather than from what it had
-recorded, so a caller could validate one change and commit another under the
-same identifier. Only the identifier is read now, and two adversarial tests hold
-it that way.
+[Decision 0032](decisions/0032-canonical-form.md) settles what canonical form
+is — the authored document, not the normalized one — which the DSL forced by
+being the first second producer.
 
-**Stage 5** is next: the TypeScript DSL, emitting documents byte-identical to
-the hand-written fixtures.
+**Stage 6** is next: the Svelte and vanilla adapters. That stage is designed to
+find duplication, and anything both adapters need moves into the core rather
+than being written twice.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema

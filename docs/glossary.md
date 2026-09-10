@@ -199,6 +199,19 @@ two siblings, validation reports `id.ambiguous` rather than guessing.
 
 Governed by [decision 0018](decisions/0018-identifier-derivation.md).
 
+### Canonical form
+
+The one textual form of a **workflow document**: known fields in the order the
+schema declares them, unknown fields after, two-space indentation, trailing
+newline. `serializeWorkflow` produces it.
+
+Parsed, not normalized — identifiers an author left out stay left out, because a
+**derived identifier** is derived and storing one duplicates what the document
+already implies ([decision 0032](decisions/0032-canonical-form.md)).
+
+It is a published function rather than a convention because the **fixture
+corpus** is a contract two authoring languages are held to.
+
 ### Fixture corpus
 
 The reference workflows under `packages/schema/src/fixtures/`, stored in the
