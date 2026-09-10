@@ -47,30 +47,25 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 2 complete.** The runtime runs and the control plane operates it. Brief
-§2 items 1–7 all pass: the workflow drives headlessly, and an agent with no
-access to application source swaps the actions table for a card grid in two
-calls, reverts it in one, and hides the metrics panel by attaching a guard.
+**Stage 3 complete.** The React adapter renders a workflow: `WorkflowView`
+resolves each active region and surface through the registry and hands it to
+whichever component claimed it. The §2 scenario runs in a real React tree, and
+the assertions are against the DOM, because "the link disappears when workspace
+state changes" is a claim about what a user sees.
 
-Every AD14 invariant has a suite that tries to break it. Change records and the
-trace stream are asserted to agree entry for entry, and a recorded log replayed
-against a fresh instance reproduces the same state.
+[Decision 0030](decisions/0030-react-rendering-contract.md) closes the debt
+[0019](decisions/0019-section-nodes.md) left: registries can claim regions as
+well as surfaces, so a container is swappable the same way a table is.
 
-Seven decisions came out of it, four closing open questions:
-[0023](decisions/0023-renderer-catalogue.md) (OQ3),
-[0024](decisions/0024-policy-shape.md) (OQ2),
-[0025](decisions/0025-live-changes.md),
-[0026](decisions/0026-revert-by-replay.md),
-[0027](decisions/0027-confirmation-flow.md) (OQ4),
-[0028](decisions/0028-persistence.md) (OQ1), and
-[0029](decisions/0029-change-log-and-stream.md), which records a deviation from
-AD15 rather than quietly implementing one thing and citing another.
+[`examples/react-workspace`](../../examples/react-workspace) is the scenario as
+a running application. It is deliberately not part of the library — nothing
+under `packages/` refers to it and it is never published — but CI builds it, so
+it cannot rot quietly.
 
-OQ7 is the only open question left, and it belongs to stage 4.
-
-**Stage 3** is next: the React adapter — the reactivity bridge already exists,
-so the work is the ranked registry bridge and `WorkflowView`, proving §2 items
-1–5 in a real application.
+**Stage 4** is next: `@leyline/agent`, with introspection, operation
+descriptors, and the MCP adapter. Proving §2 items 6–7 with a real agent driving
+this application through MCP is the exit criterion, and OQ7 is the open question
+it has to settle.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema

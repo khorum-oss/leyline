@@ -26,6 +26,8 @@ export {
   type RegistrySnapshot,
   type Resolution,
   type SurfaceDescriptor,
+  type RegionDescriptor,
+  type RenderTarget,
 } from './registry.js';
 
 export { ControlPlane, type ControlPlaneOptions, type ReplayFailure } from './control/plane.js';

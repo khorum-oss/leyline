@@ -1,33 +1,21 @@
-import { useSyncExternalStore } from 'react';
-import type { Store } from '@leyline/core';
-
 /**
- * `@leyline/react` — the React reactivity bridge.
+ * `@leyline/react` — the React adapter.
  *
- * Adapters stay thin (G5). Everything below bridges the core's store contract
- * to React's own subscription primitive; no workflow logic lives here. If this
- * package grows meaningful logic, treat it as a defect in the core.
- *
- * Delivery stage 3 adds the ranked renderer registry and `WorkflowView`, and
- * proves the §2 scenario end to end.
+ * Adapters stay thin (G5). This package bridges the core's store contract to
+ * React's own subscription primitive and hands each resolved surface and region
+ * to whichever component claimed it. No workflow logic lives here; if it ever
+ * needs some, that is a defect in the core rather than a cost of supporting
+ * React.
  */
 
-export const packageStatus = {
-  package: '@leyline/react',
-  deliveryStage: 3,
-  status: 'in-progress',
-} as const;
-
-/**
- * Subscribes a component to a Leyline store.
- *
- * Snapshots are immutable with structural sharing (AD4), so React's identity
- * comparison is a valid change check and no equality function is needed.
- */
-export function useLeylineStore<TSnapshot>(store: Store<TSnapshot>): TSnapshot {
-  return useSyncExternalStore(
-    (listener) => store.subscribe(listener),
-    () => store.getSnapshot(),
-    () => store.getSnapshot(),
-  );
-}
+export { useLeylineStore } from './useLeylineStore.js';
+export { WorkflowView, type WorkflowViewProps } from './WorkflowView.jsx';
+export { FallbackSurface, FallbackRegion, FALLBACK_RENDERERS } from './fallback.jsx';
+export type {
+  SurfaceSlot,
+  RegionSlot,
+  SurfaceRendererProps,
+  RegionRendererProps,
+  SurfaceRenderer,
+  RegionRenderer,
+} from './types.js';

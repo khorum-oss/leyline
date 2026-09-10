@@ -27,10 +27,16 @@ export interface RendererDefinition {
   readonly component: unknown;
 }
 
+export type RenderTarget = 'surface' | 'region';
+
 export interface RendererMatch {
+  /** What the entry claims. Absent means `surface` (decision 0030). */
+  readonly target?: RenderTarget | undefined;
   readonly surfaceId?: string | undefined;
   readonly surfaceType?: string | undefined;
   readonly nodeId?: string | undefined;
+  /** Region matches only: every node of this kind. */
+  readonly nodeKind?: string | undefined;
 }
 
 export interface RegistryEntry {
@@ -58,7 +64,18 @@ export interface SurfaceDescriptor {
   readonly type: string;
 }
 
-function matches(match: RendererMatch, surface: SurfaceDescriptor): boolean {
+/** The container a `section` node is drawn as. */
+export interface RegionDescriptor {
+  readonly id: string;
+  readonly kind: string;
+}
+
+function targetOf(match: RendererMatch): RenderTarget {
+  return match.target ?? 'surface';
+}
+
+function matchesSurface(match: RendererMatch, surface: SurfaceDescriptor): boolean {
+  if (targetOf(match) !== 'surface') return false;
   if (match.surfaceId !== undefined && match.surfaceId !== surface.id) return false;
   if (match.surfaceType !== undefined && match.surfaceType !== surface.type) return false;
   if (match.nodeId !== undefined && match.nodeId !== surface.nodeId) return false;
@@ -66,6 +83,13 @@ function matches(match: RendererMatch, surface: SurfaceDescriptor): boolean {
   return (
     match.surfaceId !== undefined || match.surfaceType !== undefined || match.nodeId !== undefined
   );
+}
+
+function matchesRegion(match: RendererMatch, region: RegionDescriptor): boolean {
+  if (targetOf(match) !== 'region') return false;
+  if (match.nodeId !== undefined && match.nodeId !== region.id) return false;
+  if (match.nodeKind !== undefined && match.nodeKind !== region.kind) return false;
+  return match.nodeId !== undefined || match.nodeKind !== undefined;
 }
 
 export class RendererRegistry {
@@ -87,11 +111,17 @@ export class RendererRegistry {
     return this.#catalogue.has(renderer);
   }
 
-  /** Whether a catalogued renderer is willing to draw a surface type. */
-  claims(renderer: string, surfaceType: string): boolean {
+  /**
+   * Whether a catalogued renderer is willing to draw something.
+   *
+   * `what` is a surface type for a surface entry and a node kind for a region
+   * entry; a renderer claiming `*` draws anything, which is how the fallback
+   * is registered (decision 0030).
+   */
+  claims(renderer: string, what: string): boolean {
     const definition = this.#catalogue.get(renderer);
     if (definition === undefined) return false;
-    return definition.claims.includes('*') || definition.claims.includes(surfaceType);
+    return definition.claims.includes('*') || definition.claims.includes(what);
   }
 
   entries(): readonly RegistryEntry[] {
@@ -108,9 +138,11 @@ export class RendererRegistry {
       'registryEntry',
       this.id,
       renderer,
+      targetOf(match),
       match.surfaceId ?? '',
       match.surfaceType ?? '',
       match.nodeId ?? '',
+      match.nodeKind ?? '',
       String(rank),
     );
   }
@@ -145,16 +177,33 @@ export class RendererRegistry {
    * An unresolvable surface returns undefined; the caller draws the registered
    * fallback and logs. Resolution never throws (AD5).
    */
+  /**
+   * The highest-ranked entry claiming this surface.
+   *
+   * Ties break toward the entry registered later, so a change applied on top of
+   * an equal-ranked one wins without an initiator having to guess a number.
+   * An unresolvable surface returns undefined; the caller draws the registered
+   * fallback and logs. Resolution never throws (AD5).
+   */
   resolve(surface: ResolvedSurface): Resolution | undefined {
     const descriptor: SurfaceDescriptor = Object.freeze({
       id: surface.id,
       nodeId: surface.nodeId,
       type: surface.type,
     });
+    return this.#best((entry) => matchesSurface(entry.match, descriptor));
+  }
 
+  /** The highest-ranked entry claiming this region (decision 0030). */
+  resolveRegion(region: RegionDescriptor): Resolution | undefined {
+    const descriptor: RegionDescriptor = Object.freeze({ id: region.id, kind: region.kind });
+    return this.#best((entry) => matchesRegion(entry.match, descriptor));
+  }
+
+  #best(claims: (entry: RegistryEntry) => boolean): Resolution | undefined {
     let best: RegistryEntry | undefined;
     for (const entry of this.#entries) {
-      if (!matches(entry.match, descriptor)) continue;
+      if (!claims(entry)) continue;
       if (best === undefined || entry.rank >= best.rank) best = entry;
     }
     if (best === undefined) return undefined;

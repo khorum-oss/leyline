@@ -258,6 +258,13 @@
     "LeylineRendererMatch": {
       "type": "object",
       "properties": {
+        "target": {
+          "type": "string",
+          "enum": [
+            "surface",
+            "region"
+          ]
+        },
         "surfaceId": {
           "$ref": "#/$defs/LeylineIdentifier"
         },
@@ -267,6 +274,10 @@
         },
         "nodeId": {
           "$ref": "#/$defs/LeylineIdentifier"
+        },
+        "nodeKind": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false,
