@@ -402,3 +402,26 @@ export function validateWorkflow(input: unknown): ValidationResult<WorkflowDocum
 
   return { ok: !hasErrors(walk.issues), issues: walk.issues, document: normalized.document };
 }
+
+/**
+ * The canonical form of a document, as text.
+ *
+ * Canonical form is what the parser emits: known fields in the order the schema
+ * declares them, unknown ones after, two-space indentation, trailing newline.
+ *
+ * Parsed, not normalized. Identifiers an author left out stay left out, because
+ * a derived identifier is derived (AD12) — storing one would duplicate what the
+ * document already implies and churn every file the day derivation changes.
+ * Publishing it as a function rather than leaving it a convention is what lets
+ * the fixture corpus be compared byte for byte — by the TypeScript DSL today,
+ * and by the planned Kotlin DSL on its own side (brief §10).
+ */
+export function serializeWorkflow(input: unknown): string {
+  const parsed = parseWorkflow(input);
+  if (parsed.document === undefined) {
+    throw new Error(
+      `Cannot serialize an invalid document: ${parsed.issues.map((issue) => issue.message).join(' ')}`,
+    );
+  }
+  return `${JSON.stringify(parsed.document, null, 2)}\n`;
+}
