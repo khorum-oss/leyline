@@ -607,6 +607,22 @@ workspace hub" without a developer explaining the schema first.
 One ordered stream carries everything observable (AD15). Devtools, log
 aggregators, and agents confirming their own effects all read the same events.
 
+### Trace stream
+
+The single ordered emitter every observable thing passes through, and the handle
+an application uses to shape it: attach a **sink**, set a **redaction hook**,
+narrow the **enabled kinds**, read the **ring buffer**.
+
+There is one per workflow instance and no way to emit around it, which is what
+lets the **change log** be a projection of it rather than a second record kept
+in parallel.
+
+Emission when nothing is attached costs one boolean check — a claim with a
+benchmark and a test behind it in
+[`performance.md`](performance.md).
+
+_Defined in:_ `packages/core/src/trace.ts`.
+
 ### Trace event
 
 One small structured message on that stream: a fixed envelope — `ts`, `seq`,

@@ -26,10 +26,15 @@ reference a guard, and may never introduce one.
 
 ## Status
 
-**Pre-alpha, stage 0 — scaffolding.** Nothing is published yet. The workspace,
-toolchain, CI gates, and documentation set exist; the packages carry their
-contracts and the pieces the brief already settled. See
-[`docs/roadmap.md`](docs/roadmap.md) for what lands when.
+**v1 feature-complete; not yet published to npm.** All seven delivery stages have
+landed: the schema, the headless runtime with its control plane and trace stream,
+three adapters (React, Svelte, plain DOM), the agent interface over MCP, and the
+TypeScript DSL. The seven security invariants each carry an adversarial suite
+that runs as a required gate.
+
+Install by workspace for now. See [`docs/roadmap.md`](docs/roadmap.md) for what
+is done and what follows v1 — a devtools inspector, an OpenTelemetry sink, and
+the Kotlin authoring track.
 
 ## How it fits together
 
@@ -122,9 +127,22 @@ Guards, services, and data sources appear as names. Implementations bind
 separately, which keeps the document serializable, keeps the logic testable on
 its own, and keeps an agent-authored document unable to smuggle in code.
 
-_(Illustrative — the schema lands in stage 1.)_
+Write it by hand, or through the [DSL](packages/dsl) — which emits the same
+bytes, and catches a mistyped transition target at compile time. The
+[authoring guide](docs/guides/authoring.md) covers both.
 
 ## Documentation
+
+**Guides**
+
+- [Authoring](docs/guides/authoring.md) — writing a workflow: what belongs in the
+  document, what belongs in the capability bundle, and what belongs in neither
+- [Agent integration](docs/guides/agents.md) — exposing the control plane to an
+  agent, and bounding what it can do
+- [Migration](docs/guides/migration.md) — adopting Leyline into an application
+  that already exists, and moving documents across schema versions
+
+**Reference**
 
 - [Glossary](docs/glossary.md) — every term in one place, with the distinctions
   that trip people up: guard vs policy, change vs change record, context vs
@@ -136,8 +154,9 @@ _(Illustrative — the schema lands in stage 1.)_
 - [Constitution](docs/constitution.md) — the obligations every change answers to
 - [Roadmap](docs/roadmap.md) — the delivery sequence and its exit criteria
 - [Decisions](docs/decisions/) — AD1–AD15 and everything recorded since
-- [Open questions](docs/open-questions.md) — what specification still has to settle
+- [Open questions](docs/open-questions.md) — all eight, and what settled each
 - [Versioning](docs/versioning.md) — document versions and package versions
+- [Performance](docs/performance.md) — what tracing costs when nobody reads it
 - [Security](SECURITY.md) — threat model and the seven invariants
 - [Contributing](CONTRIBUTING.md) — setup, commands, and the merge gates
 

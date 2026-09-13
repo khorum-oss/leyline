@@ -9,7 +9,7 @@ import CardGrid from './test-renderers/CardGrid.svelte';
 import MetricPanel from './test-renderers/MetricPanel.svelte';
 import Link from './test-renderers/Link.svelte';
 import Panel from './test-renderers/Panel.svelte';
-import { referenceDocument, scenarioBundle, settle } from './testing/scenario.js';
+import { referenceDocument, scenarioBundle, settle } from '@leyline/core/testing';
 
 /**
  * Brief §2 items 6 and 7, against Svelte, through `@leyline/agent` (roadmap

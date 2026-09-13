@@ -17,7 +17,7 @@ defines it.
 | 4     | **Agent interface** — introspection, operation descriptors, MCP adapter                                                                                                                                                                                                                                                 | §2 items 6–7 run end to end with a real agent driving the React application through MCP, with no access to application source                                      |
 | 5     | **TypeScript DSL** — builder emitting validated schema with compile-time node reference checking                                                                                                                                                                                                                        | The §2 workflow authored through the DSL emits a document byte-identical to the hand-written one                                                                   |
 | 6     | **Svelte and vanilla adapters**                                                                                                                                                                                                                                                                                         | §2 items 6–7 re-run against the SvelteKit application with no change to `@leyline/agent`; anything an adapter had to duplicate has moved into the core             |
-| 7     | **Hardening** — devtools inspector, OpenTelemetry sink, finalized threat model, versioning policy, authoring guide, agent integration guide, migration guidance                                                                                                                                                         | Benchmarks show unobserved tracing within noise; `SECURITY.md` matches the shipped invariant suites                                                                |
+| 7     | **Hardening** — finalized threat model, observation-cost benchmarks, versioning policy, authoring guide, agent integration guide, migration guidance. The devtools inspector and the OpenTelemetry sink moved to post-v1 (see below)                                                                                    | Benchmarks show unobserved tracing within noise; `SECURITY.md` matches the shipped invariant suites                                                                |
 
 ## Stage order
 
@@ -47,22 +47,41 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 6 complete.** Three adapters now render the same document: React,
-Svelte, and plain DOM. Brief §2 items 6 and 7 run against the Svelte
-application through `@leyline/agent` **with no changes to that package** — which
-was the actual exit criterion, since needing one would have meant the control
-plane was carrying framework knowledge.
+**Stage 7 complete. v1 is done.** Seven stages, each with a working tested
+artifact, and both orderings the sequence was built around paid out: stage 4
+landed before the second and third adapters and found nothing wrong with the
+control plane, and stage 6 found the duplication it was placed to find.
 
-The stage did what it was designed to do: it found duplication. The walk over
-the active tree, the registry questions, and the fallback selection were about
-to be written a third time, so they moved into the core as a **render plan**
-([decision 0033](decisions/0033-render-plan.md)). The React adapter lost its
-walk and kept all eighteen of its tests passing unchanged.
+What stage 7 settled:
 
-**Stage 7** is the last: `SECURITY.md` reconciled against the shipped invariant
-suites, the versioning policy, and the authoring, agent-integration, and
-migration guides. Then v1 is done.
+- **The threat model matches what ships.** Each of I1–I7 names the suites behind
+  it, and [`tests/security.test.ts`](../tests/security.test.ts) fails if the
+  document and the suites disagree in either direction — or if the required CI
+  gate stops running a package that holds one. The gate had in fact gone narrow:
+  invariant suites in `@leyline/agent` and `@leyline/dsl` sat outside its project
+  filter, so they had quietly stopped counting as a gate.
+- **The cost of tracing has a number and a test.**
+  [`performance.md`](performance.md) records both. An unobserved `emit` runs
+  within 13% of the bare boolean check it performs, and the property that makes
+  that true is held by tests rather than by the benchmark. Writing them found a
+  defect: the engine flattened the active tree twice on every published snapshot
+  to describe a transition that, unobserved, was then discarded.
+- **The guides.** [Authoring](guides/authoring.md),
+  [agent integration](guides/agents.md), and [migration](guides/migration.md) —
+  the last covering both senses of the word: adopting Leyline into an application
+  that already exists, and moving documents across versions.
+- **The documentation stopped drifting.** The decision index listed three of
+  eighteen records, and the open-questions page claimed eight closures above a
+  table reading as though six were still open. Both are now checked by
+  [`tests/decisions.test.ts`](../tests/decisions.test.ts) — the same answer the
+  glossary got: a document that has to stay true gets a test that says so.
 
-Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
-track described in brief §10, which coordinates through the exported JSON Schema
-and a shared fixture corpus.
+**Post-v1**, in the order the project has already asked for them:
+`@leyline/devtools`, an inspector over the trace stream and the change log, and
+`@leyline/otel`, a sink bridging to OpenTelemetry. The delivery table above
+listed both under stage 7 while brief §6 places them after v1; the contradiction
+had to resolve somewhere, and it resolved here.
+
+Then the Kotlin authoring track described in brief §10, which coordinates through
+the exported JSON Schema and a shared fixture corpus — the same equivalence the
+TypeScript DSL is already held to.

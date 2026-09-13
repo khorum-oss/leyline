@@ -1,5 +1,11 @@
 import { Fragment, type ReactElement } from 'react';
-import { buildRenderPlan, type RegionPlan, type WorkflowInstance } from '@leyline/core';
+import {
+  buildRenderPlan,
+  regionIdentity,
+  surfaceIdentity,
+  type RegionPlan,
+  type WorkflowInstance,
+} from '@leyline/core';
 import { useLeylineStore } from './useLeylineStore.js';
 import { FallbackRegion, FallbackSurface } from './fallback.jsx';
 import type { RegionRenderer, RegionSlot, SurfaceRenderer, SurfaceSlot } from './types.js';
@@ -18,8 +24,7 @@ function renderRegion(plan: RegionPlan): ReactElement {
   const Renderer = (plan.renderer?.component as RegionRenderer | undefined) ?? FallbackRegion;
 
   const surfaces: SurfaceSlot[] = plan.surfaces.map((entry) => ({
-    id: entry.surface.id,
-    type: entry.surface.type,
+    ...surfaceIdentity(entry),
     render: () => {
       const Surface = (entry.renderer?.component as SurfaceRenderer | undefined) ?? FallbackSurface;
       return <Fragment key={entry.surface.id}>{Surface({ surface: entry.surface })}</Fragment>;
@@ -27,23 +32,13 @@ function renderRegion(plan: RegionPlan): ReactElement {
   }));
 
   const regions: RegionSlot[] = plan.children.map((child) => ({
-    id: child.id,
-    kind: child.kind,
-    ...(child.description !== undefined ? { description: child.description } : {}),
+    ...regionIdentity(child),
     render: () => renderRegion(child),
   }));
 
   return (
     <Fragment key={plan.id}>
-      {Renderer({
-        region: {
-          id: plan.id,
-          kind: plan.kind,
-          ...(plan.description !== undefined ? { description: plan.description } : {}),
-        },
-        surfaces,
-        regions,
-      })}
+      {Renderer({ region: regionIdentity(plan), surfaces, regions })}
     </Fragment>
   );
 }

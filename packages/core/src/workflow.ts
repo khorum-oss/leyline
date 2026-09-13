@@ -150,7 +150,7 @@ export function createWorkflow<TContext extends Record<string, unknown> = Record
   let context: TContext = options.initialContext ?? ({} as TContext);
 
   const observer: EngineObserver = {
-    guardTracingEnabled: () => emitter.isEnabled('guard.evaluated'),
+    tracingEnabled: (kind) => emitter.isEnabled(kind),
     onGuard: (name, result) =>
       emitter.emit({
         kind: 'guard.evaluated',

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { mount, unmount, flushSync } from 'svelte';
-import { createWorkflow, type CapabilityBundle, type WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@leyline/core';
+import {
+  applyChange,
+  openScenario,
+  settle,
+  swapActionsToCardGrid,
+  type ScenarioContext,
+} from '@leyline/core/testing';
 import WorkflowView from './lib/WorkflowView.svelte';
 import { FALLBACK_RENDERERS } from './lib/fallback.js';
 import DataTable from './test-renderers/DataTable.svelte';
@@ -8,7 +15,6 @@ import CardGrid from './test-renderers/CardGrid.svelte';
 import MetricPanel from './test-renderers/MetricPanel.svelte';
 import Link from './test-renderers/Link.svelte';
 import Panel from './test-renderers/Panel.svelte';
-import { referenceDocument, scenarioBundle, settle } from './testing/scenario.js';
 
 /**
  * The §2 scenario in a real Svelte tree (roadmap stage 6).
@@ -16,21 +22,14 @@ import { referenceDocument, scenarioBundle, settle } from './testing/scenario.js
  * The genuine test of whether the core stayed headless: the same document, the
  * same capabilities, the same control plane, and a second framework rendering
  * it with no changes to anything below the adapter.
+ *
+ * Standing the scenario up is `@leyline/core/testing`'s job — it is the same
+ * work in every adapter, so duplicating it here would say something is missing
+ * from the core. What is left below is the only part that is about Svelte:
+ * mounting a component and flushing its updates.
  */
 
-interface ScenarioContext extends Record<string, unknown> {
-  tier: string;
-  actionTwoReady: boolean;
-}
-
-const catalogue = [
-  ...FALLBACK_RENDERERS,
-  { id: 'DataTable', claims: ['datatable'], component: DataTable },
-  { id: 'CardGrid', description: 'Rows as cards.', claims: ['datatable'], component: CardGrid },
-  { id: 'MetricPanel', claims: ['metric-panel'], component: MetricPanel },
-  { id: 'Link', claims: ['link'], component: Link },
-  { id: 'Panel', claims: ['*'], component: Panel },
-];
+const components = { DataTable, CardGrid, MetricPanel, Link, Panel };
 
 interface Mounted {
   workflow: WorkflowInstance<ScenarioContext>;
@@ -39,34 +38,13 @@ interface Mounted {
 }
 
 async function open(context: Partial<ScenarioContext> = {}, register = true): Promise<Mounted> {
-  const workflow = createWorkflow<ScenarioContext>(
-    referenceDocument('workspace-onboarding'),
-    scenarioBundle() as CapabilityBundle,
-    {
-      mode: 'development',
-      renderers: catalogue,
-      initialContext: { tier: 'free', actionTwoReady: true, ...context } as ScenarioContext,
-    },
-  );
+  const workflow = await openScenario({
+    components,
+    fallbacks: FALLBACK_RENDERERS,
+    context,
+    register,
+  });
 
-  if (register) {
-    for (const [renderer, match, rank] of [
-      ['DataTable', { surfaceType: 'datatable' }, 10],
-      ['MetricPanel', { surfaceType: 'metric-panel' }, 10],
-      ['Link', { surfaceType: 'link' }, 10],
-      ['Panel', { target: 'region', nodeKind: 'hub' }, 10],
-      ['Panel', { target: 'region', nodeKind: 'step' }, 10],
-    ] as const) {
-      await workflow.control.apply(
-        await workflow.control.propose(
-          { kind: 'renderer.register', registry: 'default', renderer, match, rank },
-          { kind: 'application' },
-        ),
-      );
-    }
-  }
-
-  await settle();
   const container = document.createElement('div');
   document.body.append(container);
   const component = mount(WorkflowView, { target: container, props: { workflow } });
@@ -121,18 +99,7 @@ describe('the control plane reaches Svelte unchanged', () => {
     const view = await open();
     expect(find(view, 'actions')?.tagName).toBe('TABLE');
 
-    await view.workflow.control.apply(
-      await view.workflow.control.propose(
-        {
-          kind: 'renderer.register',
-          registry: 'default',
-          renderer: 'CardGrid',
-          match: { surfaceId: 'actions' },
-          rank: 80,
-        },
-        { kind: 'agent', label: 'card-grid-swap' },
-      ),
-    );
+    await swapActionsToCardGrid(view.workflow);
     await settle();
     flushSync();
 
@@ -145,16 +112,15 @@ describe('the control plane reaches Svelte unchanged', () => {
     const view = await open();
     expect(find(view, 'metrics')).not.toBeNull();
 
-    await view.workflow.control.apply(
-      await view.workflow.control.propose(
-        {
-          kind: 'surface.attach-guard',
-          node: 'workspace-hub',
-          surface: 'metrics',
-          guard: 'needsBilling',
-        },
-        { kind: 'agent' },
-      ),
+    await applyChange(
+      view.workflow,
+      {
+        kind: 'surface.attach-guard',
+        node: 'workspace-hub',
+        surface: 'metrics',
+        guard: 'needsBilling',
+      },
+      { kind: 'agent' },
     );
     await settle();
     flushSync();

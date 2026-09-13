@@ -1,4 +1,10 @@
-import { buildRenderPlan, type RegionPlan, type WorkflowInstance } from '@leyline/core';
+import {
+  buildRenderPlan,
+  regionIdentity,
+  surfaceIdentity,
+  type RegionPlan,
+  type WorkflowInstance,
+} from '@leyline/core';
 import { fallbackRegion, fallbackSurface } from './fallback.js';
 import type { RegionRenderer, RegionSlot, SurfaceRenderer, SurfaceSlot } from './types.js';
 
@@ -15,8 +21,7 @@ function renderRegion(plan: RegionPlan): Node {
   const render = (plan.renderer?.component as RegionRenderer | undefined) ?? fallbackRegion;
 
   const surfaces: SurfaceSlot[] = plan.surfaces.map((entry) => ({
-    id: entry.surface.id,
-    type: entry.surface.type,
+    ...surfaceIdentity(entry),
     render: () => {
       const draw = (entry.renderer?.component as SurfaceRenderer | undefined) ?? fallbackSurface;
       return draw({ surface: entry.surface });
@@ -24,21 +29,11 @@ function renderRegion(plan: RegionPlan): Node {
   }));
 
   const regions: RegionSlot[] = plan.children.map((child) => ({
-    id: child.id,
-    kind: child.kind,
-    ...(child.description !== undefined ? { description: child.description } : {}),
+    ...regionIdentity(child),
     render: () => renderRegion(child),
   }));
 
-  return render({
-    region: {
-      id: plan.id,
-      kind: plan.kind,
-      ...(plan.description !== undefined ? { description: plan.description } : {}),
-    },
-    surfaces,
-    regions,
-  });
+  return render({ region: regionIdentity(plan), surfaces, regions });
 }
 
 export interface MountOptions {

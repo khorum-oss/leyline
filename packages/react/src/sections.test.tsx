@@ -5,7 +5,7 @@ import { createWorkflow, type CapabilityBundle } from '@leyline/core';
 import { WorkflowView } from './WorkflowView.jsx';
 import { FALLBACK_RENDERERS } from './fallback.jsx';
 import type { RegionRenderer, SurfaceRenderer } from './types.js';
-import { referenceDocument, settle } from './testing/scenario.js';
+import { referenceDocument, settle } from '@leyline/core/testing';
 
 (globalThis as Record<string, unknown>)['IS_REACT_ACT_ENVIRONMENT'] = true;
 

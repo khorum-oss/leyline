@@ -1,4 +1,4 @@
-import type { ResolvedSurface } from '@leyline/core';
+import type { RegionRendererPropsOf, SurfaceRendererProps } from '@leyline/core';
 import type { Component } from 'svelte';
 
 /**
@@ -7,6 +7,10 @@ import type { Component } from 'svelte';
  * A surface renderer is a component taking `{ surface }`. A region renderer is
  * a component taking named slots and deciding where each goes — the same
  * contract the React adapter offers, in Svelte's shape (decision 0030).
+ *
+ * The slot is where Svelte differs from the other two: it carries the component
+ * and the props to mount it with, rather than a function that draws it, because
+ * that is how Svelte mounts something dynamic.
  */
 
 export interface SurfaceSlot {
@@ -25,15 +29,8 @@ export interface RegionSlot {
   readonly props: RegionRendererProps;
 }
 
-export interface SurfaceRendererProps {
-  readonly surface: ResolvedSurface;
-}
-
-export interface RegionRendererProps {
-  readonly region: { readonly id: string; readonly kind: string; readonly description?: string };
-  readonly surfaces: readonly SurfaceSlot[];
-  readonly regions: readonly RegionSlot[];
-}
+export type { SurfaceRendererProps };
+export type RegionRendererProps = RegionRendererPropsOf<SurfaceSlot, RegionSlot>;
 
 export type SurfaceRenderer = Component<SurfaceRendererProps>;
 export type RegionRenderer = Component<RegionRendererProps>;

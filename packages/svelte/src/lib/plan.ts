@@ -1,4 +1,4 @@
-import type { RegionPlan } from '@leyline/core';
+import { regionIdentity, surfaceIdentity, type RegionPlan } from '@leyline/core';
 import { FallbackRegion, FallbackSurface } from './fallback.js';
 import type {
   RegionRenderer,
@@ -23,8 +23,7 @@ export function toRegionSlot(plan: RegionPlan): RegionSlot {
   const surfaces: SurfaceSlot[] = plan.surfaces.map((entry) => {
     const props: SurfaceRendererProps = { surface: entry.surface };
     return {
-      id: entry.surface.id,
-      type: entry.surface.type,
+      ...surfaceIdentity(entry),
       component: (entry.renderer?.component as SurfaceRenderer | undefined) ?? FallbackSurface,
       props,
     };
@@ -33,18 +32,8 @@ export function toRegionSlot(plan: RegionPlan): RegionSlot {
   const regions: RegionSlot[] = plan.children.map((child) => toRegionSlot(child));
 
   return {
-    id: plan.id,
-    kind: plan.kind,
-    ...(plan.description !== undefined ? { description: plan.description } : {}),
+    ...regionIdentity(plan),
     component,
-    props: {
-      region: {
-        id: plan.id,
-        kind: plan.kind,
-        ...(plan.description !== undefined ? { description: plan.description } : {}),
-      },
-      surfaces,
-      regions,
-    },
+    props: { region: regionIdentity(plan), surfaces, regions },
   };
 }

@@ -1,24 +1,19 @@
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { createWorkflow, type CapabilityBundle, type WorkflowInstance } from '@leyline/core';
+import { createWorkflow, type WorkflowInstance } from '@leyline/core';
+import { referenceDocument, scenarioBundle, settle } from '@leyline/core/testing';
 
-/** The §2 scenario, hosted headlessly — what an agent connects to. */
+/**
+ * The §2 scenario, hosted headlessly — what an agent connects to.
+ *
+ * The document and the capability bundle come from `@leyline/core/testing`, so
+ * an agent is tested against the same fixture every adapter is. What this file
+ * adds is the part that is about agents rather than about the scenario: a
+ * published renderer catalogue with something worth swapping in it.
+ */
 
-const fixtures = join(
-  dirname(fileURLToPath(import.meta.url)),
-  '..',
-  '..',
-  '..',
-  'schema',
-  'src',
-  'fixtures',
-);
+import type { ScenarioContext } from '@leyline/core/testing';
 
-export interface ScenarioContext extends Record<string, unknown> {
-  tier: string;
-  actionTwoReady: boolean;
-}
+export type { ScenarioContext };
+export { settle };
 
 export const catalogue = [
   { id: 'DataTable', description: 'Rows as a table.', claims: ['datatable'], component: 'table' },
@@ -40,28 +35,9 @@ export const catalogue = [
 export async function hostWorkflow(
   overrides: Partial<Parameters<typeof createWorkflow>[2]> = {},
 ): Promise<WorkflowInstance<ScenarioContext>> {
-  const document = JSON.parse(
-    readFileSync(join(fixtures, 'workspace-onboarding.json'), 'utf8'),
-  ) as unknown;
-
   const workflow = createWorkflow<ScenarioContext>(
-    document,
-    {
-      guards: {
-        needsBilling: (c: ScenarioContext) => c.tier === 'paid' || c.tier === 'organization',
-        canRunActionTwo: (c: ScenarioContext) => c.actionTwoReady === true,
-      },
-      services: {
-        createWorkspace: async () => ({ id: 'ws_1' }),
-        submitBilling: async () => ({ settled: true }),
-        runActionTwo: async () => ({}),
-        runActionThree: async () => ({}),
-      },
-      dataSources: {
-        workspaceActions: () => [{ id: 'invite' }, { id: 'archive' }],
-        workspaceMetrics: () => ({ members: 3 }),
-      },
-    } as CapabilityBundle,
+    referenceDocument('workspace-onboarding'),
+    scenarioBundle(),
     {
       mode: 'development',
       renderers: catalogue,
@@ -84,8 +60,4 @@ export async function hostWorkflow(
     ),
   );
   return workflow;
-}
-
-export async function settle(times = 4): Promise<void> {
-  for (let i = 0; i < times; i += 1) await new Promise((resolve) => setTimeout(resolve, 0));
 }

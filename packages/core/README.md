@@ -30,7 +30,9 @@ Terms used below — **store contract**, **snapshot**, **resolved surface**,
   records, policy decisions, operation descriptors
 - The trace stream contract: envelope, kinds, sinks, redaction hook (AD15)
 - Structured errors that name the path and identifier at fault
-- `@leyline/core/testing` — a conformance double every adapter tests against
+- `@leyline/core/testing` — the conformance doubles and the §2 fixture every
+  adapter tests against, published so an adapter written outside this repository
+  is held to the same bar
 
 ```ts
 const workflow = createWorkflow(document, capabilityBundle, {
@@ -84,9 +86,21 @@ interpreter and restores the position it held.
 Persistence is the application's: store the records `log()` returns, hand them
 back to `hydrate()`, and each one meets policy again on the way in.
 
-## Next — delivery stage 3
+## Observability
 
-The React adapter's registry bridge and `WorkflowView`.
+One ordered stream carries everything — transitions, guard evaluations, service
+invocations, snapshot publications, proposals, policy decisions, applies, and
+reverts (AD15). With nothing attached it costs one boolean check, and hot paths
+ask `isEnabled` before building a payload, so an unobserved stream allocates
+nothing at all. [`docs/performance.md`](../../docs/performance.md) has the
+numbers and the tests that hold the claim.
+
+```ts
+workflow.trace.attach(consoleSink());
+workflow.trace.setEnabledKinds(['workflow.transition', 'control.applied']);
+workflow.trace.setRedaction((event) => redactPii(event));
+workflow.trace.recent(20);
+```
 
 ## The engine facade
 

@@ -42,7 +42,15 @@ export interface EngineInstance<TContext> {
 export interface EngineObserver {
   onTransition(from: readonly string[], to: readonly string[], event: WorkflowEvent): void;
   onGuard(name: string, result: boolean): void;
-  guardTracingEnabled(): boolean;
   onServiceInvoked(name: string, nodeId: string): void;
   onServiceSettled(name: string, nodeId: string, outcome: 'done' | 'error'): void;
+  /**
+   * Whether an event of this kind would reach anything.
+   *
+   * The engine asks before assembling an argument, never after. Both hot paths
+   * pay for their observation only when something is observing: a guard
+   * evaluation runs on every render pass, and describing a transition means
+   * flattening the active tree twice and comparing the results.
+   */
+  tracingEnabled(kind: string): boolean;
 }

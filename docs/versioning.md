@@ -27,12 +27,29 @@ A major bump means a document written for the old version no longer parses. Such
 a bump arrives with a migration path and a documented reason, never as a side
 effect of a refactor.
 
+### What a consumer does with a version it does not recognise
+
+`isSupportedSchemaVersion` is the check, and `SUPPORTED_MAJOR_VERSIONS` names
+what this build reads. A newer **minor** version stays readable — that is what
+additive means. A different **major** is refused rather than guessed at.
+
+Unknown vocabulary inside a readable document is a warning, never an error
+([decision 0017](decisions/0017-structure-errors-vocabulary-warnings.md)): the
+document validates, the parts this build understands run, and the parts it does
+not draw the fallback renderer and report `surface.unresolved`. The
+[migration guide](guides/migration.md) covers what an application does about it.
+
 ### The exported JSON Schema is a published artifact
 
 The JSON Schema exported from the Zod definitions (AD9) ships as a versioned,
 published artifact rather than an internal detail. Agents generating documents
 directly and the planned Kotlin DSL (brief §10) both validate against it, and
 both are entitled to a stable URL and a changelog.
+
+It carries the real constraints rather than a description of them — identifier
+and version rules travel as `pattern` — and the test suite compares the committed
+artifacts against a fresh export, so a Zod change that does not regenerate them
+fails the build instead of shipping a contract that disagrees with the code.
 
 ## Package versions
 
@@ -44,9 +61,40 @@ Package versions follow semver against the TypeScript and JavaScript API. A
 schema document version bump does not force a package major, and a package major
 does not imply a document version change; the two answer different questions.
 
+### What semver covers
+
+It covers the documented TypeScript and JavaScript API of each package: exported
+functions, their parameter and return types, the store contract, the change
+vocabulary, and the trace envelope.
+
+It does not cover anything reached by going around that API. Three things are
+explicitly internal, and a change to any of them is not a breaking change:
+
+- **`src/engine/`.** The only directory permitted to name XState (AD3), and none
+  of its types or concepts appear in the public API. Replacing the interpreter
+  is a design option this keeps open.
+- **The shape of a derived identifier.** Derived identifiers are stable within a
+  major version and opaque by contract (I5). Parsing one is not a supported use,
+  and neither is depending on the hash.
+- **Trace payload fields beyond the envelope.** `ts`, `seq`, `kind`,
+  `correlationId`, and `initiator` are the contract. A `data` payload may gain
+  fields, and an unknown `kind` is data a later build emits, not a fault.
+
 ## Deprecation
 
 A deprecated API keeps working for at least one minor release, carries an
 `@deprecated` TSDoc tag naming its replacement, and emits nothing at runtime —
 warnings belong on the trace stream, where a sink can decide what to do with
 them.
+
+Nothing is removed in a minor release, including something deprecated in that
+same release. Removal waits for the next major, which is what makes the
+`@deprecated` tag a schedule rather than a threat.
+
+## Pre-1.0
+
+The packages are pre-1.0. Until `@leyline/core` reaches 1.0.0, a minor bump may
+carry a breaking API change, which is what semver says a `0.x` minor means. The
+schema document version is already `1.0.0` and is governed by the rules above
+regardless — a document you write today is one this project has committed to
+reading.
