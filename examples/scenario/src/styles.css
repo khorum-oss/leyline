@@ -1,3 +1,12 @@
+/*
+ * One stylesheet for all three UI examples.
+ *
+ * They look identical on purpose: when the React, Svelte, and plain-DOM
+ * versions of the same document render the same page, the only honest
+ * explanation is that the document decided what the page holds and the
+ * framework decided nothing at all.
+ */
+
 :root {
   color-scheme: light dark;
   font-family: system-ui, sans-serif;

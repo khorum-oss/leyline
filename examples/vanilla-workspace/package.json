@@ -1,8 +1,8 @@
 {
-  "name": "@leyline-examples/react-workspace",
+  "name": "@leyline-examples/vanilla-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "The brief's \u00a72 scenario, running in a React application.",
+  "description": "The brief's §2 scenario with no framework at all — the same document, rendered straight into the DOM.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,14 +13,9 @@
   "dependencies": {
     "@leyline-examples/scenario": "workspace:*",
     "@leyline/core": "workspace:*",
-    "@leyline/react": "workspace:*",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@leyline/vanilla": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.0.4",
     "typescript": "^5.9.3",
     "vite": "^7.1.14"
   }

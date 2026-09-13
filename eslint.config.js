@@ -34,6 +34,9 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/.tsbuild/**',
+      // svelte-package's intermediate build, including the declarations it
+      // generates from `.svelte` files. Generated, gitignored, and not ours.
+      '**/.svelte-kit/**',
       '**/node_modules/**',
       '**/coverage/**',
       '**/*.tsbuildinfo',

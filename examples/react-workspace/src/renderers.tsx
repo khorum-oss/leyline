@@ -70,3 +70,7 @@ export const Panel: RegionRenderer = ({ region, surfaces, regions }) => (
     ))}
   </section>
 );
+
+export const TextBlock: SurfaceRenderer = ({ surface }) => (
+  <p className="text">{String(surface.props['value'] ?? '')}</p>
+);

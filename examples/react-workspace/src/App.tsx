@@ -1,20 +1,12 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { WorkflowView } from '@leyline/react';
 import type { TraceEvent, WorkflowInstance } from '@leyline/core';
+import { HIDE_METRICS_ON_FREE, SWAP_TO_CARDS, applyChange } from '@leyline-examples/scenario';
 import { start, type WorkspaceContext } from './workflow.js';
 
 type Workflow = WorkflowInstance<WorkspaceContext>;
 
 const AGENT = { kind: 'agent', label: 'demo' } as const;
-
-/** Every button below is a proposal, a validation, and an apply. */
-async function change(workflow: Workflow, description: unknown): Promise<string> {
-  const proposal = await workflow.control.propose(description, AGENT);
-  const result = await workflow.control.validate(proposal);
-  if (!result.ok) return result.issues.map((issue) => issue.message).join(' ');
-  const record = await workflow.control.apply(proposal);
-  return `applied ${record.id}`;
-}
 
 export function App(): ReactElement {
   const [workflow, setWorkflow] = useState<Workflow | undefined>();
@@ -37,8 +29,10 @@ export function App(): ReactElement {
 
   if (!workflow) return <p>Starting…</p>;
 
+  // Every button below is a proposal, a validation, and an apply — reaching the
+  // same control plane an agent reaches, and meeting the same policy.
   const act = (description: unknown) => () => {
-    void change(workflow, description).then(setNote);
+    void applyChange(workflow, description, AGENT).then(setNote);
   };
 
   return (
@@ -61,28 +55,11 @@ export function App(): ReactElement {
           </select>
         </label>
 
-        <button
-          type="button"
-          onClick={act({
-            kind: 'renderer.register',
-            registry: 'default',
-            renderer: 'CardGrid',
-            match: { surfaceId: 'actions' },
-            rank: 80,
-          })}
-        >
+        <button type="button" onClick={act(SWAP_TO_CARDS)}>
           Swap the table for cards
         </button>
 
-        <button
-          type="button"
-          onClick={act({
-            kind: 'surface.attach-guard',
-            node: 'workspace-hub',
-            surface: 'metrics',
-            guard: 'needsBilling',
-          })}
-        >
+        <button type="button" onClick={act(HIDE_METRICS_ON_FREE)}>
           Hide metrics on free tiers
         </button>
 

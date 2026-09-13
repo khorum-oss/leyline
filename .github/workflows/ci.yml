@@ -48,11 +48,20 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # The example is not part of the library — nothing under packages/ refers
-      # to it and it is never published — but an example that stops compiling is
-      # worse than no example, so CI builds it.
-      - name: Example app
+      # The examples are not part of the library — nothing under packages/ refers
+      # to them and they are never published — but an example that stops
+      # compiling is worse than no example, so CI builds all of them.
+      - name: Example apps
         run: pnpm --filter "./examples/**" run typecheck && pnpm --filter "./examples/**" run build
+
+      # The agent example is the one that can actually be *run* headlessly, and
+      # running it exercises the whole control plane through the same interface
+      # a model uses: discovery, two refusals, both §2 changes, a revert, and the
+      # audit trail. No API key and no network — that is the point of it.
+      - name: Agent example
+        run: pnpm --filter @leyline-examples/agent-cli run demo
+        env:
+          NO_COLOR: '1'
 
   invariants:
     name: Security invariants
