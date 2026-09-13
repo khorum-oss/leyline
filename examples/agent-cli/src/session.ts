@@ -1,7 +1,12 @@
 import { createAgentSurface, type AgentSurface } from '@leyline/agent';
-import { allowKinds, forInitiator, walkRegions, type Policy } from '@leyline/core';
+import {
+  allowKinds,
+  forInitiator,
+  walkRegions,
+  type Policy,
+  type WorkflowInstance,
+} from '@leyline/core';
 import { start, type WorkspaceContext } from '@leyline-examples/scenario';
-import type { WorkflowInstance } from '@leyline/core';
 
 /**
  * The application side of the demonstration.

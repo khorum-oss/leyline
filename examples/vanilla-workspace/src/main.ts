@@ -108,4 +108,4 @@ root.querySelector<HTMLSelectElement>('#tier')?.addEventListener('change', (even
   void restart((event.target as HTMLSelectElement).value);
 });
 
-void restart('paid');
+await restart('paid');

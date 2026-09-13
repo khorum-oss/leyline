@@ -68,6 +68,71 @@ export async function runChat(session: Session, apiKey: string): Promise<void> {
   rl.close();
 }
 
+/** What Claude said this turn: its reasoning summary, then its prose. */
+function printAssistantTurn(content: readonly Anthropic.ContentBlock[]): void {
+  for (const block of content) {
+    if (block.type === 'thinking' && block.thinking !== '') {
+      console.log(dim(`\n  ${block.thinking.replaceAll('\n', '\n  ')}`));
+    }
+    if (block.type === 'text') console.log(`\n${bold('claude')} ${block.text}`);
+  }
+}
+
+/**
+ * Runs every tool call in one turn and collects the results.
+ *
+ * Each goes through the same `handle` the scripted demo and the REPL use. A
+ * refusal comes back as a tool result the model can read and act on, never as a
+ * thrown error — the call worked; the change was rejected.
+ */
+async function runToolCalls(
+  session: Session,
+  calls: readonly Anthropic.ToolUseBlock[],
+): Promise<Anthropic.ToolResultBlockParam[]> {
+  const results: Anthropic.ToolResultBlockParam[] = [];
+  for (const call of calls) {
+    const result = await session.surface.handle(call.name, call.input);
+    printResult(call.name, result);
+    results.push({
+      type: 'tool_result',
+      tool_use_id: call.id,
+      content: JSON.stringify(result.ok ? result.value : result.error),
+    });
+  }
+  return results;
+}
+
+/** One request. Returns undefined when the turn cannot continue. */
+async function ask(
+  client: Anthropic,
+  tools: Anthropic.Tool[],
+  messages: Anthropic.MessageParam[],
+): Promise<Anthropic.Message | undefined> {
+  let response: Anthropic.Message;
+  try {
+    response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 16000,
+      system: SYSTEM,
+      thinking: { type: 'adaptive', display: 'summarized' },
+      tools,
+      messages,
+    });
+  } catch (error) {
+    console.log(red(describeApiError(error)));
+    return undefined;
+  }
+
+  if (response.stop_reason === 'refusal') {
+    const why = response.stop_details?.explanation ?? 'no reason given';
+    console.log(red(`The model declined: ${why}`));
+    return undefined;
+  }
+
+  return response;
+}
+
+/** The agentic loop: ask, run whatever tools came back, ask again. */
 async function converse(
   client: Anthropic,
   tools: Anthropic.Tool[],
@@ -75,35 +140,10 @@ async function converse(
   session: Session,
 ): Promise<void> {
   for (;;) {
-    let response: Anthropic.Message;
-    try {
-      response = await client.messages.create({
-        model: MODEL,
-        max_tokens: 16000,
-        system: SYSTEM,
-        thinking: { type: 'adaptive', display: 'summarized' },
-        tools,
-        messages,
-      });
-    } catch (error) {
-      console.log(red(describeApiError(error)));
-      return;
-    }
+    const response = await ask(client, tools, messages);
+    if (response === undefined) return;
 
-    if (response.stop_reason === 'refusal') {
-      console.log(
-        red(`The model declined: ${response.stop_details?.explanation ?? 'no reason given'}`),
-      );
-      return;
-    }
-
-    for (const block of response.content) {
-      if (block.type === 'thinking' && block.thinking !== '') {
-        console.log(dim(`\n  ${block.thinking.split('\n').join('\n  ')}`));
-      }
-      if (block.type === 'text') console.log(`\n${bold('claude')} ${block.text}`);
-    }
-
+    printAssistantTurn(response.content);
     messages.push({ role: 'assistant', content: response.content });
 
     const calls = response.content.filter(
@@ -111,21 +151,7 @@ async function converse(
     );
     if (calls.length === 0) return;
 
-    // Every call goes through the same `handle` the scripted demo and the REPL
-    // use. A refusal comes back as a tool result the model can read and act on,
-    // never as a thrown error — the call worked; the change was rejected.
-    const results: Anthropic.ToolResultBlockParam[] = [];
-    for (const call of calls) {
-      const result = await session.surface.handle(call.name, call.input);
-      printResult(call.name, result);
-      results.push({
-        type: 'tool_result',
-        tool_use_id: call.id,
-        content: JSON.stringify(result.ok ? result.value : result.error),
-      });
-    }
-
-    messages.push({ role: 'user', content: results });
+    messages.push({ role: 'user', content: await runToolCalls(session, calls) });
   }
 }
 

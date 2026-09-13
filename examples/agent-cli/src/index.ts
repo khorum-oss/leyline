@@ -69,10 +69,9 @@ async function main(): Promise<number> {
   return 1;
 }
 
-main().then(
-  (code) => process.exit(code),
-  (error: unknown) => {
-    console.error(error);
-    process.exit(1);
-  },
-);
+try {
+  process.exit(await main());
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}

@@ -34,11 +34,14 @@ export interface StartOptions {
   readonly policy?: Policy;
 }
 
+/** Who a change is attributed to when the caller does not say. */
+const APPLICATION: Initiator = { kind: 'application' };
+
 /** Propose and apply in one step — the pair every control-plane caller writes. */
 export async function applyChange(
   workflow: WorkflowInstance<WorkspaceContext>,
   change: unknown,
-  initiator: Initiator = { kind: 'application' },
+  initiator: Initiator = APPLICATION,
 ): Promise<string> {
   const proposal = await workflow.control.propose(change, initiator);
   const validation = await workflow.control.validate(proposal);

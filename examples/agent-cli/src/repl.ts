@@ -25,8 +25,43 @@ const HELP = `
   ${bold('help')} / ${bold('exit')}
 `;
 
+/** The built-in commands. Anything not named here is treated as a tool call. */
+function builtins(session: Session): Map<string, (argument: string) => void> {
+  const { surface, workflow } = session;
+
+  return new Map([
+    ['help', (): void => console.log(HELP)],
+    ['view', (): void => console.log(renderText(workflow))],
+    [
+      'tools',
+      (): void => {
+        for (const tool of surface.tools()) {
+          const mark = tool.mutates ? bold('writes') : dim('reads ');
+          console.log(`  ${mark}  ${tool.name}`);
+          console.log(dim(`          ${tool.description}`));
+        }
+      },
+    ],
+    [
+      'schema',
+      (name: string): void => {
+        const tool = surface.tools().find((candidate) => candidate.name === name);
+        console.log(tool ? JSON.stringify(tool.inputSchema, null, 2) : `No tool named "${name}".`);
+      },
+    ],
+  ]);
+}
+
+/** Splits `leyline_apply {"id":"…"}` into a name and whatever follows it. */
+function split(line: string): { name: string; argument: string } {
+  const space = line.indexOf(' ');
+  if (space === -1) return { name: line, argument: '' };
+  return { name: line.slice(0, space), argument: line.slice(space + 1).trim() };
+}
+
 export async function runRepl(session: Session): Promise<void> {
   const { surface, workflow } = session;
+  const commands = builtins(session);
   const rl = createInterface({ input: stdin, output: stdout });
 
   console.log(bold('\nLeyline agent surface — interactive'));
@@ -39,49 +74,33 @@ export async function runRepl(session: Session): Promise<void> {
     if (line === '') continue;
     if (line === 'exit' || line === 'quit') break;
 
-    if (line === 'help') {
-      console.log(HELP);
+    const { name, argument } = split(line);
+
+    const builtin = commands.get(name);
+    if (builtin !== undefined) {
+      builtin(argument);
       continue;
     }
 
-    if (line === 'view') {
-      console.log(renderText(workflow));
-      continue;
-    }
-
-    if (line === 'tools') {
-      for (const tool of surface.tools()) {
-        const mark = tool.mutates ? bold('writes') : dim('reads ');
-        console.log(`  ${mark}  ${tool.name}`);
-        console.log(dim(`          ${tool.description}`));
-      }
-      continue;
-    }
-
-    if (line.startsWith('schema ')) {
-      const wanted = line.slice('schema '.length).trim();
-      const tool = surface.tools().find((candidate) => candidate.name === wanted);
-      console.log(tool ? JSON.stringify(tool.inputSchema, null, 2) : `No tool named "${wanted}".`);
-      continue;
-    }
-
-    const space = line.indexOf(' ');
-    const name = space === -1 ? line : line.slice(0, space);
-    const rest = space === -1 ? '' : line.slice(space + 1).trim();
-
-    let input: unknown;
-    if (rest !== '') {
-      try {
-        input = JSON.parse(rest);
-      } catch (error) {
-        console.log(`Could not parse that as JSON: ${String(error)}`);
-        continue;
-      }
-    }
+    const input = parseInput(argument);
+    if (input === INVALID) continue;
 
     printResult(name, await surface.handle(name, input));
     console.log(dim('\n' + renderText(workflow)));
   }
 
   rl.close();
+}
+
+/** Distinguishes "no argument" from "an argument that would not parse". */
+const INVALID = Symbol('invalid');
+
+function parseInput(argument: string): unknown {
+  if (argument === '') return undefined;
+  try {
+    return JSON.parse(argument);
+  } catch (error) {
+    console.log(`Could not parse that as JSON: ${String(error)}`);
+    return INVALID;
+  }
 }

@@ -98,7 +98,17 @@ export default tseslint.config(
      * profile actually failed a build over, rather than importing all 279 of
      * the plugin's rules and then arguing with them.
      */
-    files: ['packages/*/src/**/*.ts', 'packages/*/src/**/*.tsx'],
+    //
+    // The examples are in scope too. They are not published, but they are the
+    // first thing a reader opens, and SonarCloud analyses them whether or not
+    // this config does — finding a complexity problem there after a push rather
+    // than before one is a worse way to learn about it.
+    files: [
+      'packages/*/src/**/*.ts',
+      'packages/*/src/**/*.tsx',
+      'examples/*/src/**/*.ts',
+      'examples/*/src/**/*.tsx',
+    ],
     // Test files live outside the package tsconfigs, so the project service
     // cannot type them. They are covered by the untyped rules above.
     ignores: ['**/*.test.ts', '**/*.test.tsx', '**/testing/**'],
