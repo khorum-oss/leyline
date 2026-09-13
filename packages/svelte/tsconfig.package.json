@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+
+  // The config `svelte-package` hands to svelte2tsx to emit declarations, and it
+  // has to be named explicitly on the command line. Without `--tsconfig`,
+  // svelte2tsx looks for one inside the *input* directory, fails to find
+  // `src/lib/tsconfig.json`, and the entire types step fails silently — the
+  // package still builds, still publishes, and every TypeScript consumer of it
+  // gets `any`.
+  //
+  // Three differences from `tsconfig.json` earn their place:
+  //   - `include` covers `.svelte` as well as `.ts`, or the components emit no
+  //     declarations and only the plain modules get typed.
+  //   - `composite` is off: this is a one-shot emit, not part of the build graph.
+  //   - `paths` is cleared so imports resolve to built packages rather than to
+  //     workspace sources, which is what a consumer will see.
+  //   - `noEmitOnError` is off. svelte2tsx type-checks `.svelte` files through
+  //     generated shims, and a complaint from that pass would otherwise suppress
+  //     every declaration in the package. Correctness is gated by `tsc --build`
+  //     and by `svelte-check` in the examples; this pass only emits.
+  "compilerOptions": {
+    "composite": false,
+    "incremental": false,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "noEmitOnError": false,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "paths": {}
+  },
+  "include": ["src/lib/**/*"]
+}

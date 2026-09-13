@@ -158,17 +158,34 @@ bytes, and catches a mistyped transition target at compile time. The
 - [Versioning](docs/versioning.md) — document versions and package versions
 - [Performance](docs/performance.md) — what tracing costs when nobody reads it
 - [Security](SECURITY.md) — threat model and the seven invariants
+- [Examples](examples) — the same scenario in React, Svelte, plain DOM, and
+  driven by an agent
 - [Contributing](CONTRIBUTING.md) — setup, commands, and the merge gates
 
 ## See it running
 
-[`examples/react-workspace`](examples/react-workspace) is the scenario above as
-a React application, with controls that drive the control plane the way an agent
-would.
+[`examples/`](examples) holds the scenario above four times over. Three of them
+render **the same document** through the same control plane, sharing everything
+except the part that is genuinely about their framework — which is the point.
 
 ```bash
-pnpm --filter @leyline-examples/react-workspace dev
+pnpm --filter @leyline-examples/react-workspace dev     # React
+pnpm --filter @leyline-examples/svelte-workspace dev    # Svelte
+pnpm --filter @leyline-examples/vanilla-workspace dev   # no framework at all
 ```
+
+The fourth needs no browser. [`agent-cli`](examples/agent-cli) drives the same
+workflow through `@leyline/agent` — scripted, interactive, or by a real model:
+
+```bash
+pnpm --filter @leyline-examples/agent-cli demo   # no API key, no network
+pnpm --filter @leyline-examples/agent-cli repl   # type tool calls yourself
+pnpm --filter @leyline-examples/agent-cli chat   # needs ANTHROPIC_API_KEY
+```
+
+The scripted run is what CI runs. Two of its steps are refusals — one from the
+renderer catalogue, one from the deployment's policy — and they are the
+interesting ones.
 
 ## Development
 
