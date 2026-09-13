@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": "src/lib",
     "outDir": ".tsbuild",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "tsBuildInfoFile": ".tsbuild/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "dist"],
+  "include": ["src/lib/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "dist"],
   "references": [
     {
       "path": "../core"

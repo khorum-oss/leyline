@@ -329,6 +329,20 @@ A framework-neutral function on the snapshot returning props an adapter spreads
 onto a native element — table sorting, row selection, focus management. The core
 ships behaviour this way and never ships components (AD7, after Zag.js).
 
+### Render plan
+
+What the core hands an adapter: for each active **region**, what claims it, its
+**resolved surfaces** with what claims each, and its active children, in
+**reading order**.
+
+A snapshot of a decision rather than a rendering — it holds identifiers,
+surfaces, and whatever opaque component each registry entry carries, and never
+calls one. `buildRenderPlan` produces it.
+
+It lives in the core because walking a snapshot and querying a registry is not
+framework work, which writing a second and third adapter made obvious
+([decision 0033](decisions/0033-render-plan.md)).
+
 ### Adapter
 
 A package bridging the **store contract** to one framework's reactivity:

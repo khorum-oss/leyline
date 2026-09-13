@@ -30,6 +30,14 @@ export {
   type RenderTarget,
 } from './registry.js';
 
+export {
+  buildRenderPlan,
+  walkPlan,
+  type Resolver,
+  type RegionPlan,
+  type SurfacePlan,
+} from './render-plan.js';
+
 export { ControlPlane, type ControlPlaneOptions, type ReplayFailure } from './control/plane.js';
 export {
   allow,

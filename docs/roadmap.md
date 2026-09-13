@@ -47,22 +47,21 @@ either one late costs a redesign; finding it on schedule costs a refactor.
 
 ## Current position
 
-**Stage 5 complete.** The TypeScript DSL emits the canonical document, and the
-§2 workflow authored through it is byte-identical to the hand-written fixture —
-which is AD1's claim turned into an assertion.
+**Stage 6 complete.** Three adapters now render the same document: React,
+Svelte, and plain DOM. Brief §2 items 6 and 7 run against the Svelte
+application through `@leyline/agent` **with no changes to that package** — which
+was the actual exit criterion, since needing one would have meant the control
+plane was carrying framework knowledge.
 
-Node references, capability names, and context fields are checked at the call
-site by accumulating what the workflow declared into type unions. The tests for
-that are the `@ts-expect-error` directives themselves: the typecheck project
-includes them, so a directive with nothing to suppress fails the build.
+The stage did what it was designed to do: it found duplication. The walk over
+the active tree, the registry questions, and the fallback selection were about
+to be written a third time, so they moved into the core as a **render plan**
+([decision 0033](decisions/0033-render-plan.md)). The React adapter lost its
+walk and kept all eighteen of its tests passing unchanged.
 
-[Decision 0032](decisions/0032-canonical-form.md) settles what canonical form
-is — the authored document, not the normalized one — which the DSL forced by
-being the first second producer.
-
-**Stage 6** is next: the Svelte and vanilla adapters. That stage is designed to
-find duplication, and anything both adapters need moves into the core rather
-than being written twice.
+**Stage 7** is the last: `SECURITY.md` reconciled against the shipped invariant
+suites, the versioning policy, and the authoring, agent-integration, and
+migration guides. Then v1 is done.
 
 Post-v1: `@leyline/devtools` and `@leyline/otel`, plus the Kotlin authoring
 track described in brief §10, which coordinates through the exported JSON Schema
