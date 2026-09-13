@@ -76,6 +76,52 @@ describe('an agent discovers what it is looking at', () => {
     await connected.close();
   });
 
+  /**
+   * A real host reads the schema to decide how to encode the argument.
+   *
+   * Claude Code sent `change` as a JSON *string* because the embedded subschema
+   * declared `$ref` and `$defs` but no `type`, so nothing told it the value was
+   * an object. The change then failed to parse and came back as the
+   * `context.patch` placeholder — a valid-looking change that was never the one
+   * sent, which is a far worse answer than a refusal.
+   *
+   * Both tests below cover the two halves of that: say it is an object, and
+   * accept the string from a host that stringifies it anyway. Neither could
+   * fail before, because every other test here builds `change` in-process and
+   * so never consults the published schema at all.
+   */
+  it('says the change parameter is an object, so a host does not stringify it', async () => {
+    const connected = await connect();
+    const { tools } = await connected.client.listTools();
+
+    const propose = tools.find((tool) => tool.name === 'leyline_propose');
+    const change = (propose?.inputSchema as { properties: Record<string, { type?: string }> })
+      .properties['change'];
+
+    expect(change?.type).toBe('object');
+    await connected.close();
+  });
+
+  it('parses a change that arrived as a string', async () => {
+    const connected = await connect();
+
+    const proposed = await call(connected, 'leyline_propose', {
+      change: JSON.stringify({
+        kind: 'renderer.register',
+        registry: 'default',
+        renderer: 'CardGrid',
+        match: { surfaceId: 'actions' },
+        rank: 80,
+      }),
+    });
+
+    // The placeholder is what a failed parse looks like; the real change is
+    // what a working one looks like.
+    expect(proposed.change.kind).toBe('renderer.register');
+    expect(proposed.change.renderer).toBe('CardGrid');
+    await connected.close();
+  });
+
   it('finds the actions table and its renderer with no access to source', async () => {
     const connected = await connect();
     const described = await call(connected, 'leyline_describe');

@@ -47,3 +47,4 @@ dist/
 
 # svelte-package writes its intermediate build here before emitting dist/
 .svelte-kit/
+.idea

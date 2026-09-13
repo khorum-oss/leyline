@@ -63,6 +63,15 @@ jobs:
         env:
           NO_COLOR: '1'
 
+      # The MCP mode is the one a local claude/codex drives, and the part of it
+      # that is not already covered by packages/agent's adapter tests is the
+      # wiring: that the process starts, that stdout carries clean JSON-RPC and
+      # no stray logging, and that a refusal survives a real pipe as data.
+      - name: Agent example over MCP
+        run: pnpm --filter @leyline-examples/agent-cli run smoke
+        env:
+          NO_COLOR: '1'
+
   invariants:
     name: Security invariants
     runs-on: ubuntu-latest

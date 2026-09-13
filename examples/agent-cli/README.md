@@ -4,7 +4,7 @@ Brief §2 items 6 and 7 — _swap the actions table for a card grid_, _hide the
 metrics panel for free tiers_ — carried out by an agent with **no access to
 application source**.
 
-Three ways to run it. All three call `surface.handle(name, input)` and nothing
+Four ways to run it. All four call `surface.handle(name, input)` and nothing
 else, which is the claim worth testing: if a scripted run and a language model
 needed different code paths, `@leyline/agent` would have failed at its one job.
 
@@ -53,7 +53,65 @@ Typing tool calls by hand is the cheapest way to see that an agent gets no
 special channel — and the cheapest way to try something and watch the control
 plane refuse it.
 
+## With a local CLI — a real model, still no API key
+
+If you already have `claude` or `codex` installed, they are already signed in
+and they already speak MCP. Point one at this server and a real model drives the
+control plane without an API key or a billing account:
+
+```bash
+claude
+```
+
+That is the whole of it. [`.mcp.json`](../../.mcp.json) at the repository root
+names the server, so the `leyline_*` tools are there the moment Claude Code
+starts anywhere in this repo. Then ask in English:
+
+```
+> swap the actions table for something easier to scan
+> hide the metrics panel unless the workspace is paying
+> actually, put the table back
+```
+
+For codex, the equivalent lives in `~/.codex/config.toml`, which is global
+rather than project-local and so needs to be told where the repository is:
+
+```toml
+[mcp_servers.leyline]
+command = "pnpm"
+args = ["--silent", "--filter", "@leyline-examples/agent-cli", "mcp"]
+cwd = "/path/to/leyline"
+```
+
+To run the server by hand — or to wire up an editor that wants a command rather
+than a config file:
+
+```bash
+pnpm --filter @leyline-examples/agent-cli mcp
+```
+
+The adapter is [`serveOverMcp`](../../packages/agent/src/mcp.ts) and this mode
+adds no second one. It publishes the operations with their JSON Schema passed
+through verbatim, which leaves [`src/mcp.ts`](src/mcp.ts) responsible for a
+transport and nothing else — the point being that a second tool-calling format
+cost the library no second surface.
+
+Two things are worth knowing if you change this mode:
+
+**Under stdio, stdout _is_ the protocol.** One `console.log` lands in the middle
+of a JSON-RPC frame and the client disconnects with a parse error that names
+nothing useful. Every human-facing byte in this mode goes to stderr, which both
+CLIs surface as server logs.
+
+**A refusal still arrives as data.** `isError` stays false and the rule that was
+violated comes back in the result, exactly as it does in the other three modes.
+The call worked; the change was rejected. An agent that reads it reconsiders the
+change rather than retrying the call.
+
 ## With a real model
+
+If you would rather read a tool-use loop than configure a CLI, this mode is the
+one to read — it is the same surface again, driven directly:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-…
@@ -116,4 +174,6 @@ that wants agents has to say what they may do. See
 
 It is not part of the library. Nothing under `packages/` refers to it, it is
 `private` so it is never published, and the release pipeline ignores it. CI runs
-the scripted mode so it cannot rot quietly.
+the scripted mode, and `pnpm smoke` — which starts the MCP server, talks to it
+over a real pipe, and checks that a refusal survives the transport as data — so
+neither can rot quietly.
