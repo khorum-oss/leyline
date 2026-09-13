@@ -14,6 +14,7 @@
   },
   "include": [
     "packages/*/src/**/*.test.ts",
+    "packages/*/src/**/*.bench.ts",
     "packages/*/src/**/*.test.tsx",
     "tests/**/*.ts",
     "packages/*/vitest.config.ts",

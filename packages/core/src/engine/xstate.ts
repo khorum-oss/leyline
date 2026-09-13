@@ -154,7 +154,7 @@ export function createEngine<TContext extends Record<string, unknown>>(
       name,
       ({ context }: { context: TContext }) => {
         const result = (predicate as (c: TContext) => boolean)(context);
-        if (observer.guardTracingEnabled()) observer.onGuard(name, result);
+        if (observer.tracingEnabled('guard.evaluated')) observer.onGuard(name, result);
         return result;
       },
     ]),
@@ -204,7 +204,12 @@ export function createEngine<TContext extends Record<string, unknown>>(
   ];
 
   const read = (snapshot: { value: StateValue; context: TContext; status: string }): void => {
-    const previous = flatten(active);
+    // Flattening the tree twice and comparing exists only to describe the
+    // transition. Nothing else needs it, so nothing pays for it when the stream
+    // has no reader (AD15: unobserved tracing costs one boolean check).
+    const tracing = observer.tracingEnabled('workflow.transition');
+    const previous = tracing ? flatten(active) : undefined;
+
     const roots = activeFrom(snapshot.value, rootNodes, byId, childrenOf);
     const next = roots[0] ?? active;
     active = next;
@@ -212,9 +217,11 @@ export function createEngine<TContext extends Record<string, unknown>>(
     context = snapshot.context;
     status = workflowStatus(snapshot.status);
 
-    const current = flatten(active);
-    if (previous.join('|') !== current.join('|')) {
-      observer.onTransition(previous, current, lastEvent);
+    if (previous !== undefined) {
+      const current = flatten(active);
+      if (previous.join('|') !== current.join('|')) {
+        observer.onTransition(previous, current, lastEvent);
+      }
     }
     for (const listener of [...listeners]) listener();
   };

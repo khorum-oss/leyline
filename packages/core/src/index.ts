@@ -6,11 +6,12 @@
  * the store contract here to its own reactivity; anything an adapter would have
  * to duplicate belongs in this package instead (G5).
  *
- * Delivery stage 2 fills in: the interpreter over the XState facade, the store,
- * capability binding and verification, control-plane-addressable registries,
- * the trace emitter with ring-buffer and console sinks, the change log derived
- * from the trace stream, propose/validate/apply/revert, policy and redaction
- * hooks, and the AD14 invariant test suites.
+ * What is here: the interpreter over the XState facade, the store, capability
+ * binding and verification, control-plane-addressable registries, the trace
+ * emitter with ring-buffer and console sinks, the change log kept honest
+ * against the trace stream, propose/validate/apply/revert, policy and
+ * redaction hooks, the render plan every adapter draws from, and the AD14
+ * invariant suites that try to break all of it.
  */
 
 export { createWorkflow } from './workflow.js';
@@ -29,6 +30,18 @@ export {
   type RegionDescriptor,
   type RenderTarget,
 } from './registry.js';
+
+export {
+  buildRenderPlan,
+  walkPlan,
+  type Resolver,
+  type RegionPlan,
+  type SurfacePlan,
+  type SurfaceRendererProps,
+  type RegionRendererPropsOf,
+  regionIdentity,
+  surfaceIdentity,
+} from './render-plan.js';
 
 export { ControlPlane, type ControlPlaneOptions, type ReplayFailure } from './control/plane.js';
 export {

@@ -20,17 +20,18 @@ surprises.
 
 ## Everyday commands
 
-| Command                              | What it does                                |
-| ------------------------------------ | ------------------------------------------- |
-| `pnpm test`                          | Runs every package's tests once             |
-| `pnpm test:watch`                    | Watches                                     |
-| `pnpm --filter @leyline/schema test` | One package                                 |
-| `pnpm typecheck`                     | Project-wide `tsc --build`                  |
-| `pnpm lint` / `pnpm lint:fix`        | ESLint                                      |
-| `pnpm format`                        | Prettier, writing                           |
-| `pnpm boundaries`                    | Framework-free packages stay framework-free |
-| `pnpm build`                         | Builds every package with tsup              |
-| `pnpm changeset`                     | Records a release note for a change         |
+| Command                              | What it does                                            |
+| ------------------------------------ | ------------------------------------------------------- |
+| `pnpm test`                          | Runs every package's tests once                         |
+| `pnpm test:watch`                    | Watches                                                 |
+| `pnpm --filter @leyline/schema test` | One package                                             |
+| `pnpm typecheck`                     | Project-wide `tsc --build`                              |
+| `pnpm lint` / `pnpm lint:fix`        | ESLint                                                  |
+| `pnpm format`                        | Prettier, writing                                       |
+| `pnpm boundaries`                    | Framework-free packages stay framework-free             |
+| `pnpm build`                         | Builds every package with tsup                          |
+| `pnpm bench`                         | Observation-cost benchmarks (see `docs/performance.md`) |
+| `pnpm changeset`                     | Records a release note for a change                     |
 
 Tests resolve `@leyline/*` to workspace sources through the alias map in
 `vitest.shared.ts`, so no build step sits between an edit and a test run.
@@ -51,6 +52,14 @@ Three gates deserve advance attention:
 2. **Adversarial tests.** A change to the schema or the control plane arrives
    with a test naming the invariant it protects (`SECURITY.md`, I1–I7). A change
    without one does not merge.
+
+   Put the invariant in the `describe` or `it` title — `I3` on its own, in
+   parentheses or before an em dash. `tests/security.test.ts` reads those titles
+   and holds `SECURITY.md` to them in both directions, so a new suite means
+   adding its path to the `_Suites:_` line of the invariant it protects. A suite
+   in a package the CI project filter does not list fails that test too, rather
+   than silently never running.
+
 3. **A changeset.** Anything altering a published package's behaviour or API
    needs `pnpm changeset`.
 4. **The glossary.** A change introducing a term — a surface type, a node kind,
@@ -58,6 +67,11 @@ Three gates deserve advance attention:
    [`docs/glossary.md`](docs/glossary.md) in the same commit. The `docs` test
    project checks the vocabulary the code exports against the glossary, and
    checks that every link into it resolves.
+5. **A decision record, if the change settles something.** Copy
+   `docs/decisions/template.md`, number it next in sequence, and add it to the
+   index — `tests/decisions.test.ts` checks that every record is reachable from
+   `docs/decisions/README.md`, and that a record closing an open question is
+   struck through in `docs/open-questions.md` with a pointer back.
 
 ## SonarQube
 
@@ -73,6 +87,17 @@ Two habits keep the gate green. Keep a function under 15 cognitive complexity:
 when a validator grows a branch per case, split it into one function per case
 and dispatch. And give `sort` a comparator, always — the default sorts as text,
 which is a bug waiting for the first array that is not strings.
+
+## Performance claims
+
+One is load-bearing: tracing that nobody reads costs one boolean check (AD15).
+`pnpm bench` reports the number and `docs/performance.md` records a run.
+
+A benchmark cannot gate that, because the regression it guards against — a hot
+path building a payload for a stream with no reader — is a few percent, which is
+noise on a CI runner. So the property is held by tests in
+`packages/core/src/trace/observation-cost.test.ts`, and a new trace call site on
+a hot path asks `isEnabled` before it assembles anything.
 
 ## Adding a surface type
 

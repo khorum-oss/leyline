@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { act, type ReactElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { createWorkflow, type CapabilityBundle, type WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@leyline/core';
+import { openScenario, settle, type ScenarioContext } from '@leyline/core/testing';
 import { WorkflowView } from './WorkflowView.jsx';
 import { FALLBACK_RENDERERS } from './fallback.jsx';
 import type { RegionRenderer, SurfaceRenderer } from './types.js';
-import { referenceDocument, scenarioBundle, settle } from './testing/scenario.js';
 
 (globalThis as Record<string, unknown>)['IS_REACT_ACT_ENVIRONMENT'] = true;
 
@@ -15,12 +15,11 @@ import { referenceDocument, scenarioBundle, settle } from './testing/scenario.js
  * Everything asserted here is asserted against the DOM, because "the link
  * disappears when workspace state changes" is a claim about what a user sees,
  * not about what a snapshot contains.
+ *
+ * Standing the scenario up lives in `@leyline/core/testing`, shared with the
+ * Svelte and vanilla adapters. What is React-specific is below: components that
+ * return elements, and a root that has to be driven inside `act`.
  */
-
-interface ScenarioContext extends Record<string, unknown> {
-  readonly tier: string;
-  readonly actionTwoReady: boolean;
-}
 
 const DataTable: SurfaceRenderer = ({ surface }) => (
   <table data-testid={surface.id}>
@@ -68,19 +67,7 @@ const Panel: RegionRenderer = ({ region, surfaces, regions }) => (
   </section>
 );
 
-const catalogue = [
-  ...FALLBACK_RENDERERS,
-  { id: 'DataTable', claims: ['datatable'], component: DataTable },
-  {
-    id: 'CardGrid',
-    description: 'Rows as a grid of cards.',
-    claims: ['datatable'],
-    component: CardGrid,
-  },
-  { id: 'MetricPanel', claims: ['metric-panel'], component: MetricPanel },
-  { id: 'Link', claims: ['link'], component: Link },
-  { id: 'Panel', claims: ['*'], component: Panel },
-];
+const components = { DataTable, CardGrid, MetricPanel, Link, Panel };
 
 interface Mounted {
   workflow: WorkflowInstance<ScenarioContext>;
@@ -90,32 +77,11 @@ interface Mounted {
 }
 
 async function mount(context: Partial<ScenarioContext>): Promise<Mounted> {
-  const workflow = createWorkflow<ScenarioContext>(
-    referenceDocument('workspace-onboarding'),
-    scenarioBundle() as CapabilityBundle,
-    {
-      mode: 'development',
-      renderers: catalogue,
-      initialContext: { tier: 'free', actionTwoReady: false, ...context } as ScenarioContext,
-    },
-  );
-
-  for (const [renderer, match, rank] of [
-    ['DataTable', { surfaceType: 'datatable' }, 10],
-    ['MetricPanel', { surfaceType: 'metric-panel' }, 10],
-    ['Link', { surfaceType: 'link' }, 10],
-    // Every active node is a region, not only sections; a hub is drawn by
-    // whichever renderer claims it, exactly like a surface (decision 0030).
-    ['Panel', { target: 'region', nodeKind: 'hub' }, 10],
-    ['Panel', { target: 'region', nodeKind: 'section' }, 10],
-  ] as const) {
-    await workflow.control.apply(
-      await workflow.control.propose(
-        { kind: 'renderer.register', registry: 'default', renderer, match, rank },
-        { kind: 'application' },
-      ),
-    );
-  }
+  const workflow = await openScenario({
+    components,
+    fallbacks: FALLBACK_RENDERERS,
+    context,
+  });
 
   const container = document.createElement('div');
   document.body.appendChild(container);
@@ -268,16 +234,13 @@ describe('the registry decides appearance, and the control plane decides the reg
 
 describe('nothing claiming a surface draws a placeholder rather than failing (AD5)', () => {
   it('renders the fallback and keeps the rest of the page', async () => {
-    const workflow = createWorkflow<ScenarioContext>(
-      referenceDocument('workspace-onboarding'),
-      scenarioBundle() as CapabilityBundle,
-      {
-        mode: 'development',
-        renderers: catalogue,
-        initialContext: { tier: 'free', actionTwoReady: true },
-      },
-    );
     // No registrations at all: every surface is unclaimed.
+    const workflow = await openScenario({
+      components,
+      fallbacks: FALLBACK_RENDERERS,
+      context: { actionTwoReady: true },
+      register: false,
+    });
     const container = document.createElement('div');
     document.body.appendChild(container);
     const root = createRoot(container);
@@ -296,16 +259,13 @@ describe('nothing claiming a surface draws a placeholder rather than failing (AD
 
   it('reports it on the trace stream, because a placeholder needs explaining', async () => {
     const kinds: string[] = [];
-    const workflow = createWorkflow<ScenarioContext>(
-      referenceDocument('workspace-onboarding'),
-      scenarioBundle() as CapabilityBundle,
-      {
-        mode: 'development',
-        renderers: catalogue,
-        sinks: [(event) => kinds.push(event.kind)],
-        initialContext: { tier: 'free', actionTwoReady: true },
-      },
-    );
+    const workflow = await openScenario({
+      components,
+      fallbacks: FALLBACK_RENDERERS,
+      context: { actionTwoReady: true },
+      register: false,
+      sinks: [(event) => kinds.push(event.kind)],
+    });
     const container = document.createElement('div');
     document.body.appendChild(container);
     const root = createRoot(container);

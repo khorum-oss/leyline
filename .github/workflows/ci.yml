@@ -73,8 +73,18 @@ jobs:
       # A required gate, not an advisory one: a change to the schema or the
       # control plane that lacks a corresponding adversarial test does not
       # merge (AD14, brief §8).
+      #
+      # The project list covers every package holding an invariant suite, and
+      # `tests/security.test.ts` fails if that stops being true — a gate that
+      # silently stops running a suite is worse than no gate.
       - name: Adversarial invariant suites
-        run: pnpm vitest run --project schema --project core -t 'I1|I2|I3|I4|I5|I6|I7'
+        run: pnpm vitest run --project schema --project core --project agent --project dsl -t 'I1|I2|I3|I4|I5|I6|I7'
+
+      # SECURITY.md names the suites behind each invariant. This checks the
+      # naming in both directions, so neither the document nor the gate above
+      # can drift from what actually ships.
+      - name: Threat model matches the suites
+        run: pnpm vitest run tests/security.test.ts
 
       # The audit trail cannot drift from reality (brief §8). Decision 0029
       # makes that a tested property rather than a structural guarantee, which

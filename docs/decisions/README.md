@@ -30,11 +30,26 @@ Full statements live in [`../project-brief.md`](../project-brief.md), §5.
 
 Decisions taken since:
 
-| ID                                                   | Decision                                                   | Closes |
-| ---------------------------------------------------- | ---------------------------------------------------------- | ------ |
-| [0016](0016-minimum-surface-set.md)                  | The v1 surface set                                         | OQ5    |
-| [0017](0017-structure-errors-vocabulary-warnings.md) | Structure is an error; vocabulary is a warning             | —      |
-| [0018](0018-identifier-derivation.md)                | Derived identifiers come from identity, never presentation | —      |
+| ID                                                   | Decision                                                                   | Closes                                                         |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [0016](0016-minimum-surface-set.md)                  | The v1 surface set                                                         | OQ5                                                            |
+| [0017](0017-structure-errors-vocabulary-warnings.md) | Structure is an error; vocabulary is a warning                             | —                                                              |
+| [0018](0018-identifier-derivation.md)                | Derived identifiers come from identity, never from presentation            | —                                                              |
+| [0019](0019-section-nodes.md)                        | The `section` node kind                                                    | —                                                              |
+| [0020](0020-personalization.md)                      | Personalization is control-plane traffic                                   | —                                                              |
+| [0021](0021-trace-retention-and-export.md)           | Trace retention and export                                                 | OQ6                                                            |
+| [0022](0022-guard-event-volume.md)                   | Guard evaluations emit like everything else                                | OQ8                                                            |
+| [0023](0023-renderer-catalogue.md)                   | Renderers are discoverable through a catalogue                             | OQ3                                                            |
+| [0024](0024-policy-shape.md)                         | Policy is one predicate, with combinators                                  | OQ2                                                            |
+| [0025](0025-live-changes.md)                         | Changes are classified by what they disturb                                | —                                                              |
+| [0026](0026-revert-by-replay.md)                     | Revert replays the log                                                     | —                                                              |
+| [0027](0027-confirmation-flow.md)                    | Confirmation is a pending proposal                                         | OQ4                                                            |
+| [0028](0028-persistence.md)                          | Persistence is a sink plus hydrate                                         | OQ1                                                            |
+| [0029](0029-change-log-and-stream.md)                | The change log is kept alongside the stream, and tested against it         | —                                                              |
+| [0030](0030-react-rendering-contract.md)             | Regions are claimable, and slots are functions                             | the region-claiming debt left by [0019](0019-section-nodes.md) |
+| [0031](0031-initiator-trust.md)                      | An initiator label is advisory; attestation is a fact about the connection | OQ7                                                            |
+| [0032](0032-canonical-form.md)                       | Canonical form is the authored document, not the normalized one            | —                                                              |
+| [0033](0033-render-plan.md)                          | The render plan lives in the core                                          | —                                                              |
 
 ## Recording a new decision
 

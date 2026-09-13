@@ -1,26 +1,80 @@
 # @leyline/svelte
 
-The Svelte store bridge.
+The Svelte adapter.
 
-Svelte's store contract is a plain `subscribe` function, so this adapter imports
-nothing from Svelte at all — which is the point. `toSvelteStore` presents a
-Leyline instance as a readable, so `$store` works directly.
+Adapters stay thin (G5). The core resolves the active tree into a
+[render plan](../../docs/glossary.md#render-plan) — what claims each region and
+surface — and this package mounts whichever component claimed each one. No
+workflow logic lives here.
 
-See the [glossary](../../docs/glossary.md#the-runtime) for **store contract**
-and **snapshot**.
+See the [glossary](../../docs/glossary.md#the-runtime) for **store contract**,
+**snapshot**, **slot**, and **region renderer**.
+
+## Rendering a workflow
 
 ```svelte
-<script>
-  const snapshot = toSvelteStore(workflow);
+<script lang="ts">
+  import { WorkflowView } from '@leyline/svelte';
+  const { workflow } = $props();
 </script>
 
-{#each $snapshot.surfaces as surface (surface.id)}
-  <!-- rendered through the registry -->
-{/each}
+<WorkflowView {workflow} />
 ```
 
-## Next — delivery stage 6
+## Writing a renderer
 
-The component and the registry bridge. The stage re-runs the brief's §2 agent
-scenario against a SvelteKit application with no change to `@leyline/agent` —
-the genuine test of whether the core stayed headless.
+A surface renderer takes the surface, with its guard already evaluated and its
+data source already attached:
+
+```svelte
+<script lang="ts">
+  import type { SurfaceRendererProps } from '@leyline/svelte';
+  const { surface }: SurfaceRendererProps = $props();
+  const rows = $derived((surface.data ?? []) as Action[]);
+</script>
+
+<table>
+  <tbody
+    >{#each rows as row (row.id)}<tr><td>{row.label}</td></tr>{/each}</tbody
+  >
+</table>
+```
+
+A region renderer takes named slots and decides where each goes:
+
+```svelte
+<script lang="ts">
+  import type { RegionRendererProps } from '@leyline/svelte';
+  const { surfaces, regions }: RegionRendererProps = $props();
+  const aside = $derived(regions.find((slot) => slot.id === 'navigation'));
+  const rest = $derived(regions.filter((slot) => slot.id !== 'navigation'));
+</script>
+
+<div class="columns">
+  <aside>
+    {#if aside}<aside.component {...aside.props} />{/if}
+  </aside>
+  <main>
+    {#each surfaces as slot (slot.id)}<slot.component {...slot.props} />{/each}
+    {#each rest as slot (slot.id)}<slot.component {...slot.props} />{/each}
+  </main>
+</div>
+```
+
+A Svelte slot carries the component and its props rather than a render function,
+because that is how Svelte mounts a dynamic component. It is the only real
+difference from the React adapter, and it is a difference in how the framework
+works rather than in anything Leyline decided.
+
+## The store bridge
+
+`toSvelteStore` presents a Leyline instance as a Svelte readable, so `$store`
+works directly. It imports nothing from Svelte — the store contract is a plain
+`subscribe` function, which is a small piece of evidence that the core stayed
+headless.
+
+## Building
+
+This package is built with `@sveltejs/package` rather than tsup, because tsup
+cannot compile `.svelte`. It is the only package in the repository that needs a
+different build tool, and the reason is entirely Svelte's file format.
