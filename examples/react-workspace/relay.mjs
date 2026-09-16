@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 /**
  * The wire between a CLI agent and the page it is changing.
@@ -94,7 +95,8 @@ const server = createServer((req, res) => {
           return;
         }
 
-        const id = `call_${String((nextId += 1))}`;
+        nextId += 1;
+        const id = `call_${String(nextId)}`;
         const timer = setTimeout(() => {
           pending.delete(id);
           send(res, 200, {
@@ -128,7 +130,12 @@ server.listen(RELAY_PORT, () => {
 
 // One command and one Ctrl-C: vite is a child of this process rather than a
 // second terminal the reader has to be told about.
-const vite = spawn('npx', ['vite', '--open'], { stdio: 'inherit', shell: false });
+//
+// Resolved from this package and run through the Node already executing, rather
+// than looked up on PATH: a demo that starts should not depend on what happens
+// to be earlier in someone's PATH than the vite they installed.
+const viteBin = fileURLToPath(new URL('node_modules/vite/bin/vite.js', import.meta.url));
+const vite = spawn(process.execPath, [viteBin, '--open'], { stdio: 'inherit', shell: false });
 const stop = () => {
   vite.kill();
   server.close();

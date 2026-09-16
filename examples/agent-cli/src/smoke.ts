@@ -15,6 +15,18 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
+/**
+ * A server's own words, quoted rather than pasted.
+ *
+ * Everything this file prints came back over the wire, and a response carrying
+ * a newline could otherwise forge a line of output that looks like this
+ * program's. `JSON.stringify` escapes the control characters and makes the
+ * boundaries of the quoted text visible, which is all the situation needs.
+ */
+function quoted(text: string): string {
+  return JSON.stringify(text);
+}
+
 /** One tool call, with the text an agent would have parsed out of the result. */
 async function call(
   client: Client,
@@ -46,7 +58,7 @@ async function main(): Promise<number> {
   const { tools } = await client.listTools();
   const names = tools.map((tool) => tool.name).sort((a, b) => a.localeCompare(b));
   if (!names.includes('leyline_describe') || !names.includes('leyline_apply')) {
-    console.error(`smoke: expected the leyline operations, got ${names.join(', ') || '(none)'}`);
+    console.error(`smoke: expected the leyline operations, got ${quoted(names.join(', '))}`);
     await client.close();
     return 1;
   }
@@ -67,7 +79,7 @@ async function main(): Promise<number> {
   const validated = await call(client, 'leyline_validate', { id: proposed.json['id'] });
 
   if (validated.isError === true || !validated.text.includes('renderer.undiscoverable')) {
-    console.error(`smoke: expected the catalogue refusal, got ${validated.text}`);
+    console.error(`smoke: expected the catalogue refusal, got ${quoted(validated.text)}`);
     await client.close();
     return 1;
   }
