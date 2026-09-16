@@ -16,15 +16,17 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 
 /**
- * A server's own words, quoted rather than pasted.
+ * A server's own words, stripped of the ones that are not words.
  *
- * Everything this file prints came back over the wire, and a response carrying
- * a newline could otherwise forge a line of output that looks like this
- * program's. `JSON.stringify` escapes the control characters and makes the
- * boundaries of the quoted text visible, which is all the situation needs.
+ * Everything this file prints came back over the wire. A response carrying a
+ * newline could forge a line of output that looks like this program's, so the
+ * control characters come out before anything is printed and the result is
+ * quoted and bounded. What is left is still the server's text, and still
+ * useful when the check fails — it just cannot pretend to be ours.
  */
 function quoted(text: string): string {
-  return JSON.stringify(text);
+  const flattened = text.replace(/[\p{Cc}\p{Cf}]/gu, ' ');
+  return JSON.stringify(flattened.slice(0, 300));
 }
 
 /** One tool call, with the text an agent would have parsed out of the result. */
