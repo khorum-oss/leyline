@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "leyline": {
+      "command": "pnpm",
+      "args": ["--silent", "--filter", "@leyline-examples/agent-cli", "mcp"]
+    },
+    "leyline-live": {
+      "command": "pnpm",
+      "args": [
+        "--silent",
+        "--filter",
+        "@leyline-examples/react-workspace",
+        "exec",
+        "tsx",
+        "mcp-bridge.ts"
+      ]
+    }
+  }
+}

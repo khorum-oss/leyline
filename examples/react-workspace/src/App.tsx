@@ -3,6 +3,7 @@ import { WorkflowView } from '@leyline/react';
 import type { TraceEvent, WorkflowInstance } from '@leyline/core';
 import { HIDE_METRICS_ON_FREE, SWAP_TO_CARDS, applyChange } from '@leyline-examples/scenario';
 import { start, type WorkspaceContext } from './workflow.js';
+import { connectAgentBridge, type BridgeStatus } from './agent-bridge.js';
 
 type Workflow = WorkflowInstance<WorkspaceContext>;
 
@@ -13,17 +14,24 @@ export function App(): ReactElement {
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [note, setNote] = useState('');
   const [tier, setTier] = useState('paid');
+  const [bridge, setBridge] = useState<BridgeStatus>('connecting');
 
   useEffect(() => {
     let live = true;
+    let disconnect: (() => void) | undefined;
+
     void start(tier).then((next) => {
       if (!live) return;
       setWorkflow(next);
       setEvents([]);
       next.trace.attach((event) => setEvents((seen) => [...seen.slice(-40), event]));
+      // The new workflow answers the relay; the one it replaced stops.
+      disconnect = connectAgentBridge(next, setBridge);
     });
+
     return () => {
       live = false;
+      disconnect?.();
     };
   }, [tier]);
 
@@ -77,6 +85,12 @@ export function App(): ReactElement {
           Revert the last change
         </button>
       </nav>
+
+      <p className={`bridge bridge-${bridge}`}>
+        {bridge === 'live'
+          ? 'A CLI agent can reach this page — try `claude` in another terminal.'
+          : 'No relay. Run `pnpm live` to let a CLI agent change this page.'}
+      </p>
 
       {note ? <p className="note">{note}</p> : null}
 

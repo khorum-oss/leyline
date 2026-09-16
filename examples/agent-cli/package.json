@@ -2,7 +2,7 @@
   "name": "@leyline-examples/agent-cli",
   "version": "0.0.0",
   "private": true,
-  "description": "Brief \u00a72 items 6 and 7, driven by an agent. Runs scripted or interactive with no API key; runs against Claude with one.",
+  "description": "Brief \u00a72 items 6 and 7, driven by an agent. Runs scripted or interactive with no API key; runs against a local claude/codex CLI over MCP, or against Claude with an API key.",
   "type": "module",
   "bin": {
     "leyline-agent": "./dist/index.js"
@@ -11,6 +11,8 @@
     "demo": "tsx src/index.ts demo",
     "repl": "tsx src/index.ts repl",
     "chat": "tsx src/index.ts chat",
+    "mcp": "tsx src/index.ts mcp",
+    "smoke": "tsx src/smoke.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.125.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@types/node": "^22.20.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

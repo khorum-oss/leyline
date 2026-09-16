@@ -9,9 +9,10 @@ import { bold, dim } from './format.js';
  *
  *   demo   scripted, no API key, no network. What CI runs.
  *   repl   you typing tool calls by hand. Still no API key.
+ *   mcp    a local `claude` or `codex` drives it, on its own sign-in.
  *   chat   a real model, through ANTHROPIC_API_KEY.
  *
- * All three call `surface.handle(name, input)` and nothing else. If they needed
+ * All four call `surface.handle(name, input)` and nothing else. If they needed
  * different code paths, `@leyline/agent` would have failed at its one job.
  */
 
@@ -21,6 +22,8 @@ ${bold('leyline-agent')} — drive a Leyline workflow through the agent surface
   ${bold('pnpm demo')}   a scripted run. No API key, no network. Two of the steps
                are refusals, and they are the interesting ones.
   ${bold('pnpm repl')}   type tool calls yourself. Still no API key.
+  ${bold('pnpm mcp')}    serve over MCP on stdio, so a local ${bold('claude')} or ${bold('codex')}
+               drives it with the sign-in it already has. No API key.
   ${bold('pnpm chat')}   a real model. Needs ANTHROPIC_API_KEY.
 
   ${dim('--tier free|paid|organization    which tier to start in (default: free)')}
@@ -51,11 +54,19 @@ async function main(): Promise<number> {
     return 0;
   }
 
+  if (mode === 'mcp') {
+    // Lazily imported, like the SDK below: `demo` and `repl` load neither.
+    const { runMcp } = await import('./mcp.js');
+    await runMcp(session);
+    return 0;
+  }
+
   if (mode === 'chat') {
     const apiKey = process.env['ANTHROPIC_API_KEY'];
     if (apiKey === undefined || apiKey === '') {
       console.error('chat mode needs ANTHROPIC_API_KEY.');
-      console.error(dim('Run `pnpm demo` or `pnpm repl` to see the same surface without one.'));
+      console.error(dim('Run `pnpm demo` or `pnpm repl` to see the same surface without one,'));
+      console.error(dim('or `pnpm mcp` to let a local claude/codex CLI drive it instead.'));
       return 1;
     }
     // Imported lazily so the modes that need no model never load the SDK.

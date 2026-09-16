@@ -25,6 +25,25 @@ const TRACE_SCHEMA = schemas['leyline-trace-event'] as Record<string, unknown>;
 
 const NO_INPUT = { type: 'object', properties: {}, additionalProperties: false } as const;
 
+/**
+ * A change as sent, whatever the host made of the schema.
+ *
+ * The declared `type: 'object'` above is the fix; this is the belt to its
+ * braces, because a host that stringifies anyway would otherwise get the
+ * `context.patch` placeholder back — a valid-looking change that was never the
+ * one it sent, which is a worse answer than a refusal.
+ */
+function asChange(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    // Left as it arrived: propose turns an unparseable change into structured
+    // issues, and that is a better answer than an exception thrown from here.
+    return value;
+  }
+}
+
 const byId = (id: string, description: string) => ({
   type: 'object',
   properties: { id: { type: 'string', description } },
@@ -60,7 +79,11 @@ export const OPERATIONS: readonly Operation[] = [
         'Describes a change and puts it to policy. Nothing is committed. Returns a proposal id to validate and apply.',
       inputSchema: {
         type: 'object',
-        properties: { change: CHANGE_SCHEMA },
+        // `type` before the spread, not after: the published change schema is a
+        // standalone document whose root is a `$ref`, and a host reading this to
+        // decide how to encode the argument has nothing else to go on. Without
+        // it, Claude Code sends the change as a JSON string.
+        properties: { change: { type: 'object', ...CHANGE_SCHEMA } },
         required: ['change'],
         additionalProperties: false,
       },
@@ -71,7 +94,7 @@ export const OPERATIONS: readonly Operation[] = [
       mutates: false,
     },
     run: async (workflow, initiator, input) => {
-      const proposal = await workflow.control.propose(input['change'], initiator);
+      const proposal = await workflow.control.propose(asChange(input['change']), initiator);
       return { id: proposal.id, correlationId: proposal.correlationId, change: proposal.change };
     },
   },

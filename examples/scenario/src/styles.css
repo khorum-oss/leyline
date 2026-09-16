@@ -143,3 +143,29 @@ h1 {
 .dim {
   opacity: 0.55;
 }
+
+/**
+ * Whether a CLI agent can reach this page.
+ *
+ * Worth showing rather than leaving to the terminal: the interesting thing
+ * about the live demo is that the change arrives from somewhere else, and a
+ * reader who cannot tell the relay is connected has no way to know whether
+ * nothing happened or nothing was listening.
+ */
+.bridge {
+  margin: 0.75rem 0;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.35rem;
+  border: 1px solid currentColor;
+  width: fit-content;
+}
+
+.bridge-live {
+  opacity: 0.75;
+}
+
+.bridge-connecting,
+.bridge-offline {
+  opacity: 0.5;
+}
