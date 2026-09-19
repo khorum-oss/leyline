@@ -50,6 +50,13 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      # Node 22 ships npm 10, and trusted publishing wants npm 11.5.1 or later.
+      # pnpm runs the OIDC exchange itself, but hands the publish that follows
+      # to the npm CLI, so the npm on PATH is part of the path a release takes
+      # to the registry.
+      - name: Use an npm that can publish with OIDC
+        run: npm install -g npm@^11.15.0
+
       - name: Install
         run: pnpm install --frozen-lockfile
 
@@ -68,10 +75,12 @@ jobs:
           commit: 'Version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # changesets/action writes the registry line; both names are read
-          # depending on which path (npm or pnpm) does the writing.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # No npm token, by design. This job authenticates to the registry
+          # with the OIDC token `id-token: write` above lets it mint: npm hands
+          # out publish rights because each package names this repository and
+          # this workflow file as its trusted publisher (docs/releasing.md).
+          # There is no npm secret in this repository to leak, and adding one
+          # back would weaken the arrangement rather than back it up.
           # Attaches a provenance attestation to each tarball, tying it to this
           # workflow, this commit, and this repository. Needs `id-token: write`
           # above and the `repository` field each package already carries.
