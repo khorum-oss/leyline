@@ -1,0 +1,72 @@
+name: Release
+
+# One workflow, two outcomes. A push to main carrying changesets opens (or
+# updates) a "Version packages" pull request; merging that pull request pushes a
+# commit with no changesets left, and this workflow publishes what it versioned.
+#
+# Nothing reaches npm without someone merging that pull request. It is the
+# review gate for a release, and the diff it carries — version numbers and
+# changelog entries — is exactly what a reviewer needs to see.
+on:
+  push:
+    branches: [main]
+
+# Releases never run concurrently, and a running one is never cancelled: an
+# interrupted publish can leave npm holding versions that the git tags do not.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  CI: true
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # commit the version bump; push the release tags
+      pull-requests: write # open and update the version pull request
+      id-token: write # mint the OIDC token npm provenance signs with
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # `changeset publish` reads the tags to know what is already released.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # CI ran this on the pull request already. It runs again here because a
+      # publish cannot be taken back — npm refuses to republish a version — so
+      # the gate is worth paying for twice on the commit that becomes a release.
+      - name: Verify
+        run: pnpm verify
+
+      - name: Version or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm version-packages
+          publish: pnpm release
+          title: 'Version packages'
+          commit: 'Version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # changesets/action writes the registry line; both names are read
+          # depending on which path (npm or pnpm) does the writing.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Attaches a provenance attestation to each tarball, tying it to this
+          # workflow, this commit, and this repository. Needs `id-token: write`
+          # above and the `repository` field each package already carries.
+          NPM_CONFIG_PROVENANCE: true

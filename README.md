@@ -32,9 +32,13 @@ three adapters (React, Svelte, plain DOM), the agent interface over MCP, and the
 TypeScript DSL. The seven security invariants each carry an adversarial suite
 that runs as a required gate.
 
-Install by workspace for now. See [`docs/roadmap.md`](docs/roadmap.md) for what
-is done and what follows v1 — a devtools inspector, an OpenTelemetry sink, and
-the Kotlin authoring track.
+Publishing is wired and waiting on the button: merging the changesets on `main`
+opens a version pull request, and merging that one publishes `@leyline/*` to npm
+at 1.0.0 — [`docs/releasing.md`](docs/releasing.md) covers the one-time npm
+setup and how to use the packages from another project before then.
+
+See [`docs/roadmap.md`](docs/roadmap.md) for what is done and what follows v1 —
+a devtools inspector, an OpenTelemetry sink, and the Kotlin authoring track.
 
 ## How it fits together
 

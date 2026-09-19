@@ -106,6 +106,19 @@ written inherits the obligation. It needs two independent real workflows that
 want it, and a recorded decision in `docs/decisions/`. Expect the answer to be
 no.
 
+## Releasing
+
+You do not publish from a laptop. A change carrying a changeset reaches `main`,
+the release workflow opens a _Version packages_ pull request, and merging that
+pull request publishes every `@leyline/*` package to npm together.
+
+That makes the version pull request the release review — the bumps are the
+compatibility claim and the changelog is what an upgrader reads — so the entry
+you write in `pnpm changeset` matters more than a commit message does.
+[`docs/releasing.md`](docs/releasing.md) covers the rest: the one-time npm
+setup, why the first release is 1.0.0, and how to use the packages from another
+project before any of it happens.
+
 ## Commit and branch conventions
 
 Small, focused commits with messages that say what changed and why. Branch names
