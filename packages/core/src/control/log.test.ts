@@ -6,7 +6,7 @@ import {
   settle,
   type ScenarioContext,
 } from '../testing/scenario.js';
-import type { Initiator } from '@leyline/schema';
+import type { Initiator } from '@khorum-oss/leyline-schema';
 import type { TraceEvent } from '../trace.js';
 
 /**

@@ -10,7 +10,7 @@ import type { TraceSink } from '../trace.js';
  * The brief's §2 scenario as a capability bundle, so the acceptance benchmark
  * can be driven with no DOM and no framework (brief §8).
  *
- * Published through `@leyline/core/testing` rather than kept private, because
+ * Published through `@khorum-oss/leyline-core/testing` rather than kept private, because
  * every adapter needs the same document and the same bundle to test against and
  * three copies of it is three chances to drift. An adapter written outside this
  * repository gets the same fixture the ones inside it are held to (G5).

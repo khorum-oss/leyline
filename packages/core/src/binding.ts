@@ -1,4 +1,4 @@
-import { pointer, type CapabilityKind, type WorkflowDocument } from '@leyline/schema';
+import { pointer, type CapabilityKind, type WorkflowDocument } from '@khorum-oss/leyline-schema';
 import { CapabilityBindingError, type MissingCapability } from './errors.js';
 import type { CapabilityBundle } from './contracts.js';
 

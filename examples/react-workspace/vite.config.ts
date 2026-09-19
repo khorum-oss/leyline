@@ -7,7 +7,7 @@ import { leylineAliases } from '../../vitest.shared.js';
  * a build first and an edit under `packages/` reaches the page immediately —
  * the same bargain `vitest.shared.ts` strikes for tests.
  *
- * `build` is deliberately left alone. It resolves `@leyline/*` through each
+ * `build` is deliberately left alone. It resolves `@khorum-oss/leyline-*` through each
  * package's published `exports`, which is what makes CI's example build a real
  * check that the packaged entry points work.
  */

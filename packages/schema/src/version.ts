@@ -6,7 +6,7 @@
  * failing. Every document carries its version explicitly.
  */
 
-/** The schema version this build of `@leyline/schema` produces. */
+/** The schema version this build of `@khorum-oss/leyline-schema` produces. */
 export const SCHEMA_VERSION = '1.0.0' as const;
 
 /** Major versions this build can read. */

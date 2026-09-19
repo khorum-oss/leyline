@@ -27,7 +27,7 @@ in the host's own vocabulary. Whatever sits between an untrusted caller and the
 control plane attaches it from the connection it already authenticated, and
 discards anything the caller sent in its place.
 
-In `@leyline/agent` that boundary is the surface. It is constructed with the
+In `@khorum-oss/leyline-agent` that boundary is the surface. It is constructed with the
 identity and attestation the host decided, and neither is readable from a tool
 call: `leyline_propose` takes a change and nothing else. A caller cannot relabel
 itself between one call and the next, and an attestation it repeats back is just

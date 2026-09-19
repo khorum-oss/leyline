@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createWorkflow } from '../workflow.js';
 import { createEngine } from '../engine/xstate.js';
 import { bindCapabilities } from '../binding.js';
-import { parseWorkflow } from '@leyline/schema';
+import { parseWorkflow } from '@khorum-oss/leyline-schema';
 import {
   referenceDocument,
   scenarioBundle,
@@ -10,7 +10,7 @@ import {
   type ScenarioContext,
 } from '../testing/scenario.js';
 import type { EngineObserver } from '../engine/facade.js';
-import type { WorkflowDocument } from '@leyline/schema';
+import type { WorkflowDocument } from '@khorum-oss/leyline-schema';
 
 /**
  * What "unobserved tracing costs nothing" means, stated so a regression fails

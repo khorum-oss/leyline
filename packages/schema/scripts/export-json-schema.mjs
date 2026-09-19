@@ -2,7 +2,7 @@
 /**
  * Regenerates the published JSON Schema artifacts (AD9).
  *
- * Run `pnpm --filter @leyline/schema run schema:export` after changing a Zod
+ * Run `pnpm --filter @khorum-oss/leyline-schema run schema:export` after changing a Zod
  * definition. The test suite compares the committed artifacts against the same
  * export function, so skipping this step fails the build rather than shipping a
  * contract that disagrees with the code.

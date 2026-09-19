@@ -1,4 +1,9 @@
-import type { ContextFieldType, JsonValue, SectionMode, SurfaceType } from '@leyline/schema';
+import type {
+  ContextFieldType,
+  JsonValue,
+  SectionMode,
+  SurfaceType,
+} from '@khorum-oss/leyline-schema';
 
 /**
  * The authoring vocabulary, with every reference checked at the call site (G3).

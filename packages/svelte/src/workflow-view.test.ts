@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { mount, unmount, flushSync } from 'svelte';
-import type { WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 import {
   applyChange,
   openScenario,
   settle,
   swapActionsToCardGrid,
   type ScenarioContext,
-} from '@leyline/core/testing';
+} from '@khorum-oss/leyline-core/testing';
 import WorkflowView from './lib/WorkflowView.svelte';
 import { FALLBACK_RENDERERS } from './lib/fallback.js';
 import DataTable from './test-renderers/DataTable.svelte';
@@ -23,7 +23,7 @@ import Panel from './test-renderers/Panel.svelte';
  * same capabilities, the same control plane, and a second framework rendering
  * it with no changes to anything below the adapter.
  *
- * Standing the scenario up is `@leyline/core/testing`'s job — it is the same
+ * Standing the scenario up is `@khorum-oss/leyline-core/testing`'s job — it is the same
  * work in every adapter, so duplicating it here would say something is missing
  * from the core. What is left below is the only part that is about Svelte:
  * mounting a component and flushing its updates.

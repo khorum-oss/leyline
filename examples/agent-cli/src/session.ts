@@ -1,11 +1,11 @@
-import { createAgentSurface, type AgentSurface } from '@leyline/agent';
+import { createAgentSurface, type AgentSurface } from '@khorum-oss/leyline-agent';
 import {
   allowKinds,
   forInitiator,
   walkRegions,
   type Policy,
   type WorkflowInstance,
-} from '@leyline/core';
+} from '@khorum-oss/leyline-core';
 import { start, type WorkspaceContext } from '@leyline-examples/scenario';
 
 /**

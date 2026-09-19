@@ -3,7 +3,7 @@ import { createWorkflow, type WorkflowInstance } from '../workflow.js';
 import { walkRegions, type ActiveRegion } from '../contracts.js';
 import { referenceDocument, settle } from '../testing/scenario.js';
 import type { CapabilityBundle } from '../contracts.js';
-import type { Initiator } from '@leyline/schema';
+import type { Initiator } from '@khorum-oss/leyline-schema';
 import type { TraceEvent } from '../trace.js';
 
 /**

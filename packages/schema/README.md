@@ -1,4 +1,4 @@
-# @leyline/schema
+# @khorum-oss/leyline-schema
 
 The canonical, serializable Leyline contract.
 
@@ -15,7 +15,7 @@ Terms used below — **surface**, **capability**, **requirements block**,
 ## What a document looks like
 
 ```ts
-import { validateWorkflow } from '@leyline/schema';
+import { validateWorkflow } from '@khorum-oss/leyline-schema';
 
 const result = validateWorkflow(document);
 if (!result.ok) {
@@ -80,7 +80,7 @@ the same rule this build enforces.
 Regenerate after changing a Zod definition:
 
 ```bash
-pnpm --filter @leyline/schema run schema:export
+pnpm --filter @khorum-oss/leyline-schema run schema:export
 ```
 
 The test suite compares the committed artifacts against the same export

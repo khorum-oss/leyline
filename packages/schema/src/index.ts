@@ -1,5 +1,5 @@
 /**
- * `@leyline/schema` — the canonical, serializable Leyline contract.
+ * `@khorum-oss/leyline-schema` — the canonical, serializable Leyline contract.
  *
  * The schema document is the source of truth (AD1). The TypeScript DSL, an AI
  * agent, a code generator, and a hand-written JSON file are all equally valid

@@ -1,4 +1,4 @@
-import type { RegionRendererPropsOf, SurfaceRendererProps } from '@leyline/core';
+import type { RegionRendererPropsOf, SurfaceRendererProps } from '@khorum-oss/leyline-core';
 import type { ReactElement, ReactNode } from 'react';
 
 /**

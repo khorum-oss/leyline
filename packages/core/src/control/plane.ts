@@ -7,7 +7,7 @@ import {
   type Initiator,
   type Issue,
   type WorkflowDocument,
-} from '@leyline/schema';
+} from '@khorum-oss/leyline-schema';
 import type {
   Description,
   OperationDescriptor,

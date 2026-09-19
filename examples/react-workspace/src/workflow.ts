@@ -1,6 +1,6 @@
-import { FALLBACK_RENDERERS } from '@leyline/react';
+import { FALLBACK_RENDERERS } from '@khorum-oss/leyline-react';
 import { start as startScenario, type WorkspaceContext } from '@leyline-examples/scenario';
-import type { WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 import { ActionsTable, CardGrid, LinkButton, MetricsPanel, Panel, TextBlock } from './renderers.js';
 import { policy } from './agent-bridge.js';
 

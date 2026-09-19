@@ -1,4 +1,4 @@
-# @leyline/agent
+# @khorum-oss/leyline-agent
 
 The control plane, packaged for machine consumers.
 
@@ -75,7 +75,7 @@ whether to require it depends on the deployment
 ```ts
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { serveOverMcp } from '@leyline/agent/mcp';
+import { serveOverMcp } from '@khorum-oss/leyline-agent/mcp';
 
 const server = new Server({ name: 'leyline', version: '1' }, { capabilities: { tools: {} } });
 serveOverMcp(server, surface, {

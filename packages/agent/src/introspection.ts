@@ -1,4 +1,4 @@
-import type { WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 
 /**
  * Introspection that reads like documentation (brief §6).

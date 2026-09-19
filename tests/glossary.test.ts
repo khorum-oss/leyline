@@ -8,7 +8,7 @@ import {
   NODE_KINDS,
   SEVERITIES,
   SURFACE_TYPES,
-} from '@leyline/schema';
+} from '@khorum-oss/leyline-schema';
 
 /**
  * The glossary is the one definition of the project's vocabulary, and every
@@ -124,7 +124,7 @@ describe('the validation rule catalogue stays complete', () => {
     expect(rules.length).toBeGreaterThan(10);
   });
 
-  it.each(rules)('%s appears in the @leyline/schema README catalogue', (rule) => {
+  it.each(rules)('%s appears in the @khorum-oss/leyline-schema README catalogue', (rule) => {
     expect(schemaReadme).toContain(rule);
   });
 });

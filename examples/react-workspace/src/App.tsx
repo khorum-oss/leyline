@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react';
-import { WorkflowView } from '@leyline/react';
-import type { TraceEvent, WorkflowInstance } from '@leyline/core';
+import { WorkflowView } from '@khorum-oss/leyline-react';
+import type { TraceEvent, WorkflowInstance } from '@khorum-oss/leyline-core';
 import { HIDE_METRICS_ON_FREE, SWAP_TO_CARDS, applyChange } from '@leyline-examples/scenario';
 import { start, type WorkspaceContext } from './workflow.js';
 import { connectAgentBridge, type BridgeStatus } from './agent-bridge.js';

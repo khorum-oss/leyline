@@ -155,7 +155,7 @@ construction. Content-derived identifiers use a hash, not a concatenation, and
 length-prefix their inputs so no arrangement of delimiters inside one part can
 imitate a different set of parts.
 
-_Enforced by:_ `@leyline/schema/src/ids.ts` and its adversarial tests. The rule
+_Enforced by:_ `@khorum-oss/leyline-schema/src/ids.ts` and its adversarial tests. The rule
 also ships as a `pattern` in the exported JSON Schema, so a producer that never
 runs this TypeScript is held to it too.
 
@@ -184,7 +184,7 @@ Documents parse with prototype-pollution defenses. Keys such as `__proto__`,
 `constructor`, and `prototype` get rejected at validation and dropped during
 parsing, at any depth. Renderer predicates receive frozen surface descriptors.
 
-_Enforced by:_ `@leyline/schema/src/hygiene.ts` and its adversarial tests.
+_Enforced by:_ `@khorum-oss/leyline-schema/src/hygiene.ts` and its adversarial tests.
 Hygiene runs before any other finding is reported, so a hostile document is
 refused for being hostile rather than for being malformed.
 

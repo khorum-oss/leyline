@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { observe } from './index.js';
-import { createFakeStore } from '@leyline/core/testing';
+import { createFakeStore } from '@khorum-oss/leyline-core/testing';
 
 describe('observe', () => {
   it('renders the current snapshot immediately', () => {

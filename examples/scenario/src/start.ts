@@ -4,7 +4,7 @@ import {
   type Policy,
   type RuntimeMode,
   type WorkflowInstance,
-} from '@leyline/core';
+} from '@khorum-oss/leyline-core';
 import { document } from './document.js';
 import { capabilities, type WorkspaceContext } from './capabilities.js';
 import { CATALOGUE, DEFAULT_REGISTRATIONS } from './catalogue.js';

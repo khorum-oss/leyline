@@ -23,7 +23,7 @@ describe('the published JSON Schema artifacts (AD9)', () => {
     for (const [name, document] of Object.entries(exportJsonSchemas())) {
       expect(
         committed(name),
-        `${name}.json is stale — run pnpm --filter @leyline/schema run schema:export`,
+        `${name}.json is stale — run pnpm --filter @khorum-oss/leyline-schema run schema:export`,
       ).toEqual(document);
     }
   });

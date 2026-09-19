@@ -6,7 +6,7 @@
 > defined entry by entry in [`glossary.md`](glossary.md), with cross-references
 > to where each term lives in code. The brief below is preserved as written.
 
-> **Name.** _Leyline_: the invisible lines said to connect significant places into a network. The metaphor carries the design — nodes joined by lines, the lines themselves never rendered, the topology present whatever gets built on top. Package scope is `@leyline/*`.
+> **Name.** _Leyline_: the invisible lines said to connect significant places into a network. The metaphor carries the design — nodes joined by lines, the lines themselves never rendered, the topology present whatever gets built on top. Package scope is `@khorum-oss/leyline-*`.
 
 ---
 
@@ -178,7 +178,7 @@ Design constraints:
 - **Light by default.** Events are plain objects with a fixed small envelope (`ts`, `seq`, `kind`, `correlationId`, `initiator`, and a `data` payload specific to the kind). No stack traces, no serialized snapshots, no component trees. Payloads reference things by identifier (AD12) rather than embedding them; a consumer that wants the full object asks the control plane for it.
 - **Zero cost when unobserved.** With no sink attached, emission is a cheap guard check and nothing is allocated. Sinks are pull-optional: the core never buffers unboundedly on behalf of an absent consumer.
 - **Correlation across layers.** A `correlationId` ties together a user event, the transition it caused, the services it invoked, and the snapshot it produced. A control-plane proposal, its policy decision, its validation, and its apply share one correlation ID. This is what lets a developer reconstruct a causal chain from the stream alone.
-- **Pluggable sinks, none bundled as required.** The core ships an in-memory ring-buffer sink (for devtools and tests) and a `console` sink. An OpenTelemetry bridge (`@leyline/otel`, post-v1) maps trace events onto spans and attributes; it is an adapter over the stream, not a dependency of it.
+- **Pluggable sinks, none bundled as required.** The core ships an in-memory ring-buffer sink (for devtools and tests) and a `console` sink. An OpenTelemetry bridge (`@khorum-oss/leyline-otel`, post-v1) maps trace events onto spans and attributes; it is an adapter over the stream, not a dependency of it.
 - **The change log is a projection of the stream.** Change records (AD11) are derived from `apply` and `revert` trace events, not maintained separately. This guarantees the audit trail and the observability stream can never disagree.
 - **Redaction is a sink concern with a core hook.** Context values may contain sensitive data. The core exposes a redaction hook applied before events leave the emitter; sinks receive already-redacted payloads. The default redacts nothing in development mode and redacts all context values in production mode unless an allow-list is supplied.
 - **Same events for humans and agents.** Devtools, log aggregators, and agents observing their own effects all read the same stream. An agent can subscribe to trace events to confirm that an applied change produced the expected transition, closing the propose-apply-observe loop within one interface.
@@ -189,19 +189,19 @@ Design constraints:
 
 ### Package layout
 
-| Package             | Responsibility                                                                                                                                                         | Framework deps |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `@leyline/schema`   | Zod schema definitions, validators, JSON Schema export, version rules, change-description schemas                                                                      | none           |
-| `@leyline/core`     | Interpreter, store, event bus, capability binding and verification, registries, control plane, change log, policy hooks, trace emitter, built-in sinks, redaction hook | none           |
-| `@leyline/dsl`      | TypeScript builder emitting validated schema documents                                                                                                                 | none           |
-| `@leyline/agent`    | Machine-facing surface over the control plane: introspection, tool-style operation descriptors, MCP server adapter                                                     | none           |
-| `@leyline/react`    | React reactivity bridge, `WorkflowView`, registry helpers                                                                                                              | React          |
-| `@leyline/svelte`   | Svelte store bridge and component                                                                                                                                      | Svelte         |
-| `@leyline/vanilla`  | Direct DOM adapter; reference implementation for plain JS                                                                                                              | none           |
-| `@leyline/devtools` | Human-facing inspector consuming the same control plane and trace stream (post-v1)                                                                                     | none           |
-| `@leyline/otel`     | OpenTelemetry sink mapping trace events to spans and attributes (post-v1)                                                                                              | OTel API       |
+| Package                        | Responsibility                                                                                                                                                         | Framework deps |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `@khorum-oss/leyline-schema`   | Zod schema definitions, validators, JSON Schema export, version rules, change-description schemas                                                                      | none           |
+| `@khorum-oss/leyline-core`     | Interpreter, store, event bus, capability binding and verification, registries, control plane, change log, policy hooks, trace emitter, built-in sinks, redaction hook | none           |
+| `@khorum-oss/leyline-dsl`      | TypeScript builder emitting validated schema documents                                                                                                                 | none           |
+| `@khorum-oss/leyline-agent`    | Machine-facing surface over the control plane: introspection, tool-style operation descriptors, MCP server adapter                                                     | none           |
+| `@khorum-oss/leyline-react`    | React reactivity bridge, `WorkflowView`, registry helpers                                                                                                              | React          |
+| `@khorum-oss/leyline-svelte`   | Svelte store bridge and component                                                                                                                                      | Svelte         |
+| `@khorum-oss/leyline-vanilla`  | Direct DOM adapter; reference implementation for plain JS                                                                                                              | none           |
+| `@khorum-oss/leyline-devtools` | Human-facing inspector consuming the same control plane and trace stream (post-v1)                                                                                     | none           |
+| `@khorum-oss/leyline-otel`     | OpenTelemetry sink mapping trace events to spans and attributes (post-v1)                                                                                              | OTel API       |
 
-`@leyline/core`, `@leyline/schema`, and `@leyline/agent` must have no dependency on any UI framework, enforced by lint rule or dependency check in CI.
+`@khorum-oss/leyline-core`, `@khorum-oss/leyline-schema`, and `@khorum-oss/leyline-agent` must have no dependency on any UI framework, enforced by lint rule or dependency check in CI.
 
 ### Core concepts and vocabulary
 
@@ -253,13 +253,13 @@ instance.trace                                       // the observability stream
   .recent(n?)            -> traceEvent[]              // from the built-in ring buffer
 ```
 
-Trace events, change records, proposals, and validation issues all share the same JSON Schema definitions published by `@leyline/schema`, so a log line, an MCP tool result, and a devtools panel all speak one format.
+Trace events, change records, proposals, and validation issues all share the same JSON Schema definitions published by `@khorum-oss/leyline-schema`, so a log line, an MCP tool result, and a devtools panel all speak one format.
 
 Binding verifies the schema's requirements against the bundle and throws a descriptive aggregate error if anything is missing.
 
-### The agent interface (`@leyline/agent`)
+### The agent interface (`@khorum-oss/leyline-agent`)
 
-`@leyline/agent` adds nothing the control plane does not already do. It packages the control plane for machine consumers:
+`@khorum-oss/leyline-agent` adds nothing the control plane does not already do. It packages the control plane for machine consumers:
 
 - **Introspection that reads like documentation.** `describe()` output includes human-readable descriptions alongside identifiers, so an agent can reason about "the table of available actions on the workspace hub" without a developer pre-explaining the schema.
 - **Operation descriptors as tool definitions.** Every control-plane operation is exposed with a JSON Schema for its input and output. These descriptors map directly onto tool/function-calling formats and onto MCP tool definitions.
@@ -278,9 +278,9 @@ Each stage should produce a working, tested artifact. Stage 5 is the real archit
 1. **Schema foundation** — Zod definitions for the minimal node and surface set, graph validation (dangling targets, unreachable nodes, undeclared capabilities), stable identifier rules, JSON Schema export. Change-description schemas defined alongside.
 2. **Core runtime with control plane and trace stream** — interpreter over the XState facade, store contract, capability binding and verification, registries built as control-plane-addressable objects from the start, trace emitter with ring-buffer and console sinks, change log derived from the trace stream, propose/validate/apply/revert, policy hooks, redaction hook. The AD14 invariant test suites ship in this stage, not later: each invariant gets tests that try to break it.
 3. **React adapter** — reactivity bridge, registry with ranked resolution, `WorkflowView`. Prove the store contract against the §2 scenario (items 1–5) end to end.
-4. **Agent interface** — `@leyline/agent` with introspection, operation descriptors, MCP adapter. Prove §2 items 6–7 end to end with a real agent driving a running React application through MCP.
+4. **Agent interface** — `@khorum-oss/leyline-agent` with introspection, operation descriptors, MCP adapter. Prove §2 items 6–7 end to end with a real agent driving a running React application through MCP.
 5. **TypeScript DSL** — builder emitting validated schema, with compile-time node reference checking.
-6. **Svelte and vanilla adapters** — the genuine test of whether the core stayed headless. Any logic that has to be duplicated in an adapter belongs in the core and must be moved there. Re-run §2 items 6–7 against the Svelte application with no changes to `@leyline/agent`.
+6. **Svelte and vanilla adapters** — the genuine test of whether the core stayed headless. Any logic that has to be duplicated in an adapter belongs in the core and must be moved there. Re-run §2 items 6–7 against the Svelte application with no changes to `@khorum-oss/leyline-agent`.
 7. **Hardening** — devtools inspector (built on the same control plane and trace stream), OpenTelemetry sink, `SECURITY.md` threat model finalized against the shipped invariant tests, documented versioning policy, authoring guide, agent integration guide, migration guidance.
 
 ---

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount, unmount, flushSync } from 'svelte';
-import { createAgentSurface } from '@leyline/agent';
-import { createWorkflow, type CapabilityBundle } from '@leyline/core';
+import { createAgentSurface } from '@khorum-oss/leyline-agent';
+import { createWorkflow, type CapabilityBundle } from '@khorum-oss/leyline-core';
 import WorkflowView from './lib/WorkflowView.svelte';
 import { FALLBACK_RENDERERS } from './lib/fallback.js';
 import DataTable from './test-renderers/DataTable.svelte';
@@ -9,10 +9,10 @@ import CardGrid from './test-renderers/CardGrid.svelte';
 import MetricPanel from './test-renderers/MetricPanel.svelte';
 import Link from './test-renderers/Link.svelte';
 import Panel from './test-renderers/Panel.svelte';
-import { referenceDocument, scenarioBundle, settle } from '@leyline/core/testing';
+import { referenceDocument, scenarioBundle, settle } from '@khorum-oss/leyline-core/testing';
 
 /**
- * Brief §2 items 6 and 7, against Svelte, through `@leyline/agent` (roadmap
+ * Brief §2 items 6 and 7, against Svelte, through `@khorum-oss/leyline-agent` (roadmap
  * stage 6).
  *
  * The exit criterion for this stage is not that these pass — it is that they

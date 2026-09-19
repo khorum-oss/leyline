@@ -1,0 +1,91 @@
+name: Release
+
+# One workflow, two outcomes. A push to main carrying changesets opens (or
+# updates) a "Version packages" pull request; merging that pull request pushes a
+# commit with no changesets left, and this workflow publishes what it versioned.
+#
+# Nothing reaches npm without someone merging that pull request. It is the
+# review gate for a release, and the diff it carries — version numbers and
+# changelog entries — is exactly what a reviewer needs to see.
+on:
+  push:
+    branches: [main]
+
+# Releases never run concurrently, and a running one is never cancelled: an
+# interrupted publish can leave npm holding versions that the git tags do not.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  CI: true
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # commit the version bump; push the release tags
+      pull-requests: write # open and update the version pull request
+      id-token: write # mint the OIDC token npm provenance signs with
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # `changeset publish` reads the tags to know what is already released.
+          fetch-depth: 0
+
+      # The two third-party actions are pinned to a commit, not a moving
+      # reference: this job hands them a token that can publish to npm. `v4` is
+      # a tag its maintainers move, and `v1` below is a *branch*, so either
+      # could change under this workflow without a diff to review. Re-resolve
+      # with `git ls-remote --tags <repo>` to update; the trailing comment is a
+      # label, not the pin.
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Node 22 ships npm 10, and trusted publishing wants npm 11.5.1 or later.
+      # pnpm runs the OIDC exchange itself, but hands the publish that follows
+      # to the npm CLI, so the npm on PATH is part of the path a release takes
+      # to the registry.
+      #
+      # Pinned exactly, and installed without lifecycle scripts, for the same
+      # reason the actions above are pinned to commits: this step runs in the
+      # job that publishes. Re-resolve with `npm view npm versions` to update.
+      - name: Use an npm that can publish with OIDC
+        run: npm install -g --ignore-scripts npm@11.17.0
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # CI ran this on the pull request already. It runs again here because a
+      # publish cannot be taken back — npm refuses to republish a version — so
+      # the gate is worth paying for twice on the commit that becomes a release.
+      - name: Verify
+        run: pnpm verify
+
+      - name: Version or publish
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        with:
+          version: pnpm version-packages
+          publish: pnpm release
+          title: 'Version packages'
+          commit: 'Version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No npm token, by design. This job authenticates to the registry
+          # with the OIDC token `id-token: write` above lets it mint: npm hands
+          # out publish rights because each package names this repository and
+          # this workflow file as its trusted publisher (docs/releasing.md).
+          # There is no npm secret in this repository to leak, and adding one
+          # back would weaken the arrangement rather than back it up.
+          # Attaches a provenance attestation to each tarball, tying it to this
+          # workflow, this commit, and this repository. Needs `id-token: write`
+          # above and the `repository` field each package already carries.
+          NPM_CONFIG_PROVENANCE: true
