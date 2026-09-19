@@ -54,8 +54,12 @@ jobs:
       # pnpm runs the OIDC exchange itself, but hands the publish that follows
       # to the npm CLI, so the npm on PATH is part of the path a release takes
       # to the registry.
+      #
+      # Pinned exactly, and installed without lifecycle scripts, for the same
+      # reason the actions above are pinned to commits: this step runs in the
+      # job that publishes. Re-resolve with `npm view npm versions` to update.
       - name: Use an npm that can publish with OIDC
-        run: npm install -g npm@^11.15.0
+        run: npm install -g --ignore-scripts npm@11.17.0
 
       - name: Install
         run: pnpm install --frozen-lockfile
