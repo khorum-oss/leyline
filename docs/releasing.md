@@ -95,6 +95,15 @@ network failure finishes the job rather than doubling it. What it cannot do is
 take back a version: npm refuses to republish one, which is why `pnpm verify`
 runs again immediately before the publish rather than trusting the earlier run.
 
+**The third-party actions are pinned to commits.** `pnpm/action-setup` and
+`changesets/action` are referenced by full commit SHA with the version in a
+trailing comment, because this job holds a token that can publish to npm and
+both of their short references move — `v4` is a tag the maintainers repoint, and
+`changesets/action@v1` is a branch, not a tag at all. The cost is that a pin
+goes stale quietly: updating means resolving the reference again
+(`git ls-remote --tags https://github.com/changesets/action`) and changing the
+SHA, not editing the comment beside it.
+
 **Provenance needs the metadata to agree.** Each package's `repository` field
 names this repository, and the workflow holds `id-token: write`. A fork
 publishing under a different repository, or a package that loses that field,
