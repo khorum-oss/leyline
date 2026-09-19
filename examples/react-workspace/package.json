@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@leyline-examples/scenario": "workspace:*",
-    "@leyline/agent": "workspace:*",
-    "@leyline/core": "workspace:*",
-    "@leyline/react": "workspace:*",
+    "@khorum-oss/leyline-agent": "workspace:*",
+    "@khorum-oss/leyline-core": "workspace:*",
+    "@khorum-oss/leyline-react": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

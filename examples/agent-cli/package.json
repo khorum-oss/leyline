@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@leyline-examples/scenario": "workspace:*",
-    "@leyline/agent": "workspace:*",
-    "@leyline/core": "workspace:*"
+    "@khorum-oss/leyline-agent": "workspace:*",
+    "@khorum-oss/leyline-core": "workspace:*"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

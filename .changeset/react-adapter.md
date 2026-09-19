@@ -1,7 +1,7 @@
 ---
-'@leyline/react': minor
-'@leyline/core': minor
-'@leyline/schema': minor
+'@khorum-oss/leyline-react': minor
+'@khorum-oss/leyline-core': minor
+'@khorum-oss/leyline-schema': minor
 ---
 
 The React adapter: `WorkflowView` resolves each active region and surface through the registry and hands it to whichever component claimed it, with built-in fallbacks so an unclaimed surface draws a placeholder rather than nothing.

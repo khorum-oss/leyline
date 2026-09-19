@@ -17,17 +17,17 @@ transitively and an ESLint rule guards imports.
 flowchart TB
     subgraph free["Framework-free — enforced by lint rule and CI boundary check"]
         direction LR
-        DSL["@leyline/dsl<br/>builder"]
-        SCHEMA["@leyline/schema<br/>Zod · JSON Schema export"]
-        CORE["@leyline/core<br/>interpreter · store<br/>control plane · trace"]
-        AGENT["@leyline/agent<br/>descriptors · MCP"]
-        VANILLA["@leyline/vanilla<br/>DOM adapter"]
+        DSL["@khorum-oss/leyline-dsl<br/>builder"]
+        SCHEMA["@khorum-oss/leyline-schema<br/>Zod · JSON Schema export"]
+        CORE["@khorum-oss/leyline-core<br/>interpreter · store<br/>control plane · trace"]
+        AGENT["@khorum-oss/leyline-agent<br/>descriptors · MCP"]
+        VANILLA["@khorum-oss/leyline-vanilla<br/>DOM adapter"]
     end
 
     subgraph bound["Framework-bound"]
         direction LR
-        REACT["@leyline/react"]
-        SVELTE["@leyline/svelte"]
+        REACT["@khorum-oss/leyline-react"]
+        SVELTE["@khorum-oss/leyline-svelte"]
     end
 
     DSL --> SCHEMA
@@ -39,7 +39,7 @@ flowchart TB
     SVELTE -. peer .-> CORE
 ```
 
-Only `@leyline/core` may name the statechart engine, and only inside
+Only `@khorum-oss/leyline-core` may name the statechart engine, and only inside
 `src/engine/` (AD3). Everything else in the core depends on the facade
 interface, which keeps the option of replacing XState with a smaller purpose-built
 interpreter later.
@@ -175,7 +175,7 @@ flowchart LR
     RED["Redaction hook<br/>runs before any sink sees a payload"]
     RING["Ring buffer sink<br/>bounded, in-memory"]
     CON["Console sink"]
-    OTEL["@leyline/otel<br/>post-v1"]
+    OTEL["@khorum-oss/leyline-otel<br/>post-v1"]
     LOG["Change log<br/>projection of apply + revert"]
     DEV["Devtools · agents<br/>observing their own effects"]
 

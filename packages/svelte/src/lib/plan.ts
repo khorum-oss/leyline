@@ -1,4 +1,4 @@
-import { regionIdentity, surfaceIdentity, type RegionPlan } from '@leyline/core';
+import { regionIdentity, surfaceIdentity, type RegionPlan } from '@khorum-oss/leyline-core';
 import { FallbackRegion, FallbackSurface } from './fallback.js';
 import type {
   RegionRenderer,

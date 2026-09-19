@@ -1,4 +1,4 @@
-# @leyline/react
+# @khorum-oss/leyline-react
 
 The React adapter.
 

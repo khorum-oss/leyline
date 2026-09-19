@@ -1,5 +1,5 @@
 /**
- * `@leyline/react` — the React adapter.
+ * `@khorum-oss/leyline-react` — the React adapter.
  *
  * Adapters stay thin (G5). This package bridges the core's store contract to
  * React's own subscription primitive and hands each resolved surface and region

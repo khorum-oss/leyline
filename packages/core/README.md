@@ -1,4 +1,4 @@
-# @leyline/core
+# @khorum-oss/leyline-core
 
 The headless Leyline runtime. Zero framework dependencies (G4), shipped as
 compiled JavaScript with declarations so plain JS gets the same API.
@@ -30,7 +30,7 @@ Terms used below — **store contract**, **snapshot**, **resolved surface**,
   records, policy decisions, operation descriptors
 - The trace stream contract: envelope, kinds, sinks, redaction hook (AD15)
 - Structured errors that name the path and identifier at fault
-- `@leyline/core/testing` — the conformance doubles and the §2 fixture every
+- `@khorum-oss/leyline-core/testing` — the conformance doubles and the §2 fixture every
   adapter tests against, published so an adapter written outside this repository
   is held to the same bar
 

@@ -1,5 +1,10 @@
-import { createAgentSurface } from '@leyline/agent';
-import { allowKinds, forInitiator, type Policy, type WorkflowInstance } from '@leyline/core';
+import { createAgentSurface } from '@khorum-oss/leyline-agent';
+import {
+  allowKinds,
+  forInitiator,
+  type Policy,
+  type WorkflowInstance,
+} from '@khorum-oss/leyline-core';
 import type { WorkspaceContext } from './workflow.js';
 
 /**

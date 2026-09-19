@@ -1,4 +1,4 @@
-import type { TraceEvent, TraceKind } from '@leyline/schema';
+import type { TraceEvent, TraceKind } from '@khorum-oss/leyline-schema';
 
 /**
  * Observability as a single lightweight emission (AD15).
@@ -8,13 +8,13 @@ import type { TraceEvent, TraceKind } from '@leyline/schema';
  * decisions, applies, reverts, and binding-time verification. The change log is
  * a projection of this stream, so the audit trail can never disagree with it.
  *
- * The envelope and the kind vocabulary live in `@leyline/schema`, published as
+ * The envelope and the kind vocabulary live in `@khorum-oss/leyline-schema`, published as
  * JSON Schema, so a log line, an MCP tool result, and a devtools panel all
  * validate against one contract. This module adds only what the core needs to
  * emit and consume them.
  */
 
-export { TRACE_KINDS, type TraceKind, type TraceEvent } from '@leyline/schema';
+export { TRACE_KINDS, type TraceKind, type TraceEvent } from '@khorum-oss/leyline-schema';
 
 export type TraceSink = (event: TraceEvent) => void;
 

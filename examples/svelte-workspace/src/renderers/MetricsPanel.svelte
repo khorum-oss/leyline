@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SurfaceRendererProps } from '@leyline/svelte';
+  import type { SurfaceRendererProps } from '@khorum-oss/leyline-svelte';
 
   const { surface }: SurfaceRendererProps = $props();
   const metrics = $derived(Object.entries((surface.data ?? {}) as Record<string, unknown>));

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { act, type ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createWorkflow, type CapabilityBundle } from '@leyline/core';
+import { createWorkflow, type CapabilityBundle } from '@khorum-oss/leyline-core';
 import { WorkflowView } from './WorkflowView.jsx';
 import { FALLBACK_RENDERERS } from './fallback.jsx';
 import type { RegionRenderer, SurfaceRenderer } from './types.js';
-import { referenceDocument, settle } from '@leyline/core/testing';
+import { referenceDocument, settle } from '@khorum-oss/leyline-core/testing';
 
 (globalThis as Record<string, unknown>)['IS_REACT_ACT_ENVIRONMENT'] = true;
 

@@ -6,7 +6,7 @@ application source**.
 
 Four ways to run it. All four call `surface.handle(name, input)` and nothing
 else, which is the claim worth testing: if a scripted run and a language model
-needed different code paths, `@leyline/agent` would have failed at its one job.
+needed different code paths, `@khorum-oss/leyline-agent` would have failed at its one job.
 
 ## Scripted — no API key, no network
 
@@ -146,7 +146,7 @@ API. `@anthropic-ai/sdk` is a `devDependency` and is imported lazily, so `demo`
 and `repl` never load it.
 
 For MCP instead of a direct API loop, see
-[`@leyline/agent/mcp`](../../packages/agent/README.md#mcp) — same surface, same
+[`@khorum-oss/leyline-agent/mcp`](../../packages/agent/README.md#mcp) — same surface, same
 `tools()`, about forty lines.
 
 ## What the agent cannot do

@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@leyline-examples/scenario": "workspace:*",
-    "@leyline/core": "workspace:*",
-    "@leyline/svelte": "workspace:*",
+    "@khorum-oss/leyline-core": "workspace:*",
+    "@khorum-oss/leyline-svelte": "workspace:*",
     "svelte": "^5.42.2"
   },
   "devDependencies": {

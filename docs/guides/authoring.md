@@ -120,7 +120,7 @@ it declared, and the DSL checks that at compile time.
 ### The TypeScript DSL
 
 ```ts
-import { defineWorkflow } from '@leyline/dsl';
+import { defineWorkflow } from '@khorum-oss/leyline-dsl';
 
 export const onboarding = defineWorkflow({
   id: 'workspace-onboarding',
@@ -172,7 +172,7 @@ fixture.
 Validate directly:
 
 ```ts
-import { validateWorkflow } from '@leyline/schema';
+import { validateWorkflow } from '@khorum-oss/leyline-schema';
 
 const result = validateWorkflow(JSON.parse(source));
 for (const issue of result.issues) {
@@ -205,7 +205,7 @@ front of a user:
 | `capability.undeclared`       | A name the requirements block does not list          |
 
 The full catalogue is in the
-[`@leyline/schema` README](../../packages/schema/README.md#validation).
+[`@khorum-oss/leyline-schema` README](../../packages/schema/README.md#validation).
 
 **Cross-boundary targets** are the rule that surprises people. A transition may
 reach a root node, a sibling, or an ancestor — but not a node nested inside a
@@ -233,7 +233,7 @@ registration, a personalization, or an agent will refer to. Omit it for a
 The document is data, so drive it headlessly with no DOM and no framework:
 
 ```ts
-import { createWorkflow } from '@leyline/core';
+import { createWorkflow } from '@khorum-oss/leyline-core';
 
 const workflow = createWorkflow(onboarding, bundle, {
   mode: 'development',
@@ -262,7 +262,7 @@ inspecting the final snapshot.
 ## Writing to disk
 
 ```ts
-import { serializeWorkflow } from '@leyline/schema';
+import { serializeWorkflow } from '@khorum-oss/leyline-schema';
 
 writeFileSync('onboarding.json', serializeWorkflow(onboarding));
 ```

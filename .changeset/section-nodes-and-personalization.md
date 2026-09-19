@@ -1,6 +1,6 @@
 ---
-'@leyline/schema': minor
-'@leyline/core': minor
+'@khorum-oss/leyline-schema': minor
+'@khorum-oss/leyline-core': minor
 ---
 
 Section nodes: a node kind that contains other nodes and says how they run together — `one` child at a time or `many` at once. Children are named rather than nested, so transition targets stay plain identifiers. Containment is validated as its own structure, and a transition may not land inside a section it does not belong to.

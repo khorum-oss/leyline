@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { RegionRendererProps } from '@leyline/svelte';
+  import type { RegionRendererProps } from '@khorum-oss/leyline-svelte';
 
   /**
    * A region renderer decides where its children go. The slots carry a component

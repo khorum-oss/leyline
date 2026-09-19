@@ -1,8 +1,8 @@
 ---
-'@leyline/svelte': patch
+'@khorum-oss/leyline-svelte': patch
 ---
 
-`@leyline/svelte`: the package now ships the type declarations it always claimed
+`@khorum-oss/leyline-svelte`: the package now ships the type declarations it always claimed
 to. `package.json` pointed `types` at `./dist/index.d.ts`, and `svelte-package`
 was emitting no `.d.ts` files at all — so every TypeScript consumer of the
 published package silently got `any`.

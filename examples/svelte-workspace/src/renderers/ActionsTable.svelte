@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SurfaceRendererProps } from '@leyline/svelte';
+  import type { SurfaceRendererProps } from '@khorum-oss/leyline-svelte';
 
   /**
    * Nothing here knows what a guard is or when it ran. A surface arrives with

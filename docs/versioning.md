@@ -8,7 +8,7 @@ short definitions; this document holds the policy.
 
 ## Schema document version
 
-Carried by every document as `leylineVersion`, and owned by `@leyline/schema`.
+Carried by every document as `leylineVersion`, and owned by `@khorum-oss/leyline-schema`.
 
 Within a major version, evolution stays additive (AD8):
 
@@ -53,7 +53,7 @@ fails the build instead of shipping a contract that disagrees with the code.
 
 ## Package versions
 
-The `@leyline/*` packages version together through Changesets (`fixed` in
+The `@khorum-oss/leyline-*` packages version together through Changesets (`fixed` in
 `.changeset/config.json`). A release therefore never pairs a schema package with
 a runtime that reads a different contract.
 
@@ -94,7 +94,7 @@ same release. Removal waits for the next major, which is what makes the
 ## The first release is 1.0.0
 
 The packages do not pass through a 0.x line, and the reason is structural rather
-than a claim about confidence. The adapters take `@leyline/core` as a peer
+than a claim about confidence. The adapters take `@khorum-oss/leyline-core` as a peer
 dependency; Changesets majors a peer-dependent whenever its peer releases; and
 `fixed` grouping spreads that major across all seven packages. On a 0.x line
 `^0.1.0` does not cover `0.2.0`, so every runtime minor would escalate into a

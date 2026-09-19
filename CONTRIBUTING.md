@@ -20,20 +20,20 @@ surprises.
 
 ## Everyday commands
 
-| Command                              | What it does                                            |
-| ------------------------------------ | ------------------------------------------------------- |
-| `pnpm test`                          | Runs every package's tests once                         |
-| `pnpm test:watch`                    | Watches                                                 |
-| `pnpm --filter @leyline/schema test` | One package                                             |
-| `pnpm typecheck`                     | Project-wide `tsc --build`                              |
-| `pnpm lint` / `pnpm lint:fix`        | ESLint                                                  |
-| `pnpm format`                        | Prettier, writing                                       |
-| `pnpm boundaries`                    | Framework-free packages stay framework-free             |
-| `pnpm build`                         | Builds every package with tsup                          |
-| `pnpm bench`                         | Observation-cost benchmarks (see `docs/performance.md`) |
-| `pnpm changeset`                     | Records a release note for a change                     |
+| Command                                         | What it does                                            |
+| ----------------------------------------------- | ------------------------------------------------------- |
+| `pnpm test`                                     | Runs every package's tests once                         |
+| `pnpm test:watch`                               | Watches                                                 |
+| `pnpm --filter @khorum-oss/leyline-schema test` | One package                                             |
+| `pnpm typecheck`                                | Project-wide `tsc --build`                              |
+| `pnpm lint` / `pnpm lint:fix`                   | ESLint                                                  |
+| `pnpm format`                                   | Prettier, writing                                       |
+| `pnpm boundaries`                               | Framework-free packages stay framework-free             |
+| `pnpm build`                                    | Builds every package with tsup                          |
+| `pnpm bench`                                    | Observation-cost benchmarks (see `docs/performance.md`) |
+| `pnpm changeset`                                | Records a release note for a change                     |
 
-Tests resolve `@leyline/*` to workspace sources through the alias map in
+Tests resolve `@khorum-oss/leyline-*` to workspace sources through the alias map in
 `vitest.shared.ts`, so no build step sits between an edit and a test run.
 
 ## Before you open a pull request
@@ -44,9 +44,9 @@ them.
 
 Three gates deserve advance attention:
 
-1. **Dependency boundaries.** `@leyline/schema`, `@leyline/core`,
-   `@leyline/dsl`, `@leyline/agent`, and `@leyline/vanilla` reach no UI
-   framework, and only `@leyline/core` names the statechart engine — inside
+1. **Dependency boundaries.** `@khorum-oss/leyline-schema`, `@khorum-oss/leyline-core`,
+   `@khorum-oss/leyline-dsl`, `@khorum-oss/leyline-agent`, and `@khorum-oss/leyline-vanilla` reach no UI
+   framework, and only `@khorum-oss/leyline-core` names the statechart engine — inside
    `src/engine` alone (AD3). Both a lint rule and
    `scripts/check-boundaries.mjs` check this.
 2. **Adversarial tests.** A change to the schema or the control plane arrives
@@ -110,7 +110,7 @@ no.
 
 You do not publish from a laptop. A change carrying a changeset reaches `main`,
 the release workflow opens a _Version packages_ pull request, and merging that
-pull request publishes every `@leyline/*` package to npm together.
+pull request publishes every `@khorum-oss/leyline-*` package to npm together.
 
 That makes the version pull request the release review — the bumps are the
 compatibility claim and the changelog is what an upgrader reads — so the entry

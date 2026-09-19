@@ -1,8 +1,8 @@
 ---
-'@leyline/core': patch
+'@khorum-oss/leyline-core': patch
 ---
 
-`@leyline/core`: describing a transition now costs nothing when nothing is
+`@khorum-oss/leyline-core`: describing a transition now costs nothing when nothing is
 reading the trace stream. The engine flattened the active tree twice and
 compared the results on every published snapshot, and the only consumer of that
 work was a `workflow.transition` event that an unobserved stream then discarded.

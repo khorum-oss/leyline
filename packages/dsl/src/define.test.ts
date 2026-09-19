@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { serializeWorkflow, validateWorkflow } from '@leyline/schema';
+import { serializeWorkflow, validateWorkflow } from '@khorum-oss/leyline-schema';
 import { defineWorkflow, WorkflowDefinitionError } from './define.js';
 import { workspaceOnboarding } from './fixtures/workspace-onboarding.js';
 

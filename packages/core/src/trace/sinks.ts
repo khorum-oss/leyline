@@ -1,4 +1,4 @@
-import type { JsonValue } from '@leyline/schema';
+import type { JsonValue } from '@khorum-oss/leyline-schema';
 import type { TraceEvent, TraceSink, RedactionHook } from '../trace.js';
 import type { RuntimeMode } from '../contracts.js';
 

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Store } from '@leyline/core';
+import type { Store } from '@khorum-oss/leyline-core';
 
 /**
  * The reactivity bridge: the core's store contract, as a React hook.

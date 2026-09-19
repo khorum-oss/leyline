@@ -1,5 +1,5 @@
 /**
- * `@leyline/vanilla` — the direct DOM adapter.
+ * `@khorum-oss/leyline-vanilla` — the direct DOM adapter.
  *
  * The reference implementation for plain JavaScript, and proof that the core is
  * genuinely headless (G5). It renders a workflow with no framework at all,

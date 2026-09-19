@@ -13,7 +13,7 @@ import { bold, dim } from './format.js';
  *   chat   a real model, through ANTHROPIC_API_KEY.
  *
  * All four call `surface.handle(name, input)` and nothing else. If they needed
- * different code paths, `@leyline/agent` would have failed at its one job.
+ * different code paths, `@khorum-oss/leyline-agent` would have failed at its one job.
  */
 
 const USAGE = `

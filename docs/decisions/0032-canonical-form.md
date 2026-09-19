@@ -23,7 +23,7 @@ output had nine.
 **Canonical form is the parsed document.** Identifiers an author left out stay
 left out.
 
-`serializeWorkflow(document)` in `@leyline/schema` is that form as text: known
+`serializeWorkflow(document)` in `@khorum-oss/leyline-schema` is that form as text: known
 fields in schema order, unknown fields after, two-space indentation, trailing
 newline. It is a published function rather than a convention, because the
 fixture corpus is a contract two authoring languages are held to (brief §10) and

@@ -1,4 +1,4 @@
-# @leyline/dsl
+# @khorum-oss/leyline-dsl
 
 The TypeScript builder that emits schema documents.
 
@@ -85,7 +85,7 @@ always produces.
 `defineWorkflow` returns the document as authored — identifiers left out stay
 left out, because a derived identifier is derived
 ([decision 0032](../../docs/decisions/0032-canonical-form.md)). Write it to disk
-with `serializeWorkflow` from `@leyline/schema` and it will match a hand-written
+with `serializeWorkflow` from `@khorum-oss/leyline-schema` and it will match a hand-written
 file byte for byte.
 
 That equivalence is also the contract the planned Kotlin DSL is held to

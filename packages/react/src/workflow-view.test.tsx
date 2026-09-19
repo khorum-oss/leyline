@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { act, type ReactElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import type { WorkflowInstance } from '@leyline/core';
-import { openScenario, settle, type ScenarioContext } from '@leyline/core/testing';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
+import { openScenario, settle, type ScenarioContext } from '@khorum-oss/leyline-core/testing';
 import { WorkflowView } from './WorkflowView.jsx';
 import { FALLBACK_RENDERERS } from './fallback.jsx';
 import type { RegionRenderer, SurfaceRenderer } from './types.js';
@@ -16,7 +16,7 @@ import type { RegionRenderer, SurfaceRenderer } from './types.js';
  * disappears when workspace state changes" is a claim about what a user sees,
  * not about what a snapshot contains.
  *
- * Standing the scenario up lives in `@leyline/core/testing`, shared with the
+ * Standing the scenario up lives in `@khorum-oss/leyline-core/testing`, shared with the
  * Svelte and vanilla adapters. What is React-specific is below: components that
  * return elements, and a root that has to be driven inside `act`.
  */

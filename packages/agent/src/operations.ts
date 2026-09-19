@@ -1,5 +1,5 @@
-import { exportJsonSchemas, type Initiator } from '@leyline/schema';
-import type { WorkflowInstance } from '@leyline/core';
+import { exportJsonSchemas, type Initiator } from '@khorum-oss/leyline-schema';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 import { introspect } from './introspection.js';
 import type { ToolDefinition, ToolResult } from './types.js';
 

@@ -1,5 +1,5 @@
 {
-  "name": "@leyline/schema",
+  "name": "@khorum-oss/leyline-schema",
   "version": "0.0.0",
   "description": "Canonical Leyline schema: Zod definitions, validators, JSON Schema export, version rules",
   "license": "Apache-2.0",

@@ -20,7 +20,7 @@ report against the core rather than an acceptable cost.
 
 ## Decision
 
-`buildRenderPlan(resolver, region)` in `@leyline/core` resolves an active tree
+`buildRenderPlan(resolver, region)` in `@khorum-oss/leyline-core` resolves an active tree
 into a **render plan**: for each region, what claims it, its surfaces with what
 claims each of those, and its active children, all in reading order.
 

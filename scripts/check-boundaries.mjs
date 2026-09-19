@@ -2,8 +2,8 @@
 /**
  * Dependency boundary check (brief §6, §8).
  *
- * `@leyline/schema`, `@leyline/core`, `@leyline/agent`, `@leyline/dsl`, and
- * `@leyline/vanilla` must reach no UI framework, directly or through another
+ * `@khorum-oss/leyline-schema`, `@khorum-oss/leyline-core`, `@khorum-oss/leyline-agent`, `@khorum-oss/leyline-dsl`, and
+ * `@khorum-oss/leyline-vanilla` must reach no UI framework, directly or through another
  * workspace package. CI runs this alongside the lint rule that guards imports,
  * because a manifest can declare a dependency no source file has imported yet.
  */
@@ -12,11 +12,11 @@ import { join } from 'node:path';
 
 const PACKAGES_DIR = 'packages';
 const FRAMEWORK_FREE = new Set([
-  '@leyline/schema',
-  '@leyline/core',
-  '@leyline/dsl',
-  '@leyline/agent',
-  '@leyline/vanilla',
+  '@khorum-oss/leyline-schema',
+  '@khorum-oss/leyline-core',
+  '@khorum-oss/leyline-dsl',
+  '@khorum-oss/leyline-agent',
+  '@khorum-oss/leyline-vanilla',
 ]);
 const FRAMEWORKS = [
   /^react($|\/|-dom)/,
@@ -28,7 +28,7 @@ const FRAMEWORKS = [
 ];
 
 /** Only the internal facade may name the statechart engine (AD3). */
-const ENGINE_OWNER = '@leyline/core';
+const ENGINE_OWNER = '@khorum-oss/leyline-core';
 const ENGINE_DEPS = [/^xstate($|\/)/, /^@xstate\//];
 
 const manifests = new Map();

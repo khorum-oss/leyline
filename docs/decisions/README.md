@@ -8,23 +8,23 @@ decision.
 A decision record assumes the project vocabulary; [`../glossary.md`](../glossary.md)
 defines it, and a record introducing a new term adds it there in the same change.
 
-| ID   | Decision                                                  | Where it binds                    |
-| ---- | --------------------------------------------------------- | --------------------------------- |
-| AD1  | Canonical schema, DSL as a producer                       | `@leyline/schema`, `@leyline/dsl` |
-| AD2  | Names, not functions, in schema                           | schema, capability binding        |
-| AD3  | Statechart semantics behind an internal facade            | `@leyline/core/src/engine`        |
-| AD4  | Headless core with a store contract                       | `@leyline/core`, every adapter    |
-| AD5  | Ranked renderer resolution                                | adapter registries                |
-| AD6  | Resolved surfaces in the snapshot                         | core interpreter                  |
-| AD7  | Behaviour via prop-getters, not components                | core, adapters                    |
-| AD8  | Additive-only schema evolution                            | schema, `docs/versioning.md`      |
-| AD9  | Zod as the validation source of truth                     | `@leyline/schema`                 |
-| AD10 | Registries and workflows mutate through one control plane | core control plane                |
-| AD11 | Propose, validate, apply, revert                          | core control plane                |
-| AD12 | Stable, deterministic addressing                          | `@leyline/schema/src/ids.ts`      |
-| AD13 | Policy hooks on the control plane                         | core control plane                |
-| AD14 | The schema is inert: the security boundary                | `SECURITY.md`, invariant suites   |
-| AD15 | Observability as a single lightweight emission            | core trace stream                 |
+| ID   | Decision                                                  | Where it binds                                          |
+| ---- | --------------------------------------------------------- | ------------------------------------------------------- |
+| AD1  | Canonical schema, DSL as a producer                       | `@khorum-oss/leyline-schema`, `@khorum-oss/leyline-dsl` |
+| AD2  | Names, not functions, in schema                           | schema, capability binding                              |
+| AD3  | Statechart semantics behind an internal facade            | `@khorum-oss/leyline-core/src/engine`                   |
+| AD4  | Headless core with a store contract                       | `@khorum-oss/leyline-core`, every adapter               |
+| AD5  | Ranked renderer resolution                                | adapter registries                                      |
+| AD6  | Resolved surfaces in the snapshot                         | core interpreter                                        |
+| AD7  | Behaviour via prop-getters, not components                | core, adapters                                          |
+| AD8  | Additive-only schema evolution                            | schema, `docs/versioning.md`                            |
+| AD9  | Zod as the validation source of truth                     | `@khorum-oss/leyline-schema`                            |
+| AD10 | Registries and workflows mutate through one control plane | core control plane                                      |
+| AD11 | Propose, validate, apply, revert                          | core control plane                                      |
+| AD12 | Stable, deterministic addressing                          | `@khorum-oss/leyline-schema/src/ids.ts`                 |
+| AD13 | Policy hooks on the control plane                         | core control plane                                      |
+| AD14 | The schema is inert: the security boundary                | `SECURITY.md`, invariant suites                         |
+| AD15 | Observability as a single lightweight emission            | core trace stream                                       |
 
 Full statements live in [`../project-brief.md`](../project-brief.md), §5.
 

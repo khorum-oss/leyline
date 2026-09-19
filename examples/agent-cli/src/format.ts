@@ -1,4 +1,4 @@
-import type { ToolResult } from '@leyline/agent';
+import type { ToolResult } from '@khorum-oss/leyline-agent';
 
 /** Terminal colour, when the terminal wants it. */
 const tty = process.stdout.isTTY === true && process.env['NO_COLOR'] === undefined;

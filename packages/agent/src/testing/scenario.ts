@@ -1,16 +1,16 @@
-import { createWorkflow, type WorkflowInstance } from '@leyline/core';
-import { referenceDocument, scenarioBundle, settle } from '@leyline/core/testing';
+import { createWorkflow, type WorkflowInstance } from '@khorum-oss/leyline-core';
+import { referenceDocument, scenarioBundle, settle } from '@khorum-oss/leyline-core/testing';
 
 /**
  * The §2 scenario, hosted headlessly — what an agent connects to.
  *
- * The document and the capability bundle come from `@leyline/core/testing`, so
+ * The document and the capability bundle come from `@khorum-oss/leyline-core/testing`, so
  * an agent is tested against the same fixture every adapter is. What this file
  * adds is the part that is about agents rather than about the scenario: a
  * published renderer catalogue with something worth swapping in it.
  */
 
-import type { ScenarioContext } from '@leyline/core/testing';
+import type { ScenarioContext } from '@khorum-oss/leyline-core/testing';
 
 export type { ScenarioContext };
 export { settle };

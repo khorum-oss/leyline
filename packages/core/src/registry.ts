@@ -1,4 +1,4 @@
-import { deterministicId, type SurfaceType } from '@leyline/schema';
+import { deterministicId, type SurfaceType } from '@khorum-oss/leyline-schema';
 import type { ResolvedSurface } from './contracts.js';
 
 /**

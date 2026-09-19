@@ -1,7 +1,10 @@
 # Releasing
 
-Seven packages publish to npm under the `@leyline` scope: `schema`, `core`,
-`dsl`, `agent`, `react`, `svelte`, and `vanilla`. They version together (`fixed`
+Seven packages publish to npm under the `@khorum-oss` scope, each named for the
+part of Leyline it carries: `leyline-schema`, `leyline-core`, `leyline-dsl`,
+`leyline-agent`, `leyline-react`, `leyline-svelte`, and `leyline-vanilla`. The
+`@leyline` org was already taken; the scope is independent of the GitHub
+organisation either way. They version together (`fixed`
 in [`.changeset/config.json`](../.changeset/config.json)), so a release never
 pairs a schema package with a runtime that reads a different contract. A package
 version is not the [schema version](glossary.md#schema-version) a document
@@ -17,12 +20,9 @@ request.
 Three things, once, by someone with admin on both the npm org and the
 repository.
 
-**1. Claim the scope.** Create the `leyline` organisation at
-<https://www.npmjs.com/org/create>. The free plan publishes public packages,
-which is what these are — every package already carries
-`publishConfig.access: public`, so nothing in the repository changes. Creating
-the org is also the real availability check: no `@leyline/*` package exists on
-the registry today, but only the create form proves the scope itself is free.
+**1. Claim the scope.** The `khorum-oss` organisation publishes these. The free
+plan publishes public packages, which is what these are — every package already
+carries `publishConfig.access: public`, so nothing in the repository changes.
 
 **2. Mint a token.** npm → Access Tokens → **Granular Access Token**, with read
 and write on the `@leyline` scope, and an expiry you will notice before it bites
@@ -61,8 +61,8 @@ the version numbers in `package.json` are never edited directly.
 
 ## The first release is 1.0.0
 
-Not an accident of the tooling, and not a soft launch. `@leyline/react`,
-`@leyline/svelte`, `@leyline/vanilla`, and `@leyline/agent` take `@leyline/core`
+Not an accident of the tooling, and not a soft launch. `@khorum-oss/leyline-react`,
+`@khorum-oss/leyline-svelte`, `@khorum-oss/leyline-vanilla`, and `@khorum-oss/leyline-agent` take `@khorum-oss/leyline-core`
 as a **peer** dependency, and Changesets majors a peer-dependent whenever its
 peer releases. Under `fixed` grouping that major reaches all seven packages, so
 the first release lands on 1.0.0 whatever the changesets say — and, left alone,
@@ -113,7 +113,7 @@ npm page after the first release.
 ## Using the packages before, or without, publishing
 
 Inside this repository, nothing is needed: `pnpm-workspace.yaml` covers
-`examples/*`, and the examples import `@leyline/core` exactly as an application
+`examples/*`, and the examples import `@khorum-oss/leyline-core` exactly as an application
 would.
 
 From a project outside the repository, link the built packages:
@@ -126,8 +126,8 @@ pnpm build   # dist/ is what a consumer resolves
 // package.json of the consuming project
 {
   "dependencies": {
-    "@leyline/core": "link:../leyline/packages/core",
-    "@leyline/react": "link:../leyline/packages/react",
+    "@khorum-oss/leyline-core": "link:../leyline/packages/core",
+    "@khorum-oss/leyline-react": "link:../leyline/packages/react",
   },
 }
 ```
@@ -137,7 +137,7 @@ monorepo's own `node_modules`, which is why it works before anything is on the
 registry.
 
 `pnpm pack` tarballs do not, on their own: the tarball's `package.json` asks for
-`@leyline/schema` by name and version, and the registry has no such package yet.
+`@khorum-oss/leyline-schema` by name and version, and the registry has no such package yet.
 Tarballs are for inspecting what a release will contain —
 
 ```bash
@@ -153,9 +153,8 @@ tar tzf /tmp/leyline-tarballs/leyline-core-*.tgz
 GitHub Packages is the usual reason to ask. It is a real option and it is not
 free of cost:
 
-- The scope must match the GitHub organisation, so all seven packages become
-  `@khorum-oss/*`, and every import in every document and example changes with
-  them.
+- The scope must match the GitHub organisation — which it already does, so
+  nothing would need renaming.
 - Consumers authenticate even for public packages: every machine and every CI
   job that installs them needs a GitHub token in `.npmrc`. That includes yours.
 - Publishing to both means keeping two scopes in step, which is a permanent tax
@@ -163,8 +162,7 @@ free of cost:
 
 If it is wanted anyway, the workflow changes little: point `registry-url` at
 `https://npm.pkg.github.com`, and publish with the `GITHUB_TOKEN` the workflow
-already holds instead of `NPM_TOKEN`. The renaming is the work, not the
-plumbing.
+already holds instead of `NPM_TOKEN`.
 
 A private registry of your own (Verdaccio, Artifactory, Cloudsmith) is the same
 shape: one `registry-url`, one token, no renaming, and the burden of running it.

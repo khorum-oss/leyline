@@ -1,5 +1,5 @@
 /**
- * `@leyline/core` — the headless Leyline runtime.
+ * `@khorum-oss/leyline-core` — the headless Leyline runtime.
  *
  * Zero framework dependencies (G4). Distributed as compiled JavaScript with
  * TypeScript declarations, usable directly from plain JS. Every adapter bridges

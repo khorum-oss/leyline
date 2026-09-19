@@ -1,12 +1,12 @@
 /**
- * `@leyline/agent` — the control plane, packaged for machine consumers.
+ * `@khorum-oss/leyline-agent` — the control plane, packaged for machine consumers.
  *
  * This package adds no capability the control plane lacks (G9). It packages
  * introspection that reads like documentation, operation descriptors carrying
  * the published JSON Schema, structured errors an agent can act on, and the
  * identity boundary between an untrusted caller and the control plane.
  *
- * Nothing here speaks a transport. `@leyline/agent/mcp` builds an MCP server
+ * Nothing here speaks a transport. `@khorum-oss/leyline-agent/mcp` builds an MCP server
  * from this surface, and its SDK is an optional peer — anyone targeting a
  * different tool-calling format uses the definitions directly.
  */

@@ -1,12 +1,12 @@
 ---
-'@leyline/core': minor
-'@leyline/react': patch
-'@leyline/svelte': patch
-'@leyline/vanilla': patch
-'@leyline/agent': patch
+'@khorum-oss/leyline-core': minor
+'@khorum-oss/leyline-react': patch
+'@khorum-oss/leyline-svelte': patch
+'@khorum-oss/leyline-vanilla': patch
+'@khorum-oss/leyline-agent': patch
 ---
 
-`@leyline/core`: the parts of the renderer contract that were identical in three
+`@khorum-oss/leyline-core`: the parts of the renderer contract that were identical in three
 adapters now live here, which is where the constitution says they belong.
 
 - `SurfaceRendererProps` and `RegionRendererPropsOf<TSurfaceSlot, TRegionSlot>`
@@ -18,7 +18,7 @@ adapters now live here, which is where the constitution says they belong.
   for `description`, and the reason it is conditional is
   `exactOptionalPropertyTypes` — a constraint from this package, so the
   ready-made object belongs here too.
-- `@leyline/core/testing` now publishes the §2 conformance scenario:
+- `@khorum-oss/leyline-core/testing` now publishes the §2 conformance scenario:
   `referenceDocument`, `scenarioBundle`, `scenarioCatalogue`, `openScenario`,
   `applyChange`, `swapActionsToCardGrid`. Standing the scenario up is not
   framework work, and an adapter author outside this repository gets the same

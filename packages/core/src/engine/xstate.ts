@@ -1,5 +1,9 @@
 import { assign, createActor, fromPromise, setup, type AnyActorRef, type StateValue } from 'xstate';
-import { buildContainment, type WorkflowDocument, type WorkflowNode } from '@leyline/schema';
+import {
+  buildContainment,
+  type WorkflowDocument,
+  type WorkflowNode,
+} from '@khorum-oss/leyline-schema';
 import type { WorkflowEvent, WorkflowStatus } from '../contracts.js';
 import type { BoundCapabilities } from '../binding.js';
 import type { ActiveNodes, EngineInstance, EngineObserver } from './facade.js';

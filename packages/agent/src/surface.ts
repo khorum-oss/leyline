@@ -1,5 +1,5 @@
-import { LeylineError, type WorkflowInstance } from '@leyline/core';
-import type { Initiator, Issue } from '@leyline/schema';
+import { LeylineError, type WorkflowInstance } from '@khorum-oss/leyline-core';
+import type { Initiator, Issue } from '@khorum-oss/leyline-schema';
 import { OPERATIONS, OPERATIONS_BY_NAME } from './operations.js';
 import type { AgentSurface, AgentSurfaceOptions, ToolDefinition, ToolResult } from './types.js';
 

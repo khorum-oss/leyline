@@ -1,4 +1,4 @@
-import type { Store } from '@leyline/core';
+import type { Store } from '@khorum-oss/leyline-core';
 
 /**
  * Runs `render` with the current snapshot and again on every change, returning

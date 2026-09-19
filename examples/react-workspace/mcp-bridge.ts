@@ -1,8 +1,8 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { OPERATIONS, type AgentSurface, type ToolResult } from '@leyline/agent';
-import { serveOverMcp } from '@leyline/agent/mcp';
+import { OPERATIONS, type AgentSurface, type ToolResult } from '@khorum-oss/leyline-agent';
+import { serveOverMcp } from '@khorum-oss/leyline-agent/mcp';
 
 /**
  * What `claude` talks to when it changes the open page.

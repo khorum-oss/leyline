@@ -4,7 +4,7 @@ import {
   surfaceIdentity,
   type RegionPlan,
   type WorkflowInstance,
-} from '@leyline/core';
+} from '@khorum-oss/leyline-core';
 import { fallbackRegion, fallbackSurface } from './fallback.js';
 import type { RegionRenderer, RegionSlot, SurfaceRenderer, SurfaceSlot } from './types.js';
 

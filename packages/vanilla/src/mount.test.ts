@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 import {
   applyChange,
   openScenario,
   settle,
   swapActionsToCardGrid,
   type ScenarioContext,
-} from '@leyline/core/testing';
+} from '@khorum-oss/leyline-core/testing';
 import { mount } from './mount.js';
 import { FALLBACK_RENDERERS } from './fallback.js';
 import type { RegionRenderer, SurfaceRenderer } from './types.js';
@@ -18,7 +18,7 @@ import type { RegionRenderer, SurfaceRenderer } from './types.js';
  * capabilities, the same control plane, and nothing between them and the DOM
  * but this package.
  *
- * Standing the scenario up comes from `@leyline/core/testing`, the same as it
+ * Standing the scenario up comes from `@khorum-oss/leyline-core/testing`, the same as it
  * does for React and Svelte. The renderers below are the whole difference:
  * without a framework, a renderer returns a `Node`.
  */

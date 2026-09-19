@@ -33,7 +33,7 @@ TypeScript DSL. The seven security invariants each carry an adversarial suite
 that runs as a required gate.
 
 Publishing is wired and waiting on the button: merging the changesets on `main`
-opens a version pull request, and merging that one publishes `@leyline/*` to npm
+opens a version pull request, and merging that one publishes `@khorum-oss/leyline-*` to npm
 at 1.0.0 — [`docs/releasing.md`](docs/releasing.md) covers the one-time npm
 setup and how to use the packages from another project before then.
 
@@ -53,7 +53,7 @@ flowchart LR
 
     DOC["Schema document<br/>names, never functions"]
     BUNDLE["Capability bundle<br/>guards · services · data sources"]
-    CORE["@leyline/core<br/>interpreter · store<br/>control plane · trace stream"]
+    CORE["@khorum-oss/leyline-core<br/>interpreter · store<br/>control plane · trace stream"]
     SNAP["Snapshot<br/>resolved surfaces"]
 
     subgraph render["Appearance — swap freely"]
@@ -86,17 +86,17 @@ See [`docs/architecture.md`](docs/architecture.md) for the mechanisms in detail.
 
 ## Packages
 
-| Package                                | Responsibility                                                                                            | Framework deps |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
-| [`@leyline/schema`](packages/schema)   | Zod definitions, validators, JSON Schema export, version rules, change-description schemas                | none           |
-| [`@leyline/core`](packages/core)       | Interpreter, store, capability binding, registries, control plane, change log, policy hooks, trace stream | none           |
-| [`@leyline/dsl`](packages/dsl)         | TypeScript builder emitting validated schema documents                                                    | none           |
-| [`@leyline/agent`](packages/agent)     | Introspection, operation descriptors, MCP server adapter                                                  | none           |
-| [`@leyline/react`](packages/react)     | React reactivity bridge, `WorkflowView`, registry helpers                                                 | React          |
-| [`@leyline/svelte`](packages/svelte)   | Svelte store bridge and component                                                                         | Svelte         |
-| [`@leyline/vanilla`](packages/vanilla) | Direct DOM adapter; reference implementation for plain JS                                                 | none           |
+| Package                                           | Responsibility                                                                                            | Framework deps |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
+| [`@khorum-oss/leyline-schema`](packages/schema)   | Zod definitions, validators, JSON Schema export, version rules, change-description schemas                | none           |
+| [`@khorum-oss/leyline-core`](packages/core)       | Interpreter, store, capability binding, registries, control plane, change log, policy hooks, trace stream | none           |
+| [`@khorum-oss/leyline-dsl`](packages/dsl)         | TypeScript builder emitting validated schema documents                                                    | none           |
+| [`@khorum-oss/leyline-agent`](packages/agent)     | Introspection, operation descriptors, MCP server adapter                                                  | none           |
+| [`@khorum-oss/leyline-react`](packages/react)     | React reactivity bridge, `WorkflowView`, registry helpers                                                 | React          |
+| [`@khorum-oss/leyline-svelte`](packages/svelte)   | Svelte store bridge and component                                                                         | Svelte         |
+| [`@khorum-oss/leyline-vanilla`](packages/vanilla) | Direct DOM adapter; reference implementation for plain JS                                                 | none           |
 
-`@leyline/devtools` and `@leyline/otel` follow after v1.
+`@khorum-oss/leyline-devtools` and `@khorum-oss/leyline-otel` follow after v1.
 
 ## What it looks like
 
@@ -179,7 +179,7 @@ pnpm --filter @leyline-examples/vanilla-workspace dev   # no framework at all
 ```
 
 The fourth needs no browser. [`agent-cli`](examples/agent-cli) drives the same
-workflow through `@leyline/agent` — scripted, interactive, or by a real model:
+workflow through `@khorum-oss/leyline-agent` — scripted, interactive, or by a real model:
 
 ```bash
 pnpm --filter @leyline-examples/agent-cli demo   # no API key, no network

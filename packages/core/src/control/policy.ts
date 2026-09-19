@@ -1,4 +1,4 @@
-import type { Change, Initiator } from '@leyline/schema';
+import type { Change, Initiator } from '@khorum-oss/leyline-schema';
 import type { Policy, PolicyDecision, Proposal } from '../control-plane.js';
 import type { RuntimeMode } from '../contracts.js';
 

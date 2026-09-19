@@ -1,5 +1,5 @@
 {
-  "name": "@leyline/vanilla",
+  "name": "@khorum-oss/leyline-vanilla",
   "version": "0.0.0",
   "description": "Direct DOM adapter for Leyline; reference implementation for plain JavaScript",
   "license": "Apache-2.0",
@@ -47,9 +47,9 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@leyline/core": "workspace:^"
+    "@khorum-oss/leyline-core": "workspace:^"
   },
   "devDependencies": {
-    "@leyline/core": "workspace:^"
+    "@khorum-oss/leyline-core": "workspace:^"
   }
 }

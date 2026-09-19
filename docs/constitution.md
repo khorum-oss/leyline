@@ -31,8 +31,8 @@ suites gate merges.
 
 ## Article III — The core stays headless
 
-`@leyline/schema`, `@leyline/core`, `@leyline/dsl`, `@leyline/agent`, and
-`@leyline/vanilla` reach no UI framework, directly or transitively. A lint rule
+`@khorum-oss/leyline-schema`, `@khorum-oss/leyline-core`, `@khorum-oss/leyline-dsl`, `@khorum-oss/leyline-agent`, and
+`@khorum-oss/leyline-vanilla` reach no UI framework, directly or transitively. A lint rule
 guards imports and `scripts/check-boundaries.mjs` guards manifests; CI runs
 both.
 

@@ -1,4 +1,4 @@
-import type { RegionRenderer, SurfaceRenderer } from '@leyline/react';
+import type { RegionRenderer, SurfaceRenderer } from '@khorum-oss/leyline-react';
 
 /**
  * The application's components.

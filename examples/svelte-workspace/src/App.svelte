@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { WorkflowView } from '@leyline/svelte';
+  import { WorkflowView } from '@khorum-oss/leyline-svelte';
   import { HIDE_METRICS_ON_FREE, SWAP_TO_CARDS, applyChange } from '@leyline-examples/scenario';
-  import type { TraceEvent, WorkflowInstance } from '@leyline/core';
+  import type { TraceEvent, WorkflowInstance } from '@khorum-oss/leyline-core';
   import { start, type WorkspaceContext } from './workflow.js';
 
   /**
