@@ -1,6 +1,6 @@
 {
   "name": "@khorum-oss/leyline-svelte",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Svelte store bridge and component for Leyline",
   "license": "Apache-2.0",
   "author": "Leyline contributors",

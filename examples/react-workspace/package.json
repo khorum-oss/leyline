@@ -2,7 +2,7 @@
   "name": "@leyline-examples/react-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "The brief's \u00a72 scenario, running in a React application.",
+  "description": "The brief's §2 scenario, running in a React application.",
   "type": "module",
   "scripts": {
     "dev": "vite",

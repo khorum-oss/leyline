@@ -2,7 +2,7 @@
   "name": "@leyline-examples/agent-cli",
   "version": "0.0.0",
   "private": true,
-  "description": "Brief \u00a72 items 6 and 7, driven by an agent. Runs scripted or interactive with no API key; runs against a local claude/codex CLI over MCP, or against Claude with an API key.",
+  "description": "Brief §2 items 6 and 7, driven by an agent. Runs scripted or interactive with no API key; runs against a local claude/codex CLI over MCP, or against Claude with an API key.",
   "type": "module",
   "bin": {
     "leyline-agent": "./dist/index.js"
