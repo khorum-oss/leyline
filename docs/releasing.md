@@ -44,14 +44,23 @@ enough for anyone to install by accident.
 
 ```bash
 npm login
-bash scripts/bootstrap-publish.sh 123456   # the argument is your 2FA code
+bash scripts/bootstrap-publish.sh          # or: ... 123456, with a 2FA code
 ```
 
-The code is not optional if the account has two-factor authentication on writes,
-which it should: without one npm answers `403` and says so. A code is good for
-about thirty seconds and there are seven publishes, so if it expires partway
-through, run the script again with a fresh one — it skips whatever already
-reached the registry, because npm will not let a version be published twice.
+Two-factor authentication has to be on the account before this works — npm
+answers `403` for a write without it, and the trust commands in step 3 refuse to
+run at all. How you answer the challenge decides what the script does: an
+authenticator app produces a code, which can be passed as the argument, while a
+passkey or security key produces nothing typable and is answered in a browser
+instead.
+
+That is why the script packs with pnpm and publishes with npm. Packing needs
+pnpm — it is what rewrites `workspace:^` into `^0.0.1` inside the tarball — and
+publishing needs npm, because pnpm accepts nothing but a typed `--otp` code and
+has no browser flow to offer a passkey.
+
+If a run stops partway, run it again: it skips whatever already reached the
+registry, because npm will not let a version be published twice.
 
 The script bumps `0.0.0` to `0.0.1`, publishes all seven, and puts the manifests
 back — deliberately _without_ running `changeset version`, because the

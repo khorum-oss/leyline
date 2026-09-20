@@ -16,9 +16,11 @@
 #
 #     bash scripts/bootstrap-publish.sh [otp-code]
 #
-# An account with two-factor authentication on writes needs the code: without
-# it npm answers 403 and names 2FA in the message. If the code expires partway
-# through, run it again with a fresh one — what already published is skipped.
+# The [otp-code] argument is only useful for an account whose second factor is
+# an authenticator app. With a passkey or security key there is no code to
+# pass: npm opens a browser instead, which is why the publish below goes
+# through npm rather than pnpm. Either way, if a run stops partway, run it
+# again — what already published is skipped.
 set -euo pipefail
 
 PKGS=(schema core dsl agent react svelte vanilla)
@@ -39,8 +41,13 @@ for p in "${PKGS[@]}"; do
   [[ "$v" == "0.0.0" ]] || { echo "@khorum-oss/leyline-$p is at $v, expected 0.0.0 — has 'changeset version' already run?" >&2; exit 1; }
 done
 
-# Whatever happens below, the manifests go back to 0.0.0.
-restore() { git checkout -- packages/*/package.json; echo "==> manifests restored to 0.0.0"; }
+# Whatever happens below, the manifests go back to 0.0.0 and the tarballs go.
+TARBALLS=$(mktemp -d)
+restore() {
+  git checkout -- packages/*/package.json
+  rm -rf "$TARBALLS"
+  echo "==> manifests restored to 0.0.0"
+}
 trap restore EXIT
 
 echo "==> building"
@@ -69,11 +76,16 @@ for p in "${PKGS[@]}"; do
     skipped=$((skipped + 1))
     continue
   fi
-  ( cd "packages/$p" && pnpm publish \
-      --tag bootstrap \
-      --access public \
-      --no-git-checks \
-      ${OTP:+--otp "$OTP"} )
+
+  # pnpm packs, npm publishes. Packing is the part that needs pnpm: it is what
+  # rewrites `workspace:^` into `^0.0.1` inside the tarball. Publishing is the
+  # part that needs npm: npm can complete two-factor authentication in the
+  # browser, which is the only way a passkey or security key can answer, while
+  # pnpm accepts nothing but a typed `--otp` code.
+  tarball=$(cd "packages/$p" && pnpm pack --pack-destination "$TARBALLS" | tail -1)
+  [[ -f "$tarball" ]] || { echo "pnpm pack produced no tarball for $name" >&2; exit 1; }
+
+  npm publish "$tarball" --tag bootstrap --access public ${OTP:+--otp "$OTP"}
   published=$((published + 1))
 done
 echo "==> $published published, $skipped already there"
