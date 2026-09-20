@@ -55,16 +55,19 @@ function failedPackages(output) {
   const lines = output.split('\n').map((line) =>
     line
       // eslint-disable-next-line no-control-regex -- colour codes, not content
-      .replace(/\[[0-9;]*m/g, '')
+      .replace(/\u001b\[[0-9;]*m/g, '')
       .replace(/^🦋\s*(error\s*)?/u, '')
       .trim(),
   );
-  const header = lines.findIndex((line) => line === 'packages failed to publish:');
+  const header = lines.indexOf('packages failed to publish:');
   if (header === -1) return [];
 
   const failures = [];
   for (const line of lines.slice(header + 1)) {
-    const match = /^(?<name>@?[^@\s]+(?:\/[^@\s]+)?)@(?<version>\d[^\s]*)$/u.exec(line);
+    // The classes exclude `/` so a scoped name splits exactly one way. Letting
+    // both halves match it would give the engine a choice per slash, and a
+    // non-matching line would cost it every combination before giving up.
+    const match = /^(?<name>@?[^@\s/]+(?:\/[^@\s/]+)?)@(?<version>\d\S*)$/u.exec(line);
     if (!match) break; // the list ends at the first line that is not one
     failures.push({ name: match.groups.name, version: match.groups.version });
   }
