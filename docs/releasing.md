@@ -194,6 +194,23 @@ network failure finishes the job rather than doubling it. What it cannot do is
 take back a version: npm refuses to republish one, which is why `pnpm verify`
 runs again immediately before the publish rather than trusting the earlier run.
 
+**That check reads a document that lags.** The registry answer Changesets acts
+on is npm's aggregated package document, which is eventually consistent — for
+minutes after a publish it can still report a version as absent while the
+per-version document already serves it. Changesets then republishes, and npm
+refuses with `E409 Cannot publish over previously staged version`: a red run
+reporting a release that succeeded, which is what happened to
+`@khorum-oss/leyline-react@1.0.0` on the 1.0.0 release. Publish mode is entered
+by _every_ push to `main` with no changesets pending, so an ordinary docs merge
+landing behind a release is enough to trigger it.
+
+[`scripts/release.mjs`](../scripts/release.mjs) is what `pnpm release` runs for
+that reason. It publishes exactly as before, and when the publish fails it asks
+the registry about each package named in the failure — the per-version
+document, the one already serving. A failure whose version is on the registry
+is a publish that happened, and the run is allowed to pass. A version that is
+genuinely missing still fails the job.
+
 **The third-party actions are pinned to commits.** `pnpm/action-setup` and
 `changesets/action` are referenced by full commit SHA with the version in a
 trailing comment, because this job holds a token that can publish to npm and
