@@ -44,8 +44,14 @@ enough for anyone to install by accident.
 
 ```bash
 npm login
-bash scripts/bootstrap-publish.sh          # or: ... <otp-code>
+bash scripts/bootstrap-publish.sh 123456   # the argument is your 2FA code
 ```
+
+The code is not optional if the account has two-factor authentication on writes,
+which it should: without one npm answers `403` and says so. A code is good for
+about thirty seconds and there are seven publishes, so if it expires partway
+through, run the script again with a fresh one — it skips whatever already
+reached the registry, because npm will not let a version be published twice.
 
 The script bumps `0.0.0` to `0.0.1`, publishes all seven, and puts the manifests
 back — deliberately _without_ running `changeset version`, because the

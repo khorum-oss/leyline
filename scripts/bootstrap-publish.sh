@@ -15,6 +15,10 @@
 # Run from the repository root, after `npm login`:
 #
 #     bash scripts/bootstrap-publish.sh [otp-code]
+#
+# An account with two-factor authentication on writes needs the code: without
+# it npm answers 403 and names 2FA in the message. If the code expires partway
+# through, run it again with a fresh one — what already published is skipped.
 set -euo pipefail
 
 PKGS=(schema core dsl agent react svelte vanilla)
@@ -48,13 +52,31 @@ for p in "${PKGS[@]}"; do
 done
 
 echo "==> publishing under the 'bootstrap' tag"
+# One package at a time, skipping any that is already up. A one-time password
+# is good for about thirty seconds and there are seven publishes here, so a
+# run can plausibly die halfway — and npm will not let a version be published
+# twice, which would turn a half-finished run into a permanent obstacle. This
+# way, re-running with a fresh code finishes the job instead of colliding with
+# what the last one managed.
+#
 # --no-git-checks: the manifests are deliberately dirty right now, and this is
 # not the branch a real release comes from.
-pnpm -r --filter "./packages/**" publish \
-  --tag bootstrap \
-  --access public \
-  --no-git-checks \
-  ${OTP:+--otp "$OTP"}
+published=0 skipped=0
+for p in "${PKGS[@]}"; do
+  name="@khorum-oss/leyline-$p"
+  if npm view "$name@0.0.1" version >/dev/null 2>&1; then
+    echo "    $name@0.0.1 is already on the registry — skipping"
+    skipped=$((skipped + 1))
+    continue
+  fi
+  ( cd "packages/$p" && pnpm publish \
+      --tag bootstrap \
+      --access public \
+      --no-git-checks \
+      ${OTP:+--otp "$OTP"} )
+  published=$((published + 1))
+done
+echo "==> $published published, $skipped already there"
 
 echo "==> done. On the registry now:"
 for p in "${PKGS[@]}"; do
