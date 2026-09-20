@@ -1,6 +1,6 @@
 {
   "name": "@khorum-oss/leyline-react",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "React reactivity bridge, WorkflowView, and registry helpers for Leyline",
   "license": "Apache-2.0",
   "author": "Leyline contributors",

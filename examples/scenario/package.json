@@ -2,7 +2,7 @@
   "name": "@leyline-examples/scenario",
   "version": "0.0.0",
   "private": true,
-  "description": "The brief's \u00a72 scenario as data: the document, the capabilities its names refer to, and the catalogue every example publishes.",
+  "description": "The brief's §2 scenario as data: the document, the capabilities its names refer to, and the catalogue every example publishes.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

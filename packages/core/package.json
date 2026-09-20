@@ -1,6 +1,6 @@
 {
   "name": "@khorum-oss/leyline-core",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Headless Leyline runtime: interpreter, store, capability binding, control plane, trace stream",
   "license": "Apache-2.0",
   "author": "Leyline contributors",

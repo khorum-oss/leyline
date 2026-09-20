@@ -1,6 +1,6 @@
 {
   "name": "@khorum-oss/leyline-dsl",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "TypeScript builder DSL emitting validated Leyline schema documents",
   "license": "Apache-2.0",
   "author": "Leyline contributors",
