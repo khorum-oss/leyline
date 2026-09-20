@@ -4,9 +4,8 @@
 #
 # npm configures a trusted publisher against a package the registry already
 # knows, so the seven records have to exist before OIDC can be turned on. This
-# publishes 0.0.1 of each under the `bootstrap` dist-tag — not `latest`, so
-# nothing installs it by accident — and puts the manifests back at 0.0.0
-# afterwards: the accumulated changesets are what make the first real release
+# publishes 0.0.1 of each under a `bootstrap` dist-tag and puts the manifests
+# back at 0.0.0 afterwards: the accumulated changesets are what make the first real release
 # 1.0.0, and `changeset version` must still find them, and still find 0.0.0.
 #
 # It is kept after it has served its purpose because it is the record of how
@@ -90,7 +89,20 @@ for p in "${PKGS[@]}"; do
 done
 echo "==> $published published, $skipped already there"
 
+# Asking for the exact version rather than the package: npm's aggregated
+# package document is eventually consistent and can answer 404 for minutes
+# after a first publish, while the per-version document is already serving.
+# A `(missing)` here means the publish did not happen; it does not mean the
+# package is unfindable.
 echo "==> done. On the registry now:"
 for p in "${PKGS[@]}"; do
-  printf '  %-32s %s\n' "@khorum-oss/leyline-$p" "$(npm view "@khorum-oss/leyline-$p" dist-tags --json 2>/dev/null | tr -d '\n ' || echo '(not found)')"
+  name="@khorum-oss/leyline-$p"
+  printf '  %-34s %s\n' "$name" "$(npm view "$name@0.0.1" version 2>/dev/null || echo '(missing)')"
 done
+
+cat <<'NOTE'
+
+Note: npm points `latest` at the first version a package ever publishes,
+whatever `--tag` asked for, so 0.0.1 is installable by default until the
+first real release moves it. `docs/releasing.md` retires it afterwards.
+NOTE

@@ -39,8 +39,12 @@ tokens carrying the bypass-2FA option too.
 laptop, and the one release that carries no provenance — attestations are minted
 by the CI runner holding the OIDC token, and npm will not let a version be
 republished to add one later. So what goes out here is 0.0.1 under a `bootstrap`
-dist-tag rather than `latest`: enough for the registry to know the names, not
-enough for anyone to install by accident.
+dist-tag: enough for the registry to know the names, and marked as what it is.
+
+The tag does not keep it out of the way, though — npm points `latest` at the
+first version a package ever publishes, whatever `--tag` asked for. So 0.0.1 is
+what `npm install` resolves to until the first real release moves `latest`,
+which is one more reason not to leave the rest of this setup half-done.
 
 ```bash
 npm login
