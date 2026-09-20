@@ -1,4 +1,4 @@
-# @leyline/svelte
+# @khorum-oss/leyline-svelte
 
 The Svelte adapter.
 
@@ -14,7 +14,7 @@ See the [glossary](../../docs/glossary.md#the-runtime) for **store contract**,
 
 ```svelte
 <script lang="ts">
-  import { WorkflowView } from '@leyline/svelte';
+  import { WorkflowView } from '@khorum-oss/leyline-svelte';
   const { workflow } = $props();
 </script>
 
@@ -28,7 +28,7 @@ data source already attached:
 
 ```svelte
 <script lang="ts">
-  import type { SurfaceRendererProps } from '@leyline/svelte';
+  import type { SurfaceRendererProps } from '@khorum-oss/leyline-svelte';
   const { surface }: SurfaceRendererProps = $props();
   const rows = $derived((surface.data ?? []) as Action[]);
 </script>
@@ -44,7 +44,7 @@ A region renderer takes named slots and decides where each goes:
 
 ```svelte
 <script lang="ts">
-  import type { RegionRendererProps } from '@leyline/svelte';
+  import type { RegionRendererProps } from '@khorum-oss/leyline-svelte';
   const { surfaces, regions }: RegionRendererProps = $props();
   const aside = $derived(regions.find((slot) => slot.id === 'navigation'));
   const rest = $derived(regions.filter((slot) => slot.id !== 'navigation'));

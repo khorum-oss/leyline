@@ -1,5 +1,5 @@
 {
-  "name": "@leyline/svelte",
+  "name": "@khorum-oss/leyline-svelte",
   "version": "0.0.0",
   "description": "Svelte store bridge and component for Leyline",
   "license": "Apache-2.0",
@@ -45,12 +45,12 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@leyline/core": "workspace:^",
+    "@khorum-oss/leyline-core": "workspace:^",
     "svelte": "^5.0.0"
   },
   "devDependencies": {
-    "@leyline/agent": "workspace:^",
-    "@leyline/core": "workspace:^",
+    "@khorum-oss/leyline-agent": "workspace:^",
+    "@khorum-oss/leyline-core": "workspace:^",
     "@sveltejs/package": "^2.5.8",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "svelte": "^5.42.2"

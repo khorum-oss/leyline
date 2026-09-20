@@ -1,4 +1,4 @@
-import type { CapabilityBundle } from '@leyline/core';
+import type { CapabilityBundle } from '@khorum-oss/leyline-core';
 
 /**
  * What the document's names refer to.

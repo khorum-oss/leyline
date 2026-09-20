@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SurfaceRendererProps } from '@leyline/svelte';
+  import type { SurfaceRendererProps } from '@khorum-oss/leyline-svelte';
 
   /**
    * Behaviour arrives as a prop-getter rather than as a component the core

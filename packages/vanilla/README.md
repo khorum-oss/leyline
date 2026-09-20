@@ -1,4 +1,4 @@
-# @leyline/vanilla
+# @khorum-oss/leyline-vanilla
 
 The direct DOM adapter, and the reference implementation for plain JavaScript.
 

@@ -16,7 +16,7 @@ defines it.
 | 3     | **React adapter** — reactivity bridge, ranked renderer registry, `WorkflowView`                                                                                                                                                                                                                                         | §2 items 1–5 run end to end in a React application; the adapter holds no workflow logic                                                                            |
 | 4     | **Agent interface** — introspection, operation descriptors, MCP adapter                                                                                                                                                                                                                                                 | §2 items 6–7 run end to end with a real agent driving the React application through MCP, with no access to application source                                      |
 | 5     | **TypeScript DSL** — builder emitting validated schema with compile-time node reference checking                                                                                                                                                                                                                        | The §2 workflow authored through the DSL emits a document byte-identical to the hand-written one                                                                   |
-| 6     | **Svelte and vanilla adapters**                                                                                                                                                                                                                                                                                         | §2 items 6–7 re-run against the SvelteKit application with no change to `@leyline/agent`; anything an adapter had to duplicate has moved into the core             |
+| 6     | **Svelte and vanilla adapters**                                                                                                                                                                                                                                                                                         | §2 items 6–7 re-run against the SvelteKit application with no change to `@khorum-oss/leyline-agent`; anything an adapter had to duplicate has moved into the core  |
 | 7     | **Hardening** — finalized threat model, observation-cost benchmarks, versioning policy, authoring guide, agent integration guide, migration guidance. The devtools inspector and the OpenTelemetry sink moved to post-v1 (see below)                                                                                    | Benchmarks show unobserved tracing within noise; `SECURITY.md` matches the shipped invariant suites                                                                |
 
 ## Stage order
@@ -58,7 +58,7 @@ What stage 7 settled:
   it, and [`tests/security.test.ts`](../tests/security.test.ts) fails if the
   document and the suites disagree in either direction — or if the required CI
   gate stops running a package that holds one. The gate had in fact gone narrow:
-  invariant suites in `@leyline/agent` and `@leyline/dsl` sat outside its project
+  invariant suites in `@khorum-oss/leyline-agent` and `@khorum-oss/leyline-dsl` sat outside its project
   filter, so they had quietly stopped counting as a gate.
 - **The cost of tracing has a number and a test.**
   [`performance.md`](performance.md) records both. An unobserved `emit` runs
@@ -77,8 +77,8 @@ What stage 7 settled:
   glossary got: a document that has to stay true gets a test that says so.
 
 **Post-v1**, in the order the project has already asked for them:
-`@leyline/devtools`, an inspector over the trace stream and the change log, and
-`@leyline/otel`, a sink bridging to OpenTelemetry. The delivery table above
+`@khorum-oss/leyline-devtools`, an inspector over the trace stream and the change log, and
+`@khorum-oss/leyline-otel`, a sink bridging to OpenTelemetry. The delivery table above
 listed both under stage 7 while brief §6 places them after v1; the contradiction
 had to resolve somewhere, and it resolved here.
 

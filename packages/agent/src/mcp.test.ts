@@ -6,7 +6,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import { createAgentSurface } from './surface.js';
 import { serveOverMcp } from './mcp.js';
 import { hostWorkflow, settle, type ScenarioContext } from './testing/scenario.js';
-import type { WorkflowInstance } from '@leyline/core';
+import type { WorkflowInstance } from '@khorum-oss/leyline-core';
 
 /**
  * Brief §2 items 6 and 7, performed by a real MCP client over a real transport

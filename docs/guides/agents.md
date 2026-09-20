@@ -13,7 +13,7 @@ Terms are defined in the [glossary](../glossary.md):
 ## The premise
 
 An agent gets the control plane a developer gets. Not a parallel API, not a
-restricted mirror — the same one, with the same checks. `@leyline/agent` adds no
+restricted mirror — the same one, with the same checks. `@khorum-oss/leyline-agent` adds no
 capability the control plane lacks (G9); what it adds is packaging: introspection
 that reads like documentation, operation descriptors carrying the published JSON
 Schema, and the identity boundary.
@@ -42,7 +42,7 @@ There is no operation that skips it and no privileged initiator (I6).
 ## Standing up a surface
 
 ```ts
-import { createAgentSurface } from '@leyline/agent';
+import { createAgentSurface } from '@khorum-oss/leyline-agent';
 
 const surface = createAgentSurface(workflow, {
   initiator: { kind: 'agent', label: 'card-grid-swap' },
@@ -58,7 +58,7 @@ because whoever accepted the connection already decided.
 ```ts
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { serveOverMcp } from '@leyline/agent/mcp';
+import { serveOverMcp } from '@khorum-oss/leyline-agent/mcp';
 
 const server = new Server({ name: 'leyline', version: '1' }, { capabilities: { tools: {} } });
 
@@ -69,7 +69,7 @@ serveOverMcp(server, surface, {
 ```
 
 The request schemas arrive as arguments rather than imports, which is why
-`@leyline/agent` has no dependency on the MCP SDK at all. Transport and
+`@khorum-oss/leyline-agent` has no dependency on the MCP SDK at all. Transport and
 authentication stay yours.
 
 Targeting something other than MCP? `surface.tools()` returns the operation
@@ -152,7 +152,7 @@ permissive, and production refuses agent and end-user initiators outright. A
 production deployment that wants agents has to say what they may do.
 
 ```ts
-import { allOf, forInitiator, allowKinds, requireConfirmation } from '@leyline/core';
+import { allOf, forInitiator, allowKinds, requireConfirmation } from '@khorum-oss/leyline-core';
 
 const policy = allOf(
   forInitiator('agent', allowKinds('renderer.register', 'section.reorder-children')),
@@ -273,4 +273,4 @@ permitted is dropped rather than restored, and `dropped` says which and why
 
 - [Authoring](authoring.md) — writing the documents an agent will operate on
 - [Security](../../SECURITY.md) — the threat model and the seven invariants
-- [`@leyline/agent`](../../packages/agent/README.md) — the package reference
+- [`@khorum-oss/leyline-agent`](../../packages/agent/README.md) — the package reference

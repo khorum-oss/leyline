@@ -26,8 +26,8 @@
     "noEmitOnError": true,
     "baseUrl": ".",
     "paths": {
-      "@leyline/core/testing": ["packages/core/src/testing/index.ts"],
-      "@leyline/*": ["packages/*/src/index.ts"]
+      "@khorum-oss/leyline-core/testing": ["packages/core/src/testing/index.ts"],
+      "@khorum-oss/leyline-*": ["packages/*/src/index.ts"]
     }
   }
 }

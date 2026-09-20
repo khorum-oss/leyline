@@ -9,7 +9,7 @@ pnpm install
 pnpm --filter @leyline-examples/react-workspace dev
 ```
 
-`dev` resolves `@leyline/*` to the workspace sources, so a fresh clone needs no
+`dev` resolves `@khorum-oss/leyline-*` to the workspace sources, so a fresh clone needs no
 build first and an edit under `packages/` reaches the page immediately. Building
 the example is the other way round — it resolves through each package's
 published `exports`, so `pnpm build` at the root has to come first:

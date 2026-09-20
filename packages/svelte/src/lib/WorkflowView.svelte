@@ -1,5 +1,5 @@
 <script lang="ts" generics="TContext extends Record<string, unknown>">
-  import { buildRenderPlan, type WorkflowInstance } from '@leyline/core';
+  import { buildRenderPlan, type WorkflowInstance } from '@khorum-oss/leyline-core';
   import { toSvelteStore } from './store.js';
   import { toRegionSlot } from './plan.js';
 

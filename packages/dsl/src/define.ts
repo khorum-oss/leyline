@@ -3,7 +3,7 @@ import {
   parseWorkflow,
   validateWorkflow,
   type WorkflowDocument,
-} from '@leyline/schema';
+} from '@khorum-oss/leyline-schema';
 import type { ContextFieldSpec, NodeSpec } from './types.js';
 
 /**

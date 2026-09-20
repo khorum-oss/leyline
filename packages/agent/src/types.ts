@@ -1,9 +1,9 @@
-import type { Attestation, InitiatorKind, Issue } from '@leyline/schema';
+import type { Attestation, InitiatorKind, Issue } from '@khorum-oss/leyline-schema';
 
 /**
  * What a machine consumer sees.
  *
- * `@leyline/agent` adds no capability the control plane lacks (G9). It packages
+ * `@khorum-oss/leyline-agent` adds no capability the control plane lacks (G9). It packages
  * the same operations as self-describing tool definitions, attaches the identity
  * a transport authenticated, and turns every failure into something an agent can
  * act on rather than a stack trace.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { act, type ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createFakeStore } from '@leyline/core/testing';
+import { createFakeStore } from '@khorum-oss/leyline-core/testing';
 import { useLeylineStore } from './index.js';
 
 // React requires this flag before `act` may be used outside a test renderer.

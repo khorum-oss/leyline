@@ -283,7 +283,7 @@ rather than merely arranging it.
 
 ## The runtime
 
-What `@leyline/core` exposes. Headless: zero framework dependencies, testable
+What `@khorum-oss/leyline-core` exposes. Headless: zero framework dependencies, testable
 with no DOM (G4).
 
 ### Store contract
@@ -346,7 +346,7 @@ framework work, which writing a second and third adapter made obvious
 ### Adapter
 
 A package bridging the **store contract** to one framework's reactivity:
-`@leyline/react`, `@leyline/svelte`, `@leyline/vanilla`. Adapters stay thin;
+`@khorum-oss/leyline-react`, `@khorum-oss/leyline-svelte`, `@khorum-oss/leyline-vanilla`. Adapters stay thin;
 logic appearing in two of them belongs in the core instead (G5).
 
 ### Engine facade
@@ -714,7 +714,7 @@ Governed by
 The machine-readable name of what was violated — `graph.dangling-target`,
 `capability.undeclared`, `id.ambiguous`. An agent branches on the rule rather
 than parsing the message. The full catalogue lives in the
-[`@leyline/schema` README](../packages/schema/README.md#validation).
+[`@khorum-oss/leyline-schema` README](../packages/schema/README.md#validation).
 
 ### Normalization
 
@@ -823,7 +823,7 @@ and the definition of done a reviewer holds a pull request to.
 
 `scripts/check-boundaries.mjs`, which walks workspace manifests and fails if a
 framework-free package reaches a UI framework directly or transitively, or if
-anything but `@leyline/core` names the statechart engine. Run in CI beside a
+anything but `@khorum-oss/leyline-core` names the statechart engine. Run in CI beside a
 lint rule doing the same job at import level, because a manifest can declare a
 dependency no source file has imported yet.
 
@@ -835,19 +835,19 @@ merge, and CI runs these as a separate required gate.
 
 ### Framework-free
 
-The property of `@leyline/schema`, `@leyline/core`, `@leyline/dsl`,
-`@leyline/agent`, and `@leyline/vanilla`: no dependency on any UI framework,
+The property of `@khorum-oss/leyline-schema`, `@khorum-oss/leyline-core`, `@khorum-oss/leyline-dsl`,
+`@khorum-oss/leyline-agent`, and `@khorum-oss/leyline-vanilla`: no dependency on any UI framework,
 direct or transitive, enforced by the **boundary check**.
 
 ---
 
 ## Where things live
 
-| Package                                                 | Holds                                                                                                 |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `@leyline/schema`                                       | The document definitions, validation, identifiers, change and trace vocabulary, JSON Schema artifacts |
-| `@leyline/core`                                         | Interpreter, store, binding, registries, control plane, change log, policy, trace stream              |
-| `@leyline/dsl`                                          | The TypeScript builder that emits documents                                                           |
-| `@leyline/agent`                                        | Introspection, operation descriptors, MCP adapter                                                     |
-| `@leyline/react`, `@leyline/svelte`, `@leyline/vanilla` | Adapters bridging the store contract                                                                  |
-| `@leyline/devtools`, `@leyline/otel`                    | Post-v1: inspector and OpenTelemetry sink                                                             |
+| Package                                                                                  | Holds                                                                                                 |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@khorum-oss/leyline-schema`                                                             | The document definitions, validation, identifiers, change and trace vocabulary, JSON Schema artifacts |
+| `@khorum-oss/leyline-core`                                                               | Interpreter, store, binding, registries, control plane, change log, policy, trace stream              |
+| `@khorum-oss/leyline-dsl`                                                                | The TypeScript builder that emits documents                                                           |
+| `@khorum-oss/leyline-agent`                                                              | Introspection, operation descriptors, MCP adapter                                                     |
+| `@khorum-oss/leyline-react`, `@khorum-oss/leyline-svelte`, `@khorum-oss/leyline-vanilla` | Adapters bridging the store contract                                                                  |
+| `@khorum-oss/leyline-devtools`, `@khorum-oss/leyline-otel`                               | Post-v1: inspector and OpenTelemetry sink                                                             |

@@ -1,11 +1,11 @@
-import type { CapabilityKind, Issue } from '@leyline/schema';
+import type { CapabilityKind, Issue } from '@khorum-oss/leyline-schema';
 
 /**
  * Errors name the problem (brief §8).
  *
  * Every failure identifies the path and identifier at fault in a shape an agent
  * can act on, not only a sentence a human can read. The issue shape itself
- * lives in `@leyline/schema` and is published as JSON Schema, so a binding
+ * lives in `@khorum-oss/leyline-schema` and is published as JSON Schema, so a binding
  * failure here and a validation issue there are one format.
  */
 

@@ -4,7 +4,7 @@ import {
   type Surface,
   type WorkflowDocument,
   type WorkflowNode,
-} from '@leyline/schema';
+} from '@khorum-oss/leyline-schema';
 import { LeylineError } from './errors.js';
 import { RendererRegistry, type RendererDefinition, type Resolution } from './registry.js';
 import { ControlPlane } from './control/plane.js';

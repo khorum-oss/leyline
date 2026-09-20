@@ -1,4 +1,4 @@
-import type { Issue, PolicyDecision, Proposal } from '@leyline/schema';
+import type { Issue, PolicyDecision, Proposal } from '@khorum-oss/leyline-schema';
 
 /**
  * The single mutation path over registries and workflows (AD10, AD11, AD13).
@@ -9,11 +9,17 @@ import type { Issue, PolicyDecision, Proposal } from '@leyline/schema';
 
 /**
  * Changes, proposals, records, and policy decisions are defined once in
- * `@leyline/schema` and published as JSON Schema, so a log line, an MCP tool
+ * `@khorum-oss/leyline-schema` and published as JSON Schema, so a log line, an MCP tool
  * result, and a devtools panel all speak one format. This module re-exports
  * them and adds only what the core itself introduces.
  */
-export type { Change, Proposal, ChangeRecord, PolicyDecision, Initiator } from '@leyline/schema';
+export type {
+  Change,
+  Proposal,
+  ChangeRecord,
+  PolicyDecision,
+  Initiator,
+} from '@khorum-oss/leyline-schema';
 
 export interface ValidationResult {
   readonly ok: boolean;
@@ -27,7 +33,7 @@ export type Policy = (proposal: Proposal) => PolicyDecision | Promise<PolicyDeci
 export interface OperationDescriptor {
   readonly name: string;
   readonly description: string;
-  /** JSON Schema exported from the Zod definitions in `@leyline/schema` (AD9). */
+  /** JSON Schema exported from the Zod definitions in `@khorum-oss/leyline-schema` (AD9). */
   readonly inputSchema: Readonly<Record<string, unknown>>;
   readonly outputSchema: Readonly<Record<string, unknown>>;
 }

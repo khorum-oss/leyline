@@ -1,4 +1,4 @@
-import type { RegionRenderer, SurfaceRenderer } from '@leyline/vanilla';
+import type { RegionRenderer, SurfaceRenderer } from '@khorum-oss/leyline-vanilla';
 
 /**
  * The application's renderers, with no framework underneath.

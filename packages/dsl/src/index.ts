@@ -1,5 +1,5 @@
 /**
- * `@leyline/dsl` — the TypeScript builder that emits schema documents.
+ * `@khorum-oss/leyline-dsl` — the TypeScript builder that emits schema documents.
  *
  * It produces the canonical document rather than standing beside it as a second
  * source of truth (AD1). Its value is the compile-time half: node references,

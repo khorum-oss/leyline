@@ -224,7 +224,7 @@ There is no v1→v2 migration to describe yet. When there is, it will live here.
 
 ### Package versions are a different number
 
-The `@leyline/*` packages version together through Changesets and follow semver
+The `@khorum-oss/leyline-*` packages version together through Changesets and follow semver
 against the TypeScript API. A schema document version bump does not force a
 package major, and a package major does not imply a document version change —
 they answer different questions. See [versioning](../versioning.md).

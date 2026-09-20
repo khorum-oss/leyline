@@ -8,7 +8,7 @@ short definitions; this document holds the policy.
 
 ## Schema document version
 
-Carried by every document as `leylineVersion`, and owned by `@leyline/schema`.
+Carried by every document as `leylineVersion`, and owned by `@khorum-oss/leyline-schema`.
 
 Within a major version, evolution stays additive (AD8):
 
@@ -53,7 +53,7 @@ fails the build instead of shipping a contract that disagrees with the code.
 
 ## Package versions
 
-The `@leyline/*` packages version together through Changesets (`fixed` in
+The `@khorum-oss/leyline-*` packages version together through Changesets (`fixed` in
 `.changeset/config.json`). A release therefore never pairs a schema package with
 a runtime that reads a different contract.
 
@@ -91,10 +91,22 @@ Nothing is removed in a minor release, including something deprecated in that
 same release. Removal waits for the next major, which is what makes the
 `@deprecated` tag a schedule rather than a threat.
 
-## Pre-1.0
+## The first release is 1.0.0
 
-The packages are pre-1.0. Until `@leyline/core` reaches 1.0.0, a minor bump may
-carry a breaking API change, which is what semver says a `0.x` minor means. The
-schema document version is already `1.0.0` and is governed by the rules above
-regardless — a document you write today is one this project has committed to
-reading.
+The packages do not pass through a 0.x line, and the reason is structural rather
+than a claim about confidence. The adapters take `@khorum-oss/leyline-core` as a peer
+dependency; Changesets majors a peer-dependent whenever its peer releases; and
+`fixed` grouping spreads that major across all seven packages. On a 0.x line
+`^0.1.0` does not cover `0.2.0`, so every runtime minor would escalate into a
+major for everything. Above 1.0.0 it does not, which is what makes an ordinary
+minor release possible at all. [`releasing.md`](releasing.md) holds the detail
+and the Changesets setting that depends on it.
+
+So the promise above is the promise from the first published version: the
+documented API is stable within a major, the three internal things named in this
+document stay outside it, and a breaking change arrives as a major with the
+deprecation schedule that precedes it.
+
+The schema document version is a separate `1.0.0` governed by the rules at the
+top of this document — a document you write today is one this project has
+committed to reading.

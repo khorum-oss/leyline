@@ -7,7 +7,7 @@ import {
   type JsonValue,
   type WorkflowDocument,
   type WorkflowNode,
-} from '@leyline/schema';
+} from '@khorum-oss/leyline-schema';
 import type { RegistryEntry, RendererRegistry } from '../registry.js';
 
 /**

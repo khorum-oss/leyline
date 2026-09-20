@@ -25,7 +25,7 @@ const frameworkImports = [
   },
   {
     group: ['xstate', 'xstate/*', '@xstate/*'],
-    message: 'XState stays behind the internal facade in @leyline/core (AD3).',
+    message: 'XState stays behind the internal facade in @khorum-oss/leyline-core (AD3).',
   },
 ];
 

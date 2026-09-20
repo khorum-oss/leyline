@@ -1,4 +1,4 @@
-import { mount, FALLBACK_RENDERERS } from '@leyline/vanilla';
+import { mount, FALLBACK_RENDERERS } from '@khorum-oss/leyline-vanilla';
 import {
   HIDE_METRICS_ON_FREE,
   SWAP_TO_CARDS,
@@ -6,7 +6,7 @@ import {
   start,
   type WorkspaceContext,
 } from '@leyline-examples/scenario';
-import type { TraceEvent, WorkflowInstance } from '@leyline/core';
+import type { TraceEvent, WorkflowInstance } from '@khorum-oss/leyline-core';
 import { ActionsTable, CardGrid, LinkButton, MetricsPanel, Panel, TextBlock } from './renderers.js';
 import '@leyline-examples/scenario/styles.css';
 

@@ -1,4 +1,4 @@
-import type { Store } from '@leyline/core';
+import type { Store } from '@khorum-oss/leyline-core';
 
 /**
  * The Svelte store bridge.

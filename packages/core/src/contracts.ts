@@ -1,4 +1,4 @@
-import type { NodeKind, SurfaceType } from '@leyline/schema';
+import type { NodeKind, SurfaceType } from '@khorum-oss/leyline-schema';
 
 /**
  * The public runtime contract (AD4, AD6, AD7).
@@ -85,11 +85,11 @@ export interface Store<TSnapshot> {
 /**
  * Who a change is attributed to. Self-asserted and advisory in v1 (OQ7).
  *
- * Defined in `@leyline/schema` and re-exported here, so the identity on a trace
+ * Defined in `@khorum-oss/leyline-schema` and re-exported here, so the identity on a trace
  * event and the identity a policy inspects are one type rather than two that
  * resemble each other.
  */
-export type { Initiator } from '@leyline/schema';
+export type { Initiator } from '@khorum-oss/leyline-schema';
 
 /** Implementations for the guards, services, and data sources a schema requires (AD2). */
 export interface CapabilityBundle {

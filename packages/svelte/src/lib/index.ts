@@ -1,5 +1,5 @@
 /**
- * `@leyline/svelte` — the Svelte adapter.
+ * `@khorum-oss/leyline-svelte` — the Svelte adapter.
  *
  * Adapters stay thin (G5). This package bridges the core's store contract to
  * Svelte's, turns a render plan into slots, and mounts whichever component
