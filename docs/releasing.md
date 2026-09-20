@@ -39,13 +39,32 @@ tokens carrying the bypass-2FA option too.
 laptop, and the one release that carries no provenance — attestations are minted
 by the CI runner holding the OIDC token, and npm will not let a version be
 republished to add one later. So what goes out here is 0.0.1 under a `bootstrap`
-dist-tag rather than `latest`: enough for the registry to know the names, not
-enough for anyone to install by accident.
+dist-tag: enough for the registry to know the names, and marked as what it is.
+
+The tag does not keep it out of the way, though — npm points `latest` at the
+first version a package ever publishes, whatever `--tag` asked for. So 0.0.1 is
+what `npm install` resolves to until the first real release moves `latest`,
+which is one more reason not to leave the rest of this setup half-done.
 
 ```bash
 npm login
-bash scripts/bootstrap-publish.sh          # or: ... <otp-code>
+bash scripts/bootstrap-publish.sh          # or: ... 123456, with a 2FA code
 ```
+
+Two-factor authentication has to be on the account before this works — npm
+answers `403` for a write without it, and the trust commands in step 3 refuse to
+run at all. How you answer the challenge decides what the script does: an
+authenticator app produces a code, which can be passed as the argument, while a
+passkey or security key produces nothing typable and is answered in a browser
+instead.
+
+That is why the script packs with pnpm and publishes with npm. Packing needs
+pnpm — it is what rewrites `workspace:^` into `^0.0.1` inside the tarball — and
+publishing needs npm, because pnpm accepts nothing but a typed `--otp` code and
+has no browser flow to offer a passkey.
+
+If a run stops partway, run it again: it skips whatever already reached the
+registry, because npm will not let a version be published twice.
 
 The script bumps `0.0.0` to `0.0.1`, publishes all seven, and puts the manifests
 back — deliberately _without_ running `changeset version`, because the
@@ -91,14 +110,28 @@ moves off the bootstrap version for good.
    `pnpm changeset`, pick the packages, pick the bump, write the entry in the
    user's language — it becomes the changelog line someone reads at upgrade
    time.
-2. **Merge to `main` as usual.** The release workflow opens or updates a pull
-   request titled _Version packages_, holding the version bumps and the
-   changelog entries the accumulated changesets produce.
-3. **Read that pull request.** It is the release review: the version numbers are
+2. **Merge to `main` as usual.** The release workflow versions the packages and
+   pushes the result to `changeset-release/main`, holding the version bumps and
+   the changelog entries the accumulated changesets produce.
+3. **Open the pull request yourself, the first time round.**
+
+   ```bash
+   gh pr create --base main --head changeset-release/main --title 'Version packages'
+   ```
+
+   The workflow would do this, and fails trying: the organisation does not
+   permit GitHub Actions to create pull requests, and the job reports
+   `GitHub Actions is not permitted to create or approve pull requests` after
+   the branch is already pushed. Nothing is lost when that happens — the
+   versioning is on the branch, and the run can be ignored. Once a pull request
+   is open, later runs update the branch under it without needing to create
+   anything, so this is a once-per-release-cycle step rather than a daily one.
+
+4. **Read that pull request.** It is the release review: the version numbers are
    the claim you are making about compatibility, and the changelog is the only
    part of a release most people ever read. Wrong bump or a thin entry — fix the
    changeset on `main` and the pull request rewrites itself.
-4. **Merge it.** The workflow runs `pnpm verify` against the merge commit, then
+5. **Merge it.** The workflow runs `pnpm verify` against the merge commit, then
    `changeset publish`: each package goes to npm with a provenance attestation,
    git tags are pushed, and `changesets/action` opens a GitHub release per
    package from its changelog entry.
@@ -133,12 +166,19 @@ things named there stay outside the promise.
 ## What the workflow does and does not do
 
 **CI does not run on the version pull request.** GitHub does not trigger
-workflows for events raised with `GITHUB_TOKEN`, and the version pull request is
-raised that way. Nothing is lost — the release job runs the full `pnpm verify`
-against the merge commit before it publishes anything — but the pull request
-carries no green check. Wanting one is the reason to swap in a personal access
-token, and the reason not to is that the token would then sit in the repository
-with push rights.
+workflows for events raised with `GITHUB_TOKEN`. Nothing is lost — the release
+job runs the full `pnpm verify` against the merge commit before it publishes
+anything — but the pull request carries no green check. Wanting one, like
+wanting the pull request opened automatically, is the reason to swap in a
+personal access token; the reason not to is that the token would then sit in
+the repository with push rights, which is the arrangement the rest of this
+document exists to avoid.
+
+**The organisation forbids Actions from opening pull requests**, which is why
+step 3 is done by hand. It is an organisation-wide policy covering every
+repository, and the switch that would lift it also lets workflows _approve_
+pull requests — which is why it is off. One `gh pr create` per release cycle
+buys that back.
 
 **Trusted publishing has a toolchain floor.** pnpm runs the OIDC exchange
 itself — 11.0.7 taught it to prefer a trusted publisher over a configured

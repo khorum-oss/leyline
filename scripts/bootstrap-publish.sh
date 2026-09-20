@@ -4,9 +4,8 @@
 #
 # npm configures a trusted publisher against a package the registry already
 # knows, so the seven records have to exist before OIDC can be turned on. This
-# publishes 0.0.1 of each under the `bootstrap` dist-tag — not `latest`, so
-# nothing installs it by accident — and puts the manifests back at 0.0.0
-# afterwards: the accumulated changesets are what make the first real release
+# publishes 0.0.1 of each under a `bootstrap` dist-tag and puts the manifests
+# back at 0.0.0 afterwards: the accumulated changesets are what make the first real release
 # 1.0.0, and `changeset version` must still find them, and still find 0.0.0.
 #
 # It is kept after it has served its purpose because it is the record of how
@@ -15,6 +14,12 @@
 # Run from the repository root, after `npm login`:
 #
 #     bash scripts/bootstrap-publish.sh [otp-code]
+#
+# The [otp-code] argument is only useful for an account whose second factor is
+# an authenticator app. With a passkey or security key there is no code to
+# pass: npm opens a browser instead, which is why the publish below goes
+# through npm rather than pnpm. Either way, if a run stops partway, run it
+# again — what already published is skipped.
 set -euo pipefail
 
 PKGS=(schema core dsl agent react svelte vanilla)
@@ -35,8 +40,13 @@ for p in "${PKGS[@]}"; do
   [[ "$v" == "0.0.0" ]] || { echo "@khorum-oss/leyline-$p is at $v, expected 0.0.0 — has 'changeset version' already run?" >&2; exit 1; }
 done
 
-# Whatever happens below, the manifests go back to 0.0.0.
-restore() { git checkout -- packages/*/package.json; echo "==> manifests restored to 0.0.0"; }
+# Whatever happens below, the manifests go back to 0.0.0 and the tarballs go.
+TARBALLS=$(mktemp -d)
+restore() {
+  git checkout -- packages/*/package.json
+  rm -rf "$TARBALLS"
+  echo "==> manifests restored to 0.0.0"
+}
 trap restore EXIT
 
 echo "==> building"
@@ -48,15 +58,51 @@ for p in "${PKGS[@]}"; do
 done
 
 echo "==> publishing under the 'bootstrap' tag"
+# One package at a time, skipping any that is already up. A one-time password
+# is good for about thirty seconds and there are seven publishes here, so a
+# run can plausibly die halfway — and npm will not let a version be published
+# twice, which would turn a half-finished run into a permanent obstacle. This
+# way, re-running with a fresh code finishes the job instead of colliding with
+# what the last one managed.
+#
 # --no-git-checks: the manifests are deliberately dirty right now, and this is
 # not the branch a real release comes from.
-pnpm -r --filter "./packages/**" publish \
-  --tag bootstrap \
-  --access public \
-  --no-git-checks \
-  ${OTP:+--otp "$OTP"}
+published=0 skipped=0
+for p in "${PKGS[@]}"; do
+  name="@khorum-oss/leyline-$p"
+  if npm view "$name@0.0.1" version >/dev/null 2>&1; then
+    echo "    $name@0.0.1 is already on the registry — skipping"
+    skipped=$((skipped + 1))
+    continue
+  fi
 
+  # pnpm packs, npm publishes. Packing is the part that needs pnpm: it is what
+  # rewrites `workspace:^` into `^0.0.1` inside the tarball. Publishing is the
+  # part that needs npm: npm can complete two-factor authentication in the
+  # browser, which is the only way a passkey or security key can answer, while
+  # pnpm accepts nothing but a typed `--otp` code.
+  tarball=$(cd "packages/$p" && pnpm pack --pack-destination "$TARBALLS" | tail -1)
+  [[ -f "$tarball" ]] || { echo "pnpm pack produced no tarball for $name" >&2; exit 1; }
+
+  npm publish "$tarball" --tag bootstrap --access public ${OTP:+--otp "$OTP"}
+  published=$((published + 1))
+done
+echo "==> $published published, $skipped already there"
+
+# Asking for the exact version rather than the package: npm's aggregated
+# package document is eventually consistent and can answer 404 for minutes
+# after a first publish, while the per-version document is already serving.
+# A `(missing)` here means the publish did not happen; it does not mean the
+# package is unfindable.
 echo "==> done. On the registry now:"
 for p in "${PKGS[@]}"; do
-  printf '  %-32s %s\n' "@khorum-oss/leyline-$p" "$(npm view "@khorum-oss/leyline-$p" dist-tags --json 2>/dev/null | tr -d '\n ' || echo '(not found)')"
+  name="@khorum-oss/leyline-$p"
+  printf '  %-34s %s\n' "$name" "$(npm view "$name@0.0.1" version 2>/dev/null || echo '(missing)')"
 done
+
+cat <<'NOTE'
+
+Note: npm points `latest` at the first version a package ever publishes,
+whatever `--tag` asked for, so 0.0.1 is installable by default until the
+first real release moves it. `docs/releasing.md` retires it afterwards.
+NOTE
